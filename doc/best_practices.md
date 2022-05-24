@@ -1,6 +1,7 @@
-# <a name="top"></a># ETLS - Recomendaciones y directrices - EPG (Enhancement Proposals and Guidelines)
+# <a name="top"></a>ETLS - Recomendaciones y directrices - EPG (Enhancement Proposals and Guidelines)
 
 * [Versión](#version)
+* [Estructura de ficheros](#estructura-de-ficheros)
 * [Uso de la librería común](#tc_etl_lib)
 * [Log format](#logging-format)
 * [Logging niveles y f-strings](#logging-string)
@@ -12,6 +13,18 @@
 Para los desarrollos de ETLs se usa la versión >= 3.8 de Python. [Ref.](https://docs.python.org/3.8/)
 
 Para ejecutar las ETLs en python, se hace uso de Virtual Enviroment, referenciado como venv. Este entorno virtualizado, permite trabajar con python en un entorno controlado, donde poder instalar las librerías que se necesitan en cada momento, independiente de las librerías generales que tenga el sistema instalado. [Ref.](https://docs.python.org/3/library/venv.html)
+
+## Estructura de ficheros
+
+La ETL estará contenida en un directorio, cuyos contenidos serán:
+
+* `README.md`: documentando la ETL con al menos las siguientes secciones: ...
+* `requirements.txt`: dependencias de la ETL. Especialmente significativa es la `[tc_etl_lib](#tc_etl_lib)`, en el caso de ETLs que
+  interactúen con la plataforma.
+* `config.example.cfg`: fichero de configuración de ejemplo, según el formato descrito [en la siguiente sección](#etl-config). **Téngase
+  precaución de ofuscar cualquier tipo de información sensible que pueda haber en esta configuración, pe. IPs, passwords, etc.**
+* `etl.py`: el fichero ejecutable de la ETL
+* Otros ficheros `.py` que la ETL pueda necesitar. Idealmente, si la ETL es sencilla, no deberían hacer falta ficheros `.py` extra
 
 ## <a name="tc_etl_lib"></a>Uso de la librería común
 
