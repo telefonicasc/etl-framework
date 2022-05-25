@@ -1,6 +1,8 @@
 # Librería Python para ETLs
 
-Esta librería tiene funciones comunes que pueden ser útiles para uso en las ETLs. 
+Esta librería tiene funciones comunes que pueden ser útiles para uso en las ETLs.
+
+Página de la libreria en PyPI:https://pypi.org/project/tc-etl-lib/
 
 ## Empaquetado de la librería
 
@@ -15,7 +17,45 @@ Para empaquetar se procede de la siguiente manera:
 
 * Una vez generada la librería, se puede utilizar desde cualquier proyecto instalándola mediante `pip`
 
+## Subida de la libreria a repositorio público de pip
+
+Una vez construido el paquete de la librería según el procedimiento descrito en la sección anterior, se puede realizar
+su subida al repositorio público de pip.
+
+En primer lugar, instalar la herramienta twine si no se dispone previamente de ella:
+
+        pip install twine
+
+Para subir la libreria al repositorio público de pip ejecutar el comando:
+
+        twine upload dist/tc_etl_lib-x.y.z.tar.gz
+
+Es necesario estar registrado previamente en https://pypi.org y con permisos en https://pypi.org/project/tc-etl-lib/, 
+ya que se solicitará el usuario y password para realizar la subida.
+
 ## Instalación de la librería
+
+Existen distintas alternativas
+
+### Desde el repositorio público de pip (recomendada)
+
+Para instalar la última versión:
+
+        pip install tc_etl_lib==0.1.0
+
+Para instalar una versión concreta:
+
+        pip install tc_etl_lib==0.1.0
+
+También se puede añadir la depedencia a `requirements.txt`:
+
+        tc_etl_lib==0.1.0
+
+he instalar (junto con el resto de depedencias) con el habitual:
+
+        pip install -r requirements.txt
+
+### Con el paquete .tar.gz
 
 La librería de tipo `tc_etl_lib-<version>.tar.gz`, se puede instalar en cualquier entorno python con el siguiente comando:
 
@@ -24,6 +64,8 @@ La librería de tipo `tc_etl_lib-<version>.tar.gz`, se puede instalar en cualqui
 En este caso, la librería está disponible en ese directorio. Si estuviera disponible en cualquier otra ruta, se debería de reemplazar por la ruta relativa o absoluta correspondiente. Si se quiere instalar sobre un entorno venv, primero has de activar el entorno venv y luego ejecutar el comando de instalación de la librería.
 
 Pueden obtenerlse los .tar.gz correspondientes a cada versión de la libreria en [este enlace](https://github.com/telefonicasc/etl-framework/releases).
+
+### Desde el repositorio git
 
 La librería se puede instalar usando el repositorio remoto de github, para ello se ha de añadir la siguiente linea en el fichero requirements.txt.
 
