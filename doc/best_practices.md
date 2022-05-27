@@ -68,7 +68,7 @@ import logging
 # sets the logging configuration
 logging.basicConfig(
     level=logging.DEBUG,
-    format="time=%(asctime)s | lvl=%(levelname)s | comp=%(name)s | op=%(filename)s[%(lineno)d]:%(funcName)s | msg=%(message)s",
+    format="time=%(asctime)s | lvl=%(levelname)s | comp=ETL-xxxx | op=%(filename)s[%(lineno)d]:%(funcName)s | msg=%(message)s",
     handlers=[
         logging.StreamHandler()
     ]
@@ -80,6 +80,8 @@ logger = logging.getLogger()
 # log something
 logger.info('lore ipsum...')
 ```
+
+reemplazando 'ETL-xxx' por el nombre que se le quiera dar a la ETL
 
 ## <a name="logging-string"></a> Logging niveles y f-strings
 
