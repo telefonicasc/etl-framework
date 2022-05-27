@@ -81,6 +81,8 @@ logger = logging.getLogger()
 logger.info('lore ipsum...')
 ```
 
+reemplazando 'xxxx' por el nombre de la ETL.
+
 reemplazando 'ETL-xxx' por el nombre que se le quiera dar a la ETL
 
 ## <a name="logging-string"></a> Logging niveles y f-strings
