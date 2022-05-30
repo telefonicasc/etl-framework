@@ -68,7 +68,7 @@ import logging
 # sets the logging configuration
 logging.basicConfig(
     level=logging.DEBUG,
-    format="time=%(asctime)s | lvl=%(levelname)s | comp=ETL-xxxx | op=%(filename)s[%(lineno)d]:%(funcName)s | msg=%(message)s",
+    format="time=%(asctime)s | lvl=%(levelname)s | comp=ETL-xxxx | op=%(name)s:%(filename)s[%(lineno)d]:%(funcName)s | msg=%(message)s",
     handlers=[
         logging.StreamHandler()
     ]
