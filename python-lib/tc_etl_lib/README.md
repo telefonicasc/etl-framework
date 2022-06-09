@@ -41,7 +41,7 @@ Existen distintas alternativas
 
 Para instalar la última versión:
 
-        pip install tc_etl_lib==0.1.0
+        pip install tc_etl_lib
 
 Para instalar una versión concreta:
 

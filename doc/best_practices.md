@@ -150,7 +150,7 @@ endpoint_cb = config.get('environment', 'endpoint_cb')
 
 ## <a name="etl-csv"></a> Manejo de CSV en las ETLs
 
-Para la recogida de datos de CSV en las ETLs, se recomienda usar la librería `panda`, que dispone de mecanismos de captación de datos, entre ellos importanción de datos desde CSV. [Ref.](https://pandas.pydata.org/docs/user_guide/io.html#io-read-csv-table)
+Para la recogida de datos de CSV en las ETLs, se recomienda usar la librería `pandas`, que dispone de mecanismos de captación de datos, entre ellos importanción de datos desde CSV. [Ref.](https://pandas.pydata.org/docs/user_guide/io.html#io-read-csv-table)
 
 Para la lectura de un csv, se necesita los siguientes parámetros:
 - csv_name: nombre del csv 
