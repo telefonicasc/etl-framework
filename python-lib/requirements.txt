@@ -1,4 +1,4 @@
 #
 # fichero de ejemplo de requirements.txt para enlazar con al librería tc_etl_lib
 #
-tc_etl_lib @ git+https://github.com/telefonicasc/etl-framework#package=tc_etl_lib&subdirectory=python-lib/tc_etl_lib
+tc_etl_lib==0.1.0
