@@ -265,7 +265,8 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     
 ## Changelog
 
-- Updated get_entities_page: Added more filters (q, mq, georel, geometry, coords, id)
+- Add: orderBy parameter to get_entities_page function
+- Add: more filters (q, mq, georel, geometry, coords, id) to get_entities_page function ([#13](https://github.com/telefonicasc/etl-framework/issues/13))
 
 0.1.0 (April 26th, 2022)
 
