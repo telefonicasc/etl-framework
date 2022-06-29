@@ -122,6 +122,13 @@ class cbManager:
             'X-Auth-Token': auth.tokens[subservice]
         }
         
+        # check if use geographical queries, must specify georel, geometry, coords
+        if (georel != None or geometry != None or coords != None):
+            if (georel != None and georel != '') and (geometry != None and geometry != '') and (coords != None and coords != ''):
+                pass
+            else:
+                raise ValueError('If use geographical queries, you must define georel, geometry and coords in params')
+        
         params = {"offset": offset, "limit": limit, "type": type, "orderBy": orderBy, "q": q, "mq": mq, "georel": georel, "geometry": geometry, "coords": coords, "id": id}
         req_url = f"{self.endpoint}/v2/entities"
         resp = requests.get(req_url, params=params, headers=headers, verify=False, timeout=self.timeout)
