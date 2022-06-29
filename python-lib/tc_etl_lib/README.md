@@ -237,6 +237,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `post_retry_backoff_factor`: Factor que se usa, para esperar varios segundos tras enviar una ráfaga de datos. (default: 0)
         - :param opcional `sleep_send_batch`: Pausa en segundos, que se realiza cada vez que se envia una ráfaga de datos. (default: 0). 
         - :param opcional `cb_flowcontrol`: Opción del Context Broker, que permite un mejor rendimiento en caso de envío masivo de datos (batch updates). Este mecanismo, requiere arrancar el Context Broker con un flag concreto y en las peticiones de envío de datos, añadir esa opción. Referencia en [documentación de Orion](https://fiware-orion.readthedocs.io/en/master/admin/perf_tuning/index.html#updates-flow-control-mechanism) (default: False)
+        - :param opcional `block_size`: Cuando se realiza el envío de datos al Context Broker mediante la función de `send_batch`, se realiza envíos en tramos que no excedan el block_size indicado (default: 800000). Se permite modificar el valor de block_size, pero sin superar la limitación de 800000. En caso de indicar un valor que supere ese límite, se lanzará una excepción ValueError indicando que se ha excedido el límite del valor permitido.
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta alguno de los argumentos obligatorios
     - `send_batch`: Función que envía un lote de entidades al Context Broker. Se le pasa el authManager, que ya dispone de un listado con todos los tokens por subservicio y usa el correspondiente para realizar la llamada al Context Broker. Si no se dispone de token o ha caducado, se solicita nuevo y luego envía los datos.
         - :param obligatorio `auth`: Se le proporciona el authManager, que tiene las credenciales por si ha de solicitar un token y dispone del listado de tokens asociado. Si no se define en la llamada a la función, avisará con una excepción ValueError.
@@ -264,7 +265,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
           "JSON Entity Representation" de la [NGSIv2 API](https://fiware.github.io/specifications/ngsiv2/stable/)
     
 ## Changelog
-
+- Update: send_batch function with block control (limitation cb)
 - Add: more filters (q, mq, georel, geometry, coords, id) to get_entities_page function ([#13](https://github.com/telefonicasc/etl-framework/issues/13))
 
 0.1.0 (April 26th, 2022)

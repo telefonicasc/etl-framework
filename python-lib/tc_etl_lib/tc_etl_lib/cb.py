@@ -76,7 +76,7 @@ class cbManager:
     # and it is not recommended to change it
     block_size = 800000
     
-    def __init__(self,*, endpoint: str = None, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, sleep_send_batch: int = 0, cb_flowcontrol: bool = False) -> None:
+    def __init__(self,*, endpoint: str = None, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, sleep_send_batch: int = 0, cb_flowcontrol: bool = False, block_size: int = 800000) -> None:
         
         if (endpoint == None):
             raise ValueError(f'You must define <<endpoint>> in cbManager')
@@ -87,6 +87,12 @@ class cbManager:
         self.post_retry_backoff_factor = post_retry_backoff_factor
         self.sleep_send_batch = sleep_send_batch
         self.cb_flowcontrol = cb_flowcontrol 
+        
+        # check block_size limit.
+        if (int(block_size) > int(800000)):
+            raise ValueError('Block size limit reached! <<block_size>> value cannot be greater than 800000')
+        
+        self.block_size = block_size
 
     def get_entities_page(self, *, subservice: str = None, auth: authManager = None, offset: int = None, limit: int = None, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
         """Retrieve data from context broker
