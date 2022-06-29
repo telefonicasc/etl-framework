@@ -30,6 +30,7 @@ from typing import Any, Optional
 
 import logging
 import time
+import json
 
 from . import authManager
 
@@ -69,6 +70,11 @@ class cbManager:
     post_retry_backoff_factor: int = 20
     sleep_send_batch: int = 0
     cb_flowcontrol: bool = False
+    # Block size is string chars (= bytes, with ASCII codification). This is calculated
+    # for 800k (Orion max request size is 1MB,
+    # see https://fiware-orion.readthedocs.io/en/master/user/known_limitations/index.html)
+    # and it is not recommended to change it
+    block_size = 800000
     
     def __init__(self,*, endpoint: str = None, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, sleep_send_batch: int = 0, cb_flowcontrol: bool = False) -> None:
         
@@ -138,7 +144,35 @@ class cbManager:
 
         return resp.json()
 
+
     def send_batch(self, *, subservice: str = None, auth: authManager, entities: str) -> bool:
+        """Send batch data to context broker with block control
+
+        :param auth: Define authManager 
+        :param entities: Entities data
+        :param subservice: Define subservice to send batch data, defaults to None
+        :raises ValueError: is thrown when some required argument is missing
+        :raises Exception: is thrown when the cotext broker response isn't ok operation
+        :return: True if the operation is correct
+        """
+        entitiesToSend = []
+        accumulated_block = 0
+        for entity in entities:
+            entitiesToSend.append(entity)
+            accumulated_block += len(json.dumps(entity))
+            
+            if accumulated_block > self.block_size:
+                logger.debug(f'- Sending a batch of {len(entitiesToSend)} entities')
+                self.__send_batch(auth=auth, subservice=subservice, entities=entitiesToSend)
+                entitiesToSend = []
+                accumulated_block = 0
+        
+        # Remaining block, if any
+        if accumulated_block > 0:
+            logger.debug(f'- Sending final batch of {len(entitiesToSend)} entities')
+            self.__send_batch(auth=auth, subservice=subservice, entities=entitiesToSend)
+
+    def __send_batch(self, *, subservice: str = None, auth: authManager, entities: str) -> bool:
         """Send batch data to context broker
 
         :param auth: Define authManager 
