@@ -82,7 +82,7 @@ class cbManager:
         self.sleep_send_batch = sleep_send_batch
         self.cb_flowcontrol = cb_flowcontrol 
 
-    def get_entities_page(self, *, subservice: str = None, auth: authManager = None, offset: int = None, limit: int = None, type: str = None, orderBy: str = None):
+    def get_entities_page(self, *, subservice: str = None, auth: authManager = None, offset: int = None, limit: int = None, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
         """Retrieve data from context broker
 
         :param subservice: Define subservice from which entities are retrieved, defaults to None
@@ -91,6 +91,12 @@ class cbManager:
         :param limit: Limits the number of entities to be retrieved, defaults to None
         :param type: Retrieve entities whose type matches one of the elements in the list, defaults to None
         :param orderBy: Criteria for ordering results, defaults to None
+        :param q: Retrieve entities filtering by attribute value, defaults to None
+        :param mq: Retrieve entities filtering by metadata, defaults to None
+        :param georel: Georel is intended to specify a spatial relationship between matching entities and a reference shape (geometry), defaults to None
+        :param geometry: Allows to define the reference shape to be used when resolving the query. (point | polygon | line | box), defaults to None
+        :param coords: Must be a string containing a semicolon-separated list of pairs of geographical coordinates in accordance with the geometry specified, defaults to None
+        :param id: Retrieve entities filtering by Identity, defaults to None
         :raises ValueError: is thrown when some required argument is missing
         :raises FetchError: is thrown when the response from the cb indicates an error
         :return: json data
@@ -116,7 +122,14 @@ class cbManager:
             'X-Auth-Token': auth.tokens[subservice]
         }
         
-        params = {"offset": offset, "limit": limit, "type": type, "orderBy": orderBy}
+        # check if use geographical queries, must specify georel, geometry, coords
+        if (georel != None or geometry != None or coords != None):
+            if (georel != None and georel != '') and (geometry != None and geometry != '') and (coords != None and coords != ''):
+                pass
+            else:
+                raise ValueError('If use geographical queries, you must define georel, geometry and coords in params')
+        
+        params = {"offset": offset, "limit": limit, "type": type, "orderBy": orderBy, "q": q, "mq": mq, "georel": georel, "geometry": geometry, "coords": coords, "id": id}
         req_url = f"{self.endpoint}/v2/entities"
         resp = requests.get(req_url, params=params, headers=headers, verify=False, timeout=self.timeout)
         
