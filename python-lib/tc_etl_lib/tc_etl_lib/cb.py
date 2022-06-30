@@ -72,7 +72,7 @@ class cbManager:
     cb_flowcontrol: bool = False
     # Block size is string chars (= bytes, with ASCII codification). This is calculated
     # for 800k (Orion max request size is 1MB,
-    # see https://fiware-orion.readthedocs.io/en/master/user/known_limitations/index.html)
+    # see https://fiware-orion.readthedocs.io/en/master/user/known_limitations.html)
     # and it is not recommended to change it
     block_size = 800000
     
