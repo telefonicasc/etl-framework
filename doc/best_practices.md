@@ -114,18 +114,23 @@ El mecanismo de f-String a la hora de formatear los strings (y en este caso usar
 
 Cada ETL tiene su propia configuración, dependiendo de su necesidades a nivel funcional. Es importante parametrizar todo lo posible y que las ETLs sean lo más flexible posible.
 
-Se recomienda utilizar grupos de configuración que agrupen variables de un mismo tipo (pe. el grupo ENVIRONMENT para la configuración que tenga que ver con el entorno de despliegue) y el uso de nombre con la siguiente estructura:
+Se recomienda utilizar grupos de configuración que agrupen variables de un mismo tipo (pe. el grupo `ENVIRONMENT` para la configuración que tenga que ver con el entorno de despliegue, `SETTINGS` para otras configuraciones, etc.) y el uso de nombre con la siguiente estructura:
 
 ```
 ETL_<nombre o mnemónico de la ETL>_<grupo de configuracion>_<elemento del grupo>
 ```
 
+Notas adicionales:
+
+* Solo se permiten mayúsculas y el underscore en el nombre de la variable
+* Con respecto a `<elemento del grupo>` se permite el uso de `_` si se trata de una palabra compuesta
+
 Por ejemplo:
 
 ```
 ETL_MYETL_ENVIRONMENT_PROTOCOL=http
-ETL_MYETL_ENVIRONMENT_ENDPOINTCB=<endpoint_cb>:<port>
-ETL_MYETL_ENVIRONMENT_ENDPOINTKEYSTONE=<endpoint_keystone>:<port>
+ETL_MYETL_ENVIRONMENT_ENDPOINT_CB=<endpoint_cb>:<port>
+ETL_MYETL_ENVIRONMENT_ENDPOINT_KEYSTONE=<endpoint_keystone>:<port>
 ETL_MYETL_ENVIRONMENT_SERVICE=dip_castellon
 ETL_MYETL_ENVIRONMENT_SUBSERVICE=/energia
 ETL_MYETL_ENVIRONMENT_USER=admin_castellon
@@ -140,7 +145,7 @@ Con comprobacion de existencia:
 import os
 
 protocol = os.getenv('ETL_MYETL_ENVIRONMENT_PROTOCOL')
-endpoint_cb = os.getenv('ETL_MYETL_ENVIRONMENT_ENDPOINTCB')
+endpoint_cb = os.getenv('ETL_MYETL_ENVIRONMENT_ENDPOINT_CB')
 if protocol is None or endpoint_db is None:
     logger.error('Some critical configuration is missing')
     sys.exit()
@@ -152,7 +157,7 @@ Con uso de default si la variable no existe:
 import os
 
 protocol = os.getenv('ETL_MYETL_ENVIRONMENT_PROTOCOL', 'http')
-endpoint_cb = os.getenv('ETL_MYETL_ENVIRONMENT_ENDPOINTCB', '<endpoint_cb>:<port>')
+endpoint_cb = os.getenv('ETL_MYETL_ENVIRONMENT_ENDPOINT_CB', '<endpoint_cb>:<port>')
 ```
 
 **NOTA:** la antigua recomendación de configurar la ETL via fichero de configuración `config.cfg` ha quedado deprecada, pero sí aún quiere consultarse puede hacerse en [el tag 0.1.0 de este repositorio](https://github.com/telefonicasc/etl-framework/blob/0.1.0/doc/best_practices.md#-configuraci%C3%B3n-de-la-etl).
