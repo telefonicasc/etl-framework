@@ -112,41 +112,55 @@ El mecanismo de f-String a la hora de formatear los strings (y en este caso usar
 
 ## <a name="etl-config"></a> Configuración de la ETL
 
-Cada ETL tiene su propia configuración, dependiendo de su necesidades a nivel funcional. Es importante parametrizar todo lo posible y que las ETLs sean lo más flexible posible. Para ello, se usa un fichero de configuración `config.cfg` donde viene una configuración básica que es común para todas las ETLs y luego una configuración concreta según las necesidades. Este fichero tiene el siguiente formato:
+Cada ETL tiene su propia configuración, dependiendo de su necesidades a nivel funcional. Es importante parametrizar todo lo posible y que las ETLs sean lo más flexible posible.
+
+Se recomienda utilizar grupos de configuración que agrupen variables de un mismo tipo (pe. el grupo `ENVIRONMENT` para la configuración que tenga que ver con el entorno de despliegue, `SETTINGS` para otras configuraciones, etc.) y el uso de nombre con la siguiente estructura:
 
 ```
-[environment]
-protocol = http
-endpoint_cb = <endpoint_cb>:<port>
-endpoint_keystone = <endpoint_keystone>:<port>
-service = dip_castellon
-subservice = /energia
-user = admin_castellon
-password = xxx
+ETL_<nombre o mnemónico de la ETL>_<grupo de configuracion>_<elemento del grupo>
 ```
 
-A la hora de recoger esa configuración, la realizamos con `configparser` [Ref.](https://docs.python.org/3/library/configparser.html)
-Configparser te permite la recogida de datos con cierto formato, usando get, getint, getboolean.
+Notas adicionales:
+
+* Solo se permiten mayúsculas y el underscore en el nombre de la variable
+* Con respecto a `<elemento del grupo>` se permite el uso de `_` si se trata de una palabra compuesta
+
+Por ejemplo:
+
+```
+ETL_MYETL_ENVIRONMENT_PROTOCOL=http
+ETL_MYETL_ENVIRONMENT_ENDPOINT_CB=<endpoint_cb>:<port>
+ETL_MYETL_ENVIRONMENT_ENDPOINT_KEYSTONE=<endpoint_keystone>:<port>
+ETL_MYETL_ENVIRONMENT_SERVICE=dip_castellon
+ETL_MYETL_ENVIRONMENT_SUBSERVICE=/energia
+ETL_MYETL_ENVIRONMENT_USER=admin_castellon
+ETL_MYETL_ENVIRONMENT_PASSWORD=xxx
+```
+
+A la hora de recoger esa configuración, se utiliza [`os.getenv()`](https://docs.python.org/3/library/os.html#os.getenv), existien do distintas variantes posibles.
+
+Con comprobacion de existencia:
 
 ``` Python
+import os
 
-#import confirparser
-import configparser
-
-
-# Gets the config
-config = configparser.ConfigParser()
-config.read(module_path.parent.joinpath('config.cfg'))
-
-# Checks if the config has a environment section
-if 'environment' not in config.sections():
-    logger.error('Environment configuration not found')
+protocol = os.getenv('ETL_MYETL_ENVIRONMENT_PROTOCOL')
+endpoint_cb = os.getenv('ETL_MYETL_ENVIRONMENT_ENDPOINT_CB')
+if protocol is None or endpoint_db is None:
+    logger.error('Some critical configuration is missing')
     sys.exit()
-
-# Get the config variables
-protocol = config.get('environment', 'protocol')
-endpoint_cb = config.get('environment', 'endpoint_cb')
 ```
+
+Con uso de default si la variable no existe:
+
+``` Python
+import os
+
+protocol = os.getenv('ETL_MYETL_ENVIRONMENT_PROTOCOL', 'http')
+endpoint_cb = os.getenv('ETL_MYETL_ENVIRONMENT_ENDPOINT_CB', '<endpoint_cb>:<port>')
+```
+
+**NOTA:** la antigua recomendación de configurar la ETL via fichero de configuración `config.cfg` ha quedado deprecada, pero sí aún quiere consultarse puede hacerse en [el tag 0.1.0 de este repositorio](https://github.com/telefonicasc/etl-framework/blob/0.1.0/doc/best_practices.md#-configuraci%C3%B3n-de-la-etl).
 
 ## <a name="etl-csv"></a> Manejo de CSV en las ETLs
 
