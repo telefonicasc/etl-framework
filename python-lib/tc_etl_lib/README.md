@@ -287,8 +287,8 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
           "JSON Entity Representation" de la [NGSIv2 API](https://fiware.github.io/specifications/ngsiv2/stable/)
     
 ## Changelog
-- Add: get_entities function to get entities with internal pagination
-- Update: send_batch function with block control to overcome CB limitation (new cbManager constructor optional param block_size) ([#6](https://github.com/telefonicasc/etl-framework/issues/6))
+- Add: get_entities function to get entities with internal pagination ( ([#5](https://github.com/telefonicasc/etl-framework/issues/6))
+- Add: block control to send_batch function to overcome CB limitation (new cbManager constructor optional param block_size) ([#6](https://github.com/telefonicasc/etl-framework/issues/6))
 - Add: more filters (q, mq, georel, geometry, coords, id) to get_entities_page function ([#13](https://github.com/telefonicasc/etl-framework/issues/13))
 
 0.1.0 (April 26th, 2022)
