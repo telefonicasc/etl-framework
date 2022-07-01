@@ -94,6 +94,36 @@ class cbManager:
         
         self.block_size = block_size
 
+    def get_entities(self, *, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
+        """Retrieve data from context broker
+
+        :param subservice: Define subservice from which entities are retrieved, defaults to None
+        :param auth: Define authManager, defaults to None
+        :param limit: Limits the number of entities to be retrieved, defaults to None
+        :param type: Retrieve entities whose type matches one of the elements in the list, defaults to None
+        :param orderBy: Criteria for ordering results, defaults to None
+        :param q: Retrieve entities filtering by attribute value, defaults to None
+        :param mq: Retrieve entities filtering by metadata, defaults to None
+        :param georel: Georel is intended to specify a spatial relationship between matching entities and a reference shape (geometry), defaults to None
+        :param geometry: Allows to define the reference shape to be used when resolving the query. (point | polygon | line | box), defaults to None
+        :param coords: Must be a string containing a semicolon-separated list of pairs of geographical coordinates in accordance with the geometry specified, defaults to None
+        :param id: Retrieve entities filtering by Identity, defaults to None
+        :raises ValueError: is thrown when some required argument is missing
+        :raises FetchError: is thrown when the response from the cb indicates an error
+        :return: json data
+        """
+        
+        result = []
+        pg = 1
+        
+        data = ['go!']
+        while (data != []) :
+            offset = (pg-1)*limit
+            data = self.get_entities_page(subservice=subservice, auth=auth, offset = offset, limit = limit, type = type, orderBy = orderBy, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id)
+            pg += 1
+            result += data
+        return result
+
     def get_entities_page(self, *, subservice: str = None, auth: authManager = None, offset: int = None, limit: int = None, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
         """Retrieve data from context broker
 
