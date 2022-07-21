@@ -94,6 +94,20 @@ class cbManager:
         
         self.block_size = block_size
 
+
+    def delete_entities(self, *, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
+        data = self.get_entities(subservice=subservice, auth=auth, limit = limit, type = type, orderBy = orderBy, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id)
+
+        entities = []
+        for i, item in enumerate(data):
+            entity = {
+                'id': f'{item["id"]}',
+                'type': f'{item["type"]}',
+            }
+            entities.append(entity)
+        
+        self.send_batch(subservice=subservice, auth=auth, entities=entities, actionType='delete')
+
     def get_entities(self, *, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
         """Retrieve data from context broker
 
@@ -181,12 +195,13 @@ class cbManager:
         return resp.json()
 
 
-    def send_batch(self, *, subservice: str = None, auth: authManager, entities: str) -> bool:
+    def send_batch(self, *, subservice: str = None, auth: authManager, entities: str, actionType: str = 'append') -> bool:
         """Send batch data to context broker with block control
 
         :param auth: Define authManager 
         :param entities: Entities data
         :param subservice: Define subservice to send batch data, defaults to None
+        :param actionType: Batch action type, defaults is append
         :raises ValueError: is thrown when some required argument is missing
         :raises Exception: is thrown when the cotext broker response isn't ok operation
         :return: True if the operation is correct
@@ -198,22 +213,23 @@ class cbManager:
             accumulated_block += len(json.dumps(entity))
             
             if accumulated_block > self.block_size:
-                logger.debug(f'- Sending a batch of {len(entitiesToSend)} entities')
-                self.__send_batch(auth=auth, subservice=subservice, entities=entitiesToSend)
+                logger.debug(f'- Sending a batch {actionType} of {len(entitiesToSend)} entities')
+                self.__send_batch(auth=auth, subservice=subservice, entities=entitiesToSend, actionType=actionType)
                 entitiesToSend = []
                 accumulated_block = 0
         
         # Remaining block, if any
         if accumulated_block > 0:
-            logger.debug(f'- Sending final batch of {len(entitiesToSend)} entities')
-            self.__send_batch(auth=auth, subservice=subservice, entities=entitiesToSend)
+            logger.debug(f'- Sending final batch {actionType} of {len(entitiesToSend)} entities')
+            self.__send_batch(auth=auth, subservice=subservice, entities=entitiesToSend, actionType=actionType)
 
-    def __send_batch(self, *, subservice: str = None, auth: authManager, entities: str) -> bool:
+    def __send_batch(self, *, subservice: str = None, auth: authManager, entities: str, actionType: str = 'append') -> bool:
         """Send batch data to context broker
 
         :param auth: Define authManager 
         :param entities: Entities data
         :param subservice: Define subservice to send batch data, defaults to None
+        :param actionType: Batch action type, defaults is append
         :raises ValueError: is thrown when some required argument is missing
         :raises Exception: is thrown when the cotext broker response isn't ok operation
         :return: True if the operation is correct
@@ -234,27 +250,28 @@ class cbManager:
         if subservice not in auth.tokens.keys():
             auth.get_auth_token_subservice(subservice = subservice)
 
-        res = self.__batch_creation_update(auth=auth, subservice = subservice, entities=entities)
+        res = self.__batch_creation(auth=auth, subservice = subservice, entities=entities, actionType=actionType)
         if res.status_code == 401:
             auth.get_auth_token_subservice(subservice = subservice)
-            res = self.__batch_creation_update(auth=auth, subservice = subservice, entities=entities)
+            res = self.__batch_creation(auth=auth, subservice = subservice, entities=entities, actionType=actionType)
 
         if res.status_code != 204:
-            raise Exception(f'Error in batch operation ({res.status_code}): {res.json()}')
+            raise Exception(f'Error in batch {actionType} operation ({res.status_code}): {res.json()}')
 
-        logger.debug(f'- Update batch of {len(entities)} entities')
+        logger.debug(f'- Update batch {actionType} of {len(entities)} entities')
 
         if (self.sleep_send_batch != 0):
             time.sleep(self.sleep_send_batch)
             
         return True 
         
-    def __batch_creation_update(self, *, subservice: str = None, auth: authManager = None, entities: str):
+    def __batch_creation(self, *, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append'):
         """Send batch data to Context Broker
 
         :param entities: Entities data
         :param subservice: Define subservice to send batch data, defaults to None
         :param auth: Define authManager, defaults to None
+        :param actionType: Batch action type, defaults is append
         :raises ValueError: is thrown when some required argument is missing
         :return: Http response code
         """
@@ -278,7 +295,7 @@ class cbManager:
         }
 
         body = {
-            'actionType': 'append',
+            'actionType': f'{actionType}',
             'entities': entities
         }
 
