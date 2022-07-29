@@ -94,15 +94,8 @@ class authManager:
             for key in self.tokens:
                 logger.info('tokens[' + key + ']: ' + self.tokens[key])
 
-    def get_auth_token_subservice(self, *, subservice: str = None):
-        """Authenticate in a service/subservice and get a token
-
-        :param subservice: define subservice to be authenticated, defaults to None
-        :raises ValueError: is thrown when some required argument is missing
-        :raises Exception: is thrown when the response from the auth service indicates an error
-        :return: the token returned by the auth service
-        """
-                
+    def check_mandatory_fields(self):
+        """Raise ValueError if some mandatory field is missing"""
         messageError = []
         if (not hasattr(self,"endpoint")):
             messageError.append('<<endpoint>>')
@@ -122,15 +115,15 @@ class authManager:
                 defineParams = " and ".join([", ".join(messageError[:-1]), messageError[-1]])
             raise ValueError(f'You must define {defineParams} in authManager')
         
-        if (not hasattr(self,"tokens")):
-            self.tokens = {}
-            
-        if (subservice == None):
-            if (not hasattr(self,"subservice")):
-                raise ValueError('You must define <<subservice>> in authManager')
-            else:
-                subservice = self.subservice
 
+    def _post_auth_request(self, detail: str, scope: dict):
+        """Send a POST Auth request to keystone for the given scope
+
+        :param detail: a detail string to include in logging messages
+        :param scope: the scope object to send in the request, in keystone v3 format
+        :raises Exception: when authorization fails
+        :return: requests.Response
+        """
         headers = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -138,14 +131,7 @@ class authManager:
 
         body = {
             "auth": {
-                "scope": {
-                    "project": {
-                        "domain": {
-                            "name": self.service
-                        },
-                        "name": subservice
-                    }
-                },
+                "scope": scope,
                 "identity": {
                     "password": {
                         "user": {
@@ -163,14 +149,68 @@ class authManager:
             }
         }
 
-        logger.debug(f'getting auth token (subservice "{subservice}")...')
+        logger.debug(f'getting auth token ({detail})...')
         req_url = self.endpoint + '/v3/auth/tokens'
         res = requests.post(req_url, json=body, headers=headers, verify=False)
 
         if res.status_code != 201:
-            raise Exception(f'Failed to get auth token (subservice "{subservice}") ({res.status_code}): {res.json()}')
+            raise Exception(f'Failed to get auth token ({detail}) ({res.status_code}): {res.json()}')
 
-        logger.debug(f'Authentication token for subservice "{subservice}" was created successfully')
+        logger.debug(f'Authentication token ({detail}) was created successfully')
+        return res
+
+    def get_auth_token_subservice(self, *, subservice: str = None):
+        """Authenticate in a service/subservice and get a token
+
+        :param subservice: define subservice to be authenticated, defaults to None
+        :raises ValueError: is thrown when some required argument is missing
+        :raises Exception: is thrown when the response from the auth service indicates an error
+        :return: the token returned by the auth service
+        """
+
+        self.check_mandatory_fields()
+        if (not hasattr(self,"tokens")):
+            self.tokens = {}
+            
+        if (subservice == None):
+            if (not hasattr(self,"subservice")):
+                raise ValueError('You must define <<subservice>> in authManager')
+            else:
+                subservice = self.subservice
+
+        res = self._post_auth_request(detail=f"subservice {subservice}", scope={
+            "project": {
+                "domain": {
+                    "name": self.service
+                },
+                "name": subservice
+            }
+        })
+
         token = res.headers['X-Subject-Token']
         self.tokens[subservice] = token
         return token
+
+    def get_auth_token_service(self):
+        """Authenticate in a service and get a token.
+        The service token is NOT cached.
+
+        :raises ValueError: is thrown when some required argument is missing
+        :raises Exception: is thrown when the response from the auth service indicates an error
+        :return: an object with { 'token': .... 'user_id': ..., 'deomain_id': ... }
+        """
+
+        self.check_mandatory_fields()
+        res = self._post_auth_request(detail=f"service {self.service}", scope={
+            "domain": {
+                "name": self.service
+            }
+        })
+
+        token = res.headers['X-Subject-Token']
+        tbody = res.json()['token']
+        return {
+            'token':     token,
+            'user_id':   tbody['user']['id'],
+            'domain_id': tbody['user']['domain']['id'],
+        }
