@@ -197,7 +197,7 @@ class authManager:
 
         :raises ValueError: is thrown when some required argument is missing
         :raises Exception: is thrown when the response from the auth service indicates an error
-        :return: an object with { 'token': .... 'user_id': ..., 'deomain_id': ... }
+        :return: an object with { 'token': .... 'user_id': ..., 'domain_id': ... }
         """
 
         self.check_mandatory_fields()
