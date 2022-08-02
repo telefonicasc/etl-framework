@@ -235,6 +235,10 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna variable del objeto authManager, para poder realizar la autenticación.
         - :raises [Exception](https://docs.python.org/3/library/exceptions.html#Exception): Se lanza cuando el servicio de identificación, responde con un error concreto.
         - :return: El token que te asigna el servicio de identificación, a parte internamente authManager almacena en caché el token que ha recibido de la autenticación para cada servicio, por si lo necesita a postetiori para realizar acciones con ese token.
+    - `get_auth_token_service`: Realiza una petición de token al IDM, identificándose con los creenciales de usuario, contraseña y servicio (obtiene un token de scope **domain**). El token obtenido es un token *privilegiado* que puede usarse para gestión del propio dominio (creación de subservicios, asignación de roles, etc), siempre que el usuario tenga el rol de administrador de dominio. Este token **no se almacena en caché interna**.
+        - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna variable del objeto authManager, para poder realizar la autenticación.
+        - :raises [Exception](https://docs.python.org/3/library/exceptions.html#Exception): Se lanza cuando el servicio de identificación, responde con un error concreto.
+        - :return: un objeto con tres propiedades: { `token`: ..., `user_id`: ..., `domain_id`: ... }. Como este token se usará principalmente para administración del dominio, es útil obtener los IDs de usuario y dominio asociados.
 - Clase `cbManager`: En esta clase están funciones para la interacción con el Context Broker.
    - `__init()__`: constructor de objetos de la clase
         - :param obligatorio `endpoint`: define el endpoint del context broker (ejemplo: https://`<service>`:`<port>`). Se debe especificar en el constructor del objeto de tipo cbManager, sino avisará con una excepción ValueError.
@@ -287,6 +291,8 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
           "JSON Entity Representation" de la [NGSIv2 API](https://fiware.github.io/specifications/ngsiv2/stable/)
     
 ## Changelog
+
+- Add: get_auth_token_service function to get domain tokens from IDM
 
 0.2.0 (July 13th, 2022)
 
