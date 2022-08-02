@@ -292,6 +292,8 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     
 ## Changelog
 
+- Add: get_auth_token_service function to get domain tokens from IDM
+
 0.2.0 (July 13th, 2022)
 
 - Add: get_entities function to get entities with internal pagination ([#5](https://github.com/telefonicasc/etl-framework/issues/6))
