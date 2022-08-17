@@ -95,8 +95,23 @@ class cbManager:
         self.block_size = block_size
 
 
-    def delete_entities(self, *, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
-        data = self.get_entities(subservice=subservice, auth=auth, limit = limit, type = type, orderBy = orderBy, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id)
+    def delete_entities(self, *, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
+        """Delete data from context broker
+
+        :param subservice: Define subservice from which entities are deleted, defaults to None
+        :param auth: Define authManager, defaults to None
+        :param limit: Limits the number of entities to be retrieved, deleted to None
+        :param type: Deleted entities whose type matches one of the elements in the list, defaults to None
+        :param q: Retrieve entities filtering by attribute value, defaults to None
+        :param mq: Retrieve entities filtering by metadata, defaults to None
+        :param georel: Georel is intended to specify a spatial relationship between matching entities and a reference shape (geometry), defaults to None
+        :param geometry: Allows to define the reference shape to be used when resolving the query. (point | polygon | line | box), defaults to None
+        :param coords: Must be a string containing a semicolon-separated list of pairs of geographical coordinates in accordance with the geometry specified, defaults to None
+        :param id: Delete entities filtering by Identity, defaults to None
+        :raises ValueError: is thrown when some required argument is missing
+        :raises FetchError: is thrown when the response from the cb indicates an error
+        """
+        data = self.get_entities(subservice=subservice, auth=auth, limit = limit, type = type, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id)
 
         entities = []
         for i, item in enumerate(data):
