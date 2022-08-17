@@ -308,6 +308,9 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
 
 - Add: new function delete_entities, to remove entities from Context Broker
 - Add: new parameter in the function send_batch to define the action. (append or delete)
+
+0.3.0 (August 2nd, 2022)
+
 - Add: get_auth_token_service function to get domain tokens from IDM
 
 0.2.0 (July 13th, 2022)
