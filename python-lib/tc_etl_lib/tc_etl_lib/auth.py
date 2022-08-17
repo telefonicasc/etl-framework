@@ -25,13 +25,14 @@ Authorization routines for Python:
 
 import requests
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 
+
 class authManager:
     """Authentication Manager
-    
+
     endpoint: define service endpoint auth (example: https://<service>:<port>)
     user: define user to authenticate
     password: define password to authenticate
@@ -46,13 +47,13 @@ class authManager:
     subservice: str
     tokens: Dict[str, str]
 
+    def __init__(self, *, endpoint: str = None, service: str = None, user: str = None, password: str = None,
+                 subservice: str = None) -> None:
 
-    def __init__(self,*, endpoint: str = None, service: str = None, user: str = None, password: str = None, subservice: str = None) -> None:
-        
         messageError = []
         if (endpoint == None):
             messageError.append('<<endpoint>>')
-        
+
         if (service == None):
             messageError.append('<<service>>')
 
@@ -61,60 +62,63 @@ class authManager:
 
         if (password == None):
             messageError.append('<<password>>')
-        
+
         if len(messageError) != 0:
             defineParams = messageError[0]
             if len(messageError) != 1:
                 defineParams = " and ".join([", ".join(messageError[:-1]), messageError[-1]])
             raise ValueError(f'You must define {defineParams} in authManager')
-        
+
         self.endpoint = endpoint
         self.service = service
         self.user = user
         self.password = password
         self.subservice = subservice
-        self.tokens = {}  
+        self.tokens = {}
+
+    def set_token(self, subservice: str, token: str):
+        self.subservice = subservice
+        self.tokens[subservice] = token
 
     def get_info(self):
         """ Show auth info
-        
+
         only for debug uses
         """
-        if (hasattr(self,"endpoint")):
+        if (hasattr(self, "endpoint")):
             logger.info(f'endpoint: {self.endpoint}')
-        if (hasattr(self,"service")):
+        if (hasattr(self, "service")):
             logger.info(f'service: {self.service}')
-        if (hasattr(self,"subservice")):
+        if (hasattr(self, "subservice")):
             logger.info(f'service: {self.subservice}')
-        if (hasattr(self,"user")):
+        if (hasattr(self, "user")):
             logger.info(f'user: {self.user}')
-        if (hasattr(self,"password")):
+        if (hasattr(self, "password")):
             logger.info(f'password: {self.password}')
-        if (hasattr(self,"tokens")):
+        if (hasattr(self, "tokens")):
             for key in self.tokens:
                 logger.info('tokens[' + key + ']: ' + self.tokens[key])
 
     def check_mandatory_fields(self):
         """Raise ValueError if some mandatory field is missing"""
         messageError = []
-        if (not hasattr(self,"endpoint")):
+        if (not hasattr(self, "endpoint")):
             messageError.append('<<endpoint>>')
-        
-        if (not hasattr(self,"service")):
+
+        if (not hasattr(self, "service")):
             messageError.append('<<service>>')
 
-        if (not hasattr(self,"user")):
+        if (not hasattr(self, "user")):
             messageError.append('<<user>>')
 
-        if (not hasattr(self,"password")):
+        if (not hasattr(self, "password")):
             messageError.append('<<password>>')
-        
+
         if len(messageError) != 0:
             defineParams = messageError[0]
             if len(messageError) != 1:
                 defineParams = " and ".join([", ".join(messageError[:-1]), messageError[-1]])
             raise ValueError(f'You must define {defineParams} in authManager')
-        
 
     def _post_auth_request(self, detail: str, scope: dict):
         """Send a POST Auth request to keystone for the given scope
@@ -159,6 +163,43 @@ class authManager:
         logger.debug(f'Authentication token ({detail}) was created successfully')
         return res
 
+    def _post_auth_request_with_token(self, detail: str, scope: dict):
+        """Send a POST Auth request to keystone for the given scope
+
+        :param detail: a detail string to include in logging messages
+        :param scope: the scope object to send in the request, in keystone v3 format
+        :raises Exception: when authorization fails
+        :return: requests.Response
+        """
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+
+        body = {
+            "auth": {
+                "identity": {
+                    "methods": [
+                        "token"
+                    ],
+                    "token": {
+                        "id": self.tokens[self.subservice]
+                    }
+                },
+                "scope": scope
+            }
+        }
+
+        logger.debug(f'getting auth token ({detail})...')
+        req_url = self.endpoint + '/v3/auth/tokens'
+        res = requests.post(req_url, json=body, headers=headers, verify=False)
+
+        if res.status_code != 201:
+            raise Exception(f'Failed to get auth token ({detail}) ({res.status_code}): {res.json()}')
+
+        logger.debug(f'Authentication token ({detail}) was created successfully')
+        return res
+
     def get_auth_token_subservice(self, *, subservice: str = None):
         """Authenticate in a service/subservice and get a token
 
@@ -169,11 +210,11 @@ class authManager:
         """
 
         self.check_mandatory_fields()
-        if (not hasattr(self,"tokens")):
+        if (not hasattr(self, "tokens")):
             self.tokens = {}
-            
+
         if (subservice == None):
-            if (not hasattr(self,"subservice")):
+            if (not hasattr(self, "subservice")):
                 raise ValueError('You must define <<subservice>> in authManager')
             else:
                 subservice = self.subservice
@@ -201,16 +242,24 @@ class authManager:
         """
 
         self.check_mandatory_fields()
-        res = self._post_auth_request(detail=f"service {self.service}", scope={
-            "domain": {
-                "name": self.service
-            }
-        })
+        if self.subservice in self.tokens:
+            res = self._post_auth_request_with_token(detail=f"service {self.service}", scope={
+                "domain": {
+                    "name": self.service
+                }
+            })
+            token = self.tokens[self.subservice]
+        else:
+            res = self._post_auth_request(detail=f"service {self.service}", scope={
+                "domain": {
+                    "name": self.service
+                }
+            })
+            token = res.headers['X-Subject-Token']
 
-        token = res.headers['X-Subject-Token']
         tbody = res.json()['token']
         return {
-            'token':     token,
-            'user_id':   tbody['user']['id'],
+            'token': token,
+            'user_id': tbody['user']['id'],
             'domain_id': tbody['user']['domain']['id'],
         }
