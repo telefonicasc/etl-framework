@@ -295,7 +295,6 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `subservice`: Se puede indicar al subservicio al que se le quiere enviar los datos. Sino se indica, usará el que haya inicializado en el objeto authManager. Sino dispone ninguno de los dos definidos, lanzará un ValueError indicando que necesita definirse el subservicio.
         - :param opcional `limit`: Se establece un límite de recogida de datos en cada tramo. Internamente se usa un mecanismo de paginación y se van solicitando al context broker los datos en tramos. Si no se especifica, enviará la petición al Context Broker sin el limit definido, por lo tanto se aplirá el valor de limit por defecto, tiene un valor de 100.
         - :param opcional `type`: Se establece la recogida de un tipo de datos. Si no se especifica, enviará la petición al Context Broker sin el type definido, por lo tanto los datos no serán filtrados por el tipo de entidad.
-        - :param opcional `orderBy`: Se establece un orden en la recogida de datos. Si no se especifica, enviará la petición al Context Broker sin el orderBy definido, por lo tanto aplicará el orden por defecto en el Context Broker (i.e. orden de fecha de creación de la entidades)
         - :param opcional `q`: Se establece un filtro de datos en función del valor de los atributos especificados. Si no se especifica, enviará la petición al Context Broker sin el q definido, por lo tanto los datos no serán filtrados por estos atributos.
         - :param opcional `mq`: Se establece un filtro de datos en función de los metadatos definidos en este parámetro. Si no se especifica, enviará la petición al Context Broker sin el mq definido, por lo tanto los datos no serán filtrados por los metadatos.
         - :param opcional `georel`: Cuando se define un filtro de datos por geolocalización, se ha de especificar en georel la relación espacial que se va a utilizar en el filtrado. Se pueden consultar los diferentes valores de georel en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
@@ -304,11 +303,11 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `id`: Se establece un filtro por Identificador. Si no se especifica, enviará la petición al Context Broker sin el id definido, por lo tanto los datos no serán filtrados por identificador.
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna varibale del objeto cbManager, para poder realizar la autenticación o envío de datos.
         - :raises FetchError: Se lanza cuando el servicio de Context Broker, responde con un error concreto.
-        - :return: array de datos cuyos elementos son objeto que representan entidades, según el formato descrito en la sección
-          "JSON Entity Representation" de la [NGSIv2 API](https://fiware.github.io/specifications/ngsiv2/stable/)
     
 ## Changelog
 
+- Add: new function delete_entities, to remove entities from Context Broker
+- Add: new parameter in the function send_batch to define the action. (append or delete)
 - Add: get_auth_token_service function to get domain tokens from IDM
 
 0.2.0 (July 13th, 2022)
