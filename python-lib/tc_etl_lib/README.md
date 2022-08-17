@@ -306,7 +306,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     
 ## Changelog
 
-- Add: new function delete_entities, to remove entities from Context Broker
+- Add: new function delete_entities, to remove entities from Context Broker ([#14](https://github.com/telefonicasc/etl-framework/issues/14))
 - Add: new parameter in the function send_batch to define the action. (append or delete)
 
 0.3.0 (August 2nd, 2022)
