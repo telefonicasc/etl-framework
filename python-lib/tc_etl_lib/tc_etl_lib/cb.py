@@ -62,6 +62,7 @@ class cbManager:
     post_retry_backoff_factor: retry factor delay -> {backoff factor} * (2 ** ({number of total retries} - 1)) (defaul: 20). (ref. urllib3 docs) (default: False)
     sleep_send_batch: sleep X seconds afters send update batch. (default: 0). 
     cb_flowcontrol: Opción del Context Broker, que permite un mejor rendimiento en caso de envío masivo de datos (batch updates). Este mecanismo, requiere arrancar el Context Broker con un flag concreto y en las peticiones de envío de datos, añadir esa opción. Referencia en Fiware Orion Docs (default: False)
+    need_auth_manager: define si necesita un auth manager el context broker manager para operar, enviando en caso necesario en las peticiones el x-auth-token correspondiente 
     """
     
     endpoint: str
@@ -70,13 +71,14 @@ class cbManager:
     post_retry_backoff_factor: int = 20
     sleep_send_batch: int = 0
     cb_flowcontrol: bool = False
+    need_auth_manager: bool = True
     # Block size is string chars (= bytes, with ASCII codification). This is calculated
     # for 800k (Orion max request size is 1MB,
     # see https://fiware-orion.readthedocs.io/en/master/user/known_limitations.html)
     # and it is not recommended to change it
     block_size = 800000
     
-    def __init__(self,*, endpoint: str = None, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, sleep_send_batch: int = 0, cb_flowcontrol: bool = False, block_size: int = 800000) -> None:
+    def __init__(self,*, endpoint: str = None, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, sleep_send_batch: int = 0, cb_flowcontrol: bool = False, block_size: int = 800000, need_auth_manager: bool = True) -> None:
         
         if (endpoint == None):
             raise ValueError(f'You must define <<endpoint>> in cbManager')
@@ -86,7 +88,8 @@ class cbManager:
         self.post_retry_connect = post_retry_connect
         self.post_retry_backoff_factor = post_retry_backoff_factor
         self.sleep_send_batch = sleep_send_batch
-        self.cb_flowcontrol = cb_flowcontrol 
+        self.cb_flowcontrol = cb_flowcontrol
+        self.need_auth_manager = need_auth_manager
         
         # check block_size limit.
         if (int(block_size) > int(800000)):
@@ -95,9 +98,10 @@ class cbManager:
         self.block_size = block_size
 
 
-    def delete_entities(self, *, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
+    def delete_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
         """Delete data from context broker
 
+        :param service: Define service from which entities are deleted, defaults to None
         :param subservice: Define subservice from which entities are deleted, defaults to None
         :param auth: Define authManager, defaults to None
         :param limit: Limits the number of entities to be retrieved, deleted to None
@@ -111,7 +115,7 @@ class cbManager:
         :raises ValueError: is thrown when some required argument is missing
         :raises FetchError: is thrown when the response from the cb indicates an error
         """
-        data = self.get_entities(subservice=subservice, auth=auth, limit = limit, type = type, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id)
+        data = self.get_entities(service=service, subservice=subservice, auth=auth, limit = limit, type = type, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id)
 
         entities = []
         for i, item in enumerate(data):
@@ -121,11 +125,12 @@ class cbManager:
             }
             entities.append(entity)
         
-        self.send_batch(subservice=subservice, auth=auth, entities=entities, actionType='delete')
+        self.send_batch(service=service, subservice=subservice, auth=auth, entities=entities, actionType='delete')
 
-    def get_entities(self, *, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
+    def get_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
         """Retrieve data from context broker
 
+        :param service: Define service from which entities are retrieved, defaults to None
         :param subservice: Define subservice from which entities are retrieved, defaults to None
         :param auth: Define authManager, defaults to None
         :param limit: Limits the number of entities to be retrieved, defaults to None
@@ -148,15 +153,16 @@ class cbManager:
         data = ['go!']
         while (data != []) :
             offset = (pg-1)*limit
-            data = self.get_entities_page(subservice=subservice, auth=auth, offset = offset, limit = limit, type = type, orderBy = orderBy, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id)
+            data = self.get_entities_page(service=service, subservice=subservice, auth=auth, offset = offset, limit = limit, type = type, orderBy = orderBy, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id)
             pg += 1
             result += data
         return result
 
-    def get_entities_page(self, *, subservice: str = None, auth: authManager = None, offset: int = None, limit: int = None, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
+    def get_entities_page(self, *, service:str = None, subservice: str = None, auth: authManager = None, offset: int = None, limit: int = None, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
         """Retrieve data from context broker
 
-        :param subservice: Define subservice from which entities are retrieved, defaults to None
+        :param service: Define service from which entities are retrieved, defaults to None or auth.service defined value
+        :param subservice: Define subservice from which entities are retrieved, defaults to None or auth.subservice defined value
         :param auth: Define authManager, defaults to None
         :param offset: Establishes the offset from where entities are retrieved, defaults to None
         :param limit: Limits the number of entities to be retrieved, defaults to None
@@ -172,26 +178,47 @@ class cbManager:
         :raises FetchError: is thrown when the response from the cb indicates an error
         :return: json data
         """
-        if (auth == None):
+        if (self.need_auth_manager and auth == None):
             raise ValueError('You must define a authManager')
 
-        if (not hasattr(auth,"tokens")):
+        if (self.need_auth_manager and not hasattr(auth,"tokens")):
             auth.tokens = {}
 
+        #check subservice defined
         if (subservice == None):
-            if (not hasattr(auth,"subservice")):
-                raise ValueError('You must define <<subservice>> in authManager')
+            if (self.need_auth_manager):
+                if (not hasattr(auth,"subservice")):
+                    raise ValueError('You must define <<subservice>> in authManager')
+                else:
+                    subservice = auth.subservice
             else:
-                subservice = auth.subservice
-    
-        if subservice not in auth.tokens.keys():
-            auth.get_auth_token_subservice(subservice = subservice)
+                raise ValueError('You must define <<subservice>>')
         
-        headers = {
-            'Fiware-Service': auth.service,
-            'Fiware-ServicePath': subservice,
-            'X-Auth-Token': auth.tokens[subservice]
-        }
+        #check service defined
+        if (service == None):
+            if (self.need_auth_manager):
+                if (not hasattr(auth,"service")):
+                    raise ValueError('You must define <<service>> in authManager')
+                else:
+                    service = auth.service
+            else:
+                raise ValueError('You must define <<service>>')
+    
+        if (self.need_auth_manager and subservice not in auth.tokens.keys()):
+                auth.get_auth_token_subservice(subservice = subservice)
+        
+        headers = {}
+        if self.need_auth_manager:
+            headers = {
+                'Fiware-Service': service,
+                'Fiware-ServicePath': subservice,
+                'X-Auth-Token': auth.tokens[subservice]
+            }
+        else:
+            headers = {
+                'Fiware-Service': service,
+                'Fiware-ServicePath': subservice
+            }
         
         # check if use geographical queries, must specify georel, geometry, coords
         if (georel != None or geometry != None or coords != None):
@@ -210,11 +237,12 @@ class cbManager:
         return resp.json()
 
 
-    def send_batch(self, *, subservice: str = None, auth: authManager, entities: str, actionType: str = 'append') -> bool:
+    def send_batch(self, *, service:str = None, subservice: str = None, auth: authManager, entities: str, actionType: str = 'append') -> bool:
         """Send batch data to context broker with block control
 
         :param auth: Define authManager 
         :param entities: Entities data
+        :param service: Define service to send batch data, defaults to None
         :param subservice: Define subservice to send batch data, defaults to None
         :param actionType: Batch action type, defaults is append
         :raises ValueError: is thrown when some required argument is missing
@@ -229,47 +257,54 @@ class cbManager:
             
             if accumulated_block > self.block_size:
                 logger.debug(f'- Sending a batch {actionType} of {len(entitiesToSend)} entities')
-                self.__send_batch(auth=auth, subservice=subservice, entities=entitiesToSend, actionType=actionType)
+                self.__send_batch(auth=auth, service=service, subservice=subservice, entities=entitiesToSend, actionType=actionType)
                 entitiesToSend = []
                 accumulated_block = 0
         
         # Remaining block, if any
         if accumulated_block > 0:
             logger.debug(f'- Sending final batch {actionType} of {len(entitiesToSend)} entities')
-            self.__send_batch(auth=auth, subservice=subservice, entities=entitiesToSend, actionType=actionType)
+            self.__send_batch(auth=auth, service=service, subservice=subservice, entities=entitiesToSend, actionType=actionType)
 
-    def __send_batch(self, *, subservice: str = None, auth: authManager, entities: str, actionType: str = 'append') -> bool:
+    def __send_batch(self, *, service:str = None, subservice: str = None, auth: authManager, entities: str, actionType: str = 'append') -> bool:
         """Send batch data to context broker
 
         :param auth: Define authManager 
         :param entities: Entities data
-        :param subservice: Define subservice to send batch data, defaults to None
+        :param service: Define service to send batch data, defaults to None
+        :param subservice: Define subservice to send batch data, defaults to None  or auth.subservice defined value
         :param actionType: Batch action type, defaults is append
         :raises ValueError: is thrown when some required argument is missing
         :raises Exception: is thrown when the cotext broker response isn't ok operation
         :return: True if the operation is correct
         """
         
-        if (auth == None):
+        if (self.need_auth_manager and auth == None):
             raise ValueError('You must define a authManager')
         
         if (not hasattr(auth,"tokens")):
             auth.tokens = {}
 
+        #check subservice defined
         if (subservice == None):
-            if (not hasattr(auth,"subservice")):
-                raise ValueError('You must define <<subservice>> in authManager')
+            if (self.need_auth_manager):
+                if (not hasattr(auth,"subservice")):
+                    raise ValueError('You must define <<subservice>> in authManager')
+                else:
+                    subservice = auth.subservice
             else:
-                subservice = auth.subservice            
-            
-        if subservice not in auth.tokens.keys():
+                raise ValueError('You must define <<subservice>>')
+        
+        if (self.need_auth_manager and subservice not in auth.tokens.keys()):
             auth.get_auth_token_subservice(subservice = subservice)
 
-        res = self.__batch_creation(auth=auth, subservice = subservice, entities=entities, actionType=actionType)
-        if res.status_code == 401:
+        res = self.__batch_creation(auth=auth, service=service, subservice = subservice, entities=entities, actionType=actionType)
+        if (self.need_auth_manager and res.status_code == 401):
             auth.get_auth_token_subservice(subservice = subservice)
-            res = self.__batch_creation(auth=auth, subservice = subservice, entities=entities, actionType=actionType)
-
+            res = self.__batch_creation(auth=auth, service=service, subservice = subservice, entities=entities, actionType=actionType)
+        else:
+            raise Exception(f'Error in batch {actionType} operation ({res.status_code}): {res.json()}')
+        
         if res.status_code != 204:
             raise Exception(f'Error in batch {actionType} operation ({res.status_code}): {res.json()}')
 
@@ -280,34 +315,59 @@ class cbManager:
             
         return True 
         
-    def __batch_creation(self, *, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append'):
+    def __batch_creation(self, *, service: str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append'):
         """Send batch data to Context Broker
 
         :param entities: Entities data
-        :param subservice: Define subservice to send batch data, defaults to None
+        :param service: Define service to send batch data, defaults to None or auth.service defined value
+        :param subservice: Define subservice to send batch data, defaults to None or auth.subservice defined value
         :param auth: Define authManager, defaults to None
         :param actionType: Batch action type, defaults is append
         :raises ValueError: is thrown when some required argument is missing
         :return: Http response code
         """
-        if (auth == None):
+        if (self.need_auth_manager and auth == None):
             raise ValueError('You must define a authManager')
         
+        
+        #check subservice defined
         if (subservice == None):
-            if (not hasattr(auth,"subservice")):
-                raise ValueError('You must define <<subservice>> in authManager')
+            if (self.need_auth_manager):
+                if (not hasattr(auth,"subservice")):
+                    raise ValueError('You must define <<subservice>> in authManager')
+                else:
+                    subservice = auth.subservice
             else:
-                subservice = auth.subservice   
+                raise ValueError('You must define <<subservice>>')
+        
+        #check service defined
+        if (service == None):
+            if (self.need_auth_manager):
+                if (not hasattr(auth,"service")):
+                    raise ValueError('You must define <<service>> in authManager')
+                else:
+                    service = auth.service
+            else:
+                raise ValueError('You must define <<service>>')
+            
         
         if (not hasattr(self,"endpoint")):
             raise ValueError('You must define <<endpoint>> in cbManager')
-
-        headers = {
-            'Fiware-Service': auth.service,
-            'Fiware-ServicePath': subservice,
-            'X-Auth-Token': auth.tokens[subservice],
-            'Content-Type': 'application/json'
-        }
+        
+        headers = {}
+        if (self.need_auth_manager):
+            headers = {
+                'Fiware-Service': service,
+                'Fiware-ServicePath': subservice,
+                'X-Auth-Token': auth.tokens[subservice],
+                'Content-Type': 'application/json'
+            }
+        else:
+            headers = {
+                'Fiware-Service': service,
+                'Fiware-ServicePath': subservice,
+                'Content-Type': 'application/json'
+            }
 
         body = {
             'actionType': f'{actionType}',
