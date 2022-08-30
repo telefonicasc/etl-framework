@@ -25,7 +25,7 @@ Authorization routines for Python:
 
 import requests
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -163,43 +163,6 @@ class authManager:
         logger.debug(f'Authentication token ({detail}) was created successfully')
         return res
 
-    def _post_auth_request_with_token(self, detail: str, scope: dict):
-        """Send a POST Auth request to keystone for the given scope
-
-        :param detail: a detail string to include in logging messages
-        :param scope: the scope object to send in the request, in keystone v3 format
-        :raises Exception: when authorization fails
-        :return: requests.Response
-        """
-        headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-
-        body = {
-            "auth": {
-                "identity": {
-                    "methods": [
-                        "token"
-                    ],
-                    "token": {
-                        "id": self.tokens[self.subservice]
-                    }
-                },
-                "scope": scope
-            }
-        }
-
-        logger.debug(f'getting auth token ({detail})...')
-        req_url = self.endpoint + '/v3/auth/tokens'
-        res = requests.post(req_url, json=body, headers=headers, verify=False)
-
-        if res.status_code != 201:
-            raise Exception(f'Failed to get auth token ({detail}) ({res.status_code}): {res.json()}')
-
-        logger.debug(f'Authentication token ({detail}) was created successfully')
-        return res
-
     def get_auth_token_subservice(self, *, subservice: str = None):
         """Authenticate in a service/subservice and get a token
 
@@ -242,21 +205,12 @@ class authManager:
         """
 
         self.check_mandatory_fields()
-        if self.subservice in self.tokens:
-            res = self._post_auth_request_with_token(detail=f"service {self.service}", scope={
-                "domain": {
-                    "name": self.service
-                }
-            })
-            token = self.tokens[self.subservice]
-        else:
-            res = self._post_auth_request(detail=f"service {self.service}", scope={
-                "domain": {
-                    "name": self.service
-                }
-            })
-            token = res.headers['X-Subject-Token']
-
+        res = self._post_auth_request(detail=f"service {self.service}", scope={
+            "domain": {
+                "name": self.service
+            }
+        })
+        token = res.headers['X-Subject-Token']
         tbody = res.json()['token']
         return {
             'token': token,
