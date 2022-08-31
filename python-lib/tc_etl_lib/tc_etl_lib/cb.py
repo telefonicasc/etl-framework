@@ -228,7 +228,7 @@ class cbManager:
         return resp.json()
 
 
-    def send_batch(self, *, service:str = None, subservice: str = None, auth: authManager, entities: str, actionType: str = 'append') -> bool:
+    def send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append') -> bool:
         """Send batch data to context broker with block control
 
         :param auth: Define authManager 
@@ -257,7 +257,7 @@ class cbManager:
             logger.debug(f'- Sending final batch {actionType} of {len(entitiesToSend)} entities')
             self.__send_batch(auth=auth, service=service, subservice=subservice, entities=entitiesToSend, actionType=actionType)
 
-    def __send_batch(self, *, service:str = None, subservice: str = None, auth: authManager, entities: str, actionType: str = 'append') -> bool:
+    def __send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append') -> bool:
         """Send batch data to context broker
 
         :param auth: Define authManager 
@@ -290,8 +290,6 @@ class cbManager:
         if (auth != None and res.status_code == 401):
             auth.get_auth_token_subservice(subservice = subservice)
             res = self.__batch_creation(auth=auth, service=service, subservice = subservice, entities=entities, actionType=actionType)
-        else:
-            raise Exception(f'Error in batch {actionType} operation ({res.status_code}): {res.json()}')
         
         if res.status_code != 204:
             raise Exception(f'Error in batch {actionType} operation ({res.status_code}): {res.json()}')
