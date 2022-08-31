@@ -62,7 +62,6 @@ class cbManager:
     post_retry_backoff_factor: retry factor delay -> {backoff factor} * (2 ** ({number of total retries} - 1)) (defaul: 20). (ref. urllib3 docs) (default: False)
     sleep_send_batch: sleep X seconds afters send update batch. (default: 0). 
     cb_flowcontrol: Opción del Context Broker, que permite un mejor rendimiento en caso de envío masivo de datos (batch updates). Este mecanismo, requiere arrancar el Context Broker con un flag concreto y en las peticiones de envío de datos, añadir esa opción. Referencia en Fiware Orion Docs (default: False)
-    need_auth_manager: define si necesita un auth manager el context broker manager para operar, enviando en caso necesario en las peticiones el x-auth-token correspondiente 
     """
     
     endpoint: str
@@ -71,14 +70,13 @@ class cbManager:
     post_retry_backoff_factor: int = 20
     sleep_send_batch: int = 0
     cb_flowcontrol: bool = False
-    need_auth_manager: bool = True
     # Block size is string chars (= bytes, with ASCII codification). This is calculated
     # for 800k (Orion max request size is 1MB,
     # see https://fiware-orion.readthedocs.io/en/master/user/known_limitations.html)
     # and it is not recommended to change it
     block_size = 800000
     
-    def __init__(self,*, endpoint: str = None, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, sleep_send_batch: int = 0, cb_flowcontrol: bool = False, block_size: int = 800000, need_auth_manager: bool = True) -> None:
+    def __init__(self,*, endpoint: str = None, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, sleep_send_batch: int = 0, cb_flowcontrol: bool = False, block_size: int = 800000) -> None:
         
         if (endpoint == None):
             raise ValueError(f'You must define <<endpoint>> in cbManager')
@@ -89,7 +87,6 @@ class cbManager:
         self.post_retry_backoff_factor = post_retry_backoff_factor
         self.sleep_send_batch = sleep_send_batch
         self.cb_flowcontrol = cb_flowcontrol
-        self.need_auth_manager = need_auth_manager
         
         # check block_size limit.
         if (int(block_size) > int(800000)):
@@ -178,15 +175,13 @@ class cbManager:
         :raises FetchError: is thrown when the response from the cb indicates an error
         :return: json data
         """
-        if (self.need_auth_manager and auth == None):
-            raise ValueError('You must define a authManager')
 
-        if (self.need_auth_manager and not hasattr(auth,"tokens")):
+        if (auth != None and not hasattr(auth,"tokens")):
             auth.tokens = {}
 
         #check subservice defined
         if (subservice == None):
-            if (self.need_auth_manager):
+            if (auth != None):
                 if (not hasattr(auth,"subservice")):
                     raise ValueError('You must define <<subservice>> in authManager')
                 else:
@@ -196,7 +191,7 @@ class cbManager:
         
         #check service defined
         if (service == None):
-            if (self.need_auth_manager):
+            if (auth != None):
                 if (not hasattr(auth,"service")):
                     raise ValueError('You must define <<service>> in authManager')
                 else:
@@ -204,11 +199,11 @@ class cbManager:
             else:
                 raise ValueError('You must define <<service>>')
     
-        if (self.need_auth_manager and subservice not in auth.tokens.keys()):
-                auth.get_auth_token_subservice(subservice = subservice)
+        if (auth != None and subservice not in auth.tokens.keys()):
+            auth.get_auth_token_subservice(subservice = subservice)
         
         headers = {}
-        if self.need_auth_manager:
+        if auth != None:
             headers = {
                 'Fiware-Service': service,
                 'Fiware-ServicePath': subservice,
@@ -230,7 +225,9 @@ class cbManager:
         params = {"offset": offset, "limit": limit, "type": type, "orderBy": orderBy, "q": q, "mq": mq, "georel": georel, "geometry": geometry, "coords": coords, "id": id}
         req_url = f"{self.endpoint}/v2/entities"
         resp = requests.get(req_url, params=params, headers=headers, verify=False, timeout=self.timeout)
-        
+        if resp.status_code == 400 or resp.status_code == 401:
+            respjson = resp.json()
+            logger.error(f'{respjson["name"]}: {respjson["message"]}')
         if resp.status_code < 200 or resp.status_code > 204:
             raise FetchError(response=resp, method="GET", url=req_url, params=params, headers=headers)
 
@@ -279,15 +276,12 @@ class cbManager:
         :return: True if the operation is correct
         """
         
-        if (self.need_auth_manager and auth == None):
-            raise ValueError('You must define a authManager')
-        
-        if (not hasattr(auth,"tokens")):
+        if (auth != None and not hasattr(auth,"tokens")):
             auth.tokens = {}
 
         #check subservice defined
         if (subservice == None):
-            if (self.need_auth_manager):
+            if (auth != None):
                 if (not hasattr(auth,"subservice")):
                     raise ValueError('You must define <<subservice>> in authManager')
                 else:
@@ -295,11 +289,11 @@ class cbManager:
             else:
                 raise ValueError('You must define <<subservice>>')
         
-        if (self.need_auth_manager and subservice not in auth.tokens.keys()):
+        if (auth != None and subservice not in auth.tokens.keys()):
             auth.get_auth_token_subservice(subservice = subservice)
 
         res = self.__batch_creation(auth=auth, service=service, subservice = subservice, entities=entities, actionType=actionType)
-        if (self.need_auth_manager and res.status_code == 401):
+        if (auth != None and res.status_code == 401):
             auth.get_auth_token_subservice(subservice = subservice)
             res = self.__batch_creation(auth=auth, service=service, subservice = subservice, entities=entities, actionType=actionType)
         else:
@@ -326,13 +320,10 @@ class cbManager:
         :raises ValueError: is thrown when some required argument is missing
         :return: Http response code
         """
-        if (self.need_auth_manager and auth == None):
-            raise ValueError('You must define a authManager')
-        
-        
+
         #check subservice defined
         if (subservice == None):
-            if (self.need_auth_manager):
+            if (auth != None):
                 if (not hasattr(auth,"subservice")):
                     raise ValueError('You must define <<subservice>> in authManager')
                 else:
@@ -342,7 +333,7 @@ class cbManager:
         
         #check service defined
         if (service == None):
-            if (self.need_auth_manager):
+            if (auth != None):
                 if (not hasattr(auth,"service")):
                     raise ValueError('You must define <<service>> in authManager')
                 else:
@@ -355,7 +346,7 @@ class cbManager:
             raise ValueError('You must define <<endpoint>> in cbManager')
         
         headers = {}
-        if (self.need_auth_manager):
+        if (auth != None):
             headers = {
                 'Fiware-Service': service,
                 'Fiware-ServicePath': subservice,
