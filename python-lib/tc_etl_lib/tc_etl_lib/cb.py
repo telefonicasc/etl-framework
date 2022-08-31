@@ -290,8 +290,6 @@ class cbManager:
         if (auth != None and res.status_code == 401):
             auth.get_auth_token_subservice(subservice = subservice)
             res = self.__batch_creation(auth=auth, service=service, subservice = subservice, entities=entities, actionType=actionType)
-        else:
-            raise Exception(f'Error in batch {actionType} operation ({res.status_code}): {res.json()}')
         
         if res.status_code != 204:
             raise Exception(f'Error in batch {actionType} operation ({res.status_code}): {res.json()}')
