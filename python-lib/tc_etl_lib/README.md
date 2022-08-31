@@ -239,6 +239,9 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna variable del objeto authManager, para poder realizar la autenticación.
         - :raises [Exception](https://docs.python.org/3/library/exceptions.html#Exception): Se lanza cuando el servicio de identificación, responde con un error concreto.
         - :return: un objeto con tres propiedades: { `token`: ..., `user_id`: ..., `domain_id`: ... }. Como este token se usará principalmente para administración del dominio, es útil obtener los IDs de usuario y dominio asociados.
+    - `set_token`: Establece el token de subservicio en el caché del objeto. En el caso de que ya hubiera un token asociado al subservicio (pe. porque se haya invocado previamente `get_auth_token_subservice`) se sobreescribe. Esta función es útil cuando el token se obtiene por otros mecanismos ajenos a la negociación con el IDM (pe. de una cabecera `x-auth-token`) y se quiere establecer dentro del authManager. Otras funciones de la librería que hagan uso del authManager (pe. las del cbManager) intentará utilizar siempre primero este caché antes que solicitar un nuevo token via API del IDM.
+        - :param `subservice`: subservicio en el que establecer el tokenn.
+        - :param `token`: token a establecer.
 - Clase `cbManager`: En esta clase están funciones para la interacción con el Context Broker.
    - `__init()__`: constructor de objetos de la clase
         - :param obligatorio `endpoint`: define el endpoint del context broker (ejemplo: https://`<service>`:`<port>`). Se debe especificar en el constructor del objeto de tipo cbManager, sino avisará con una excepción ValueError.
@@ -311,6 +314,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     
 ## Changelog
 - Modify: parameter authManager becomes optional in get_entities, get_entities_page, delete_entities and send_batch
+- Add: new function set_token, to set specific token bypassing IDM negotiation
 - Add: new function delete_entities, to remove entities from Context Broker ([#14](https://github.com/telefonicasc/etl-framework/issues/14))
 - Add: new parameter actionType in the function send_batch to define the action (append, appendStrict, update, delete or replace)
 
