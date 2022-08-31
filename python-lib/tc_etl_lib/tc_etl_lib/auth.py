@@ -210,6 +210,7 @@ class authManager:
                 "name": self.service
             }
         })
+
         token = res.headers['X-Subject-Token']
         tbody = res.json()['token']
         return {
