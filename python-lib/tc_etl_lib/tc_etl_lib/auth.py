@@ -25,7 +25,7 @@ Authorization routines for Python:
 
 import requests
 import logging
-from typing import Dict, Optional
+from typing import Dict
 
 logger = logging.getLogger(__name__)
 
