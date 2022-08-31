@@ -313,11 +313,14 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :raises FetchError: Se lanza cuando el servicio de Context Broker, responde con un error concreto.
     
 ## Changelog
-- add: new optional parameter called `service` in get_entities, get_entities_page, delete_entities and send_batch
-- Fix: parameter authManager becomes optional in get_entities, get_entities_page, delete_entities and send_batch
+
+0.4.0 (August 31st, 2022)
+
+- Add: new optional parameter called `service` in get_entities, get_entities_page, delete_entities and send_batch
 - Add: new function set_token, to set specific token bypassing IDM negotiation
 - Add: new function delete_entities, to remove entities from Context Broker ([#14](https://github.com/telefonicasc/etl-framework/issues/14))
-- Add: new parameter actionType in the function send_batch to define the action (append, appendStrict, update, delete or replace)
+- Add: new parameter actionType in the function send_batch to define the action (append, appendStrict, update, delete or replace) ([#16](https://github.com/telefonicasc/etl-framework/issues/16))
+- Fix: parameter authManager becomes optional in get_entities, get_entities_page, delete_entities and send_batch
 
 0.3.0 (August 2nd, 2022)
 
