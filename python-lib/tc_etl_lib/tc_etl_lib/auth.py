@@ -29,7 +29,6 @@ from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
 
-
 class authManager:
     """Authentication Manager
 
