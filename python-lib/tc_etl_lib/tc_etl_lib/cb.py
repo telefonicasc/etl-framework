@@ -202,18 +202,12 @@ class cbManager:
         if (auth != None and subservice not in auth.tokens.keys()):
             auth.get_auth_token_subservice(subservice = subservice)
         
-        headers = {}
-        if auth != None:
-            headers = {
-                'Fiware-Service': service,
-                'Fiware-ServicePath': subservice,
-                'X-Auth-Token': auth.tokens[subservice]
-            }
-        else:
-            headers = {
-                'Fiware-Service': service,
-                'Fiware-ServicePath': subservice
-            }
+        headers = {
+            'Fiware-Service': service,
+            'Fiware-ServicePath': subservice
+        }
+        if (auth != None):
+            headers['X-Auth-Token'] = auth.tokens[subservice]
         
         # check if use geographical queries, must specify georel, geometry, coords
         if (georel != None or geometry != None or coords != None):
@@ -345,20 +339,13 @@ class cbManager:
         if (not hasattr(self,"endpoint")):
             raise ValueError('You must define <<endpoint>> in cbManager')
         
-        headers = {}
+        headers = {
+            'Fiware-Service': service,
+            'Fiware-ServicePath': subservice,
+            'Content-Type': 'application/json'
+        }
         if (auth != None):
-            headers = {
-                'Fiware-Service': service,
-                'Fiware-ServicePath': subservice,
-                'X-Auth-Token': auth.tokens[subservice],
-                'Content-Type': 'application/json'
-            }
-        else:
-            headers = {
-                'Fiware-Service': service,
-                'Fiware-ServicePath': subservice,
-                'Content-Type': 'application/json'
-            }
+            headers['X-Auth-Token'] = auth.tokens[subservice]
 
         body = {
             'actionType': f'{actionType}',
