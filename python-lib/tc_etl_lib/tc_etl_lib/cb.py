@@ -95,7 +95,7 @@ class cbManager:
         self.block_size = block_size
 
 
-    def delete_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
+    def delete_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options_get: str = None, options_send: str = None):
         """Delete data from context broker
 
         :param service: Define service from which entities are deleted, defaults to None
@@ -109,10 +109,12 @@ class cbManager:
         :param geometry: Allows to define the reference shape to be used when resolving the query. (point | polygon | line | box), defaults to None
         :param coords: Must be a string containing a semicolon-separated list of pairs of geographical coordinates in accordance with the geometry specified, defaults to None
         :param id: Delete entities filtering by Identity, defaults to None
+        :param options_get: Options used in Context Broker to find entities, defaults to None
+        :param options_send: Options used in Context Broker to delete entities, defaults to None
         :raises ValueError: is thrown when some required argument is missing
         :raises FetchError: is thrown when the response from the cb indicates an error
         """
-        data = self.get_entities(service=service, subservice=subservice, auth=auth, limit = limit, type = type, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id)
+        data = self.get_entities(service=service, subservice=subservice, auth=auth, limit = limit, type = type, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id, options=options_get)
 
         entities = []
         for i, item in enumerate(data):
@@ -122,9 +124,9 @@ class cbManager:
             }
             entities.append(entity)
         
-        self.send_batch(service=service, subservice=subservice, auth=auth, entities=entities, actionType='delete')
+        self.send_batch(service=service, subservice=subservice, auth=auth, entities=entities, actionType='delete', options=options_send)
 
-    def get_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
+    def get_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options: str = None):
         """Retrieve data from context broker
 
         :param service: Define service from which entities are retrieved, defaults to None
@@ -139,6 +141,7 @@ class cbManager:
         :param geometry: Allows to define the reference shape to be used when resolving the query. (point | polygon | line | box), defaults to None
         :param coords: Must be a string containing a semicolon-separated list of pairs of geographical coordinates in accordance with the geometry specified, defaults to None
         :param id: Retrieve entities filtering by Identity, defaults to None
+        :param options: Options used to retrive entities, defaults to None
         :raises ValueError: is thrown when some required argument is missing
         :raises FetchError: is thrown when the response from the cb indicates an error
         :return: json data
@@ -150,12 +153,12 @@ class cbManager:
         data = ['go!']
         while (data != []) :
             offset = (pg-1)*limit
-            data = self.get_entities_page(service=service, subservice=subservice, auth=auth, offset = offset, limit = limit, type = type, orderBy = orderBy, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id)
+            data = self.get_entities_page(service=service, subservice=subservice, auth=auth, offset = offset, limit = limit, type = type, orderBy = orderBy, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id, options = options)
             pg += 1
             result += data
         return result
 
-    def get_entities_page(self, *, service:str = None, subservice: str = None, auth: authManager = None, offset: int = None, limit: int = None, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None):
+    def get_entities_page(self, *, service:str = None, subservice: str = None, auth: authManager = None, offset: int = None, limit: int = None, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options: str = None):
         """Retrieve data from context broker
 
         :param service: Define service from which entities are retrieved, defaults to None or auth.service defined value
@@ -171,6 +174,7 @@ class cbManager:
         :param geometry: Allows to define the reference shape to be used when resolving the query. (point | polygon | line | box), defaults to None
         :param coords: Must be a string containing a semicolon-separated list of pairs of geographical coordinates in accordance with the geometry specified, defaults to None
         :param id: Retrieve entities filtering by Identity, defaults to None
+        :param options: Options used, defaults to None
         :raises ValueError: is thrown when some required argument is missing
         :raises FetchError: is thrown when the response from the cb indicates an error
         :return: json data
@@ -216,8 +220,15 @@ class cbManager:
             else:
                 raise ValueError('If use geographical queries, you must define georel, geometry and coords in params')
         
+        
         params = {"offset": offset, "limit": limit, "type": type, "orderBy": orderBy, "q": q, "mq": mq, "georel": georel, "geometry": geometry, "coords": coords, "id": id}
-        req_url = f"{self.endpoint}/v2/entities"
+        
+        req_url = ""
+        if (options != None and len(options) > 0):
+            req_url = f"{self.endpoint}/v2/entities?options={options}"
+        else:    
+            req_url = f"{self.endpoint}/v2/entities"
+        
         resp = requests.get(req_url, params=params, headers=headers, verify=False, timeout=self.timeout)
         if resp.status_code == 400 or resp.status_code == 401:
             respjson = resp.json()
@@ -228,7 +239,7 @@ class cbManager:
         return resp.json()
 
 
-    def send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append') -> bool:
+    def send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append', options: str = None) -> bool:
         """Send batch data to context broker with block control
 
         :param auth: Define authManager 
@@ -236,6 +247,7 @@ class cbManager:
         :param service: Define service to send batch data, defaults to None
         :param subservice: Define subservice to send batch data, defaults to None
         :param actionType: Batch action type, defaults is append
+        :param options: Options used, defaults to None
         :raises ValueError: is thrown when some required argument is missing
         :raises Exception: is thrown when the cotext broker response isn't ok operation
         :return: True if the operation is correct
@@ -248,16 +260,16 @@ class cbManager:
             
             if accumulated_block > self.block_size:
                 logger.debug(f'- Sending a batch {actionType} of {len(entitiesToSend)} entities')
-                self.__send_batch(auth=auth, service=service, subservice=subservice, entities=entitiesToSend, actionType=actionType)
+                self.__send_batch(auth=auth, service=service, subservice=subservice, entities=entitiesToSend, actionType=actionType, options=options)
                 entitiesToSend = []
                 accumulated_block = 0
         
         # Remaining block, if any
         if accumulated_block > 0:
             logger.debug(f'- Sending final batch {actionType} of {len(entitiesToSend)} entities')
-            self.__send_batch(auth=auth, service=service, subservice=subservice, entities=entitiesToSend, actionType=actionType)
+            self.__send_batch(auth=auth, service=service, subservice=subservice, entities=entitiesToSend, actionType=actionType, options=options)
 
-    def __send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append') -> bool:
+    def __send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append', options: str = None) -> bool:
         """Send batch data to context broker
 
         :param auth: Define authManager 
@@ -265,6 +277,7 @@ class cbManager:
         :param service: Define service to send batch data, defaults to None
         :param subservice: Define subservice to send batch data, defaults to None  or auth.subservice defined value
         :param actionType: Batch action type, defaults is append
+        :param options: Options used, defaults to None
         :raises ValueError: is thrown when some required argument is missing
         :raises Exception: is thrown when the cotext broker response isn't ok operation
         :return: True if the operation is correct
@@ -286,10 +299,10 @@ class cbManager:
         if (auth != None and subservice not in auth.tokens.keys()):
             auth.get_auth_token_subservice(subservice = subservice)
 
-        res = self.__batch_creation(auth=auth, service=service, subservice = subservice, entities=entities, actionType=actionType)
+        res = self.__batch_creation(auth=auth, service=service, subservice = subservice, entities=entities, actionType=actionType, options=options)
         if (auth != None and res.status_code == 401):
             auth.get_auth_token_subservice(subservice = subservice)
-            res = self.__batch_creation(auth=auth, service=service, subservice = subservice, entities=entities, actionType=actionType)
+            res = self.__batch_creation(auth=auth, service=service, subservice = subservice, entities=entities, actionType=actionType, options=options)
         
         if res.status_code != 204:
             raise Exception(f'Error in batch {actionType} operation ({res.status_code}): {res.json()}')
@@ -301,7 +314,7 @@ class cbManager:
             
         return True 
         
-    def __batch_creation(self, *, service: str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append'):
+    def __batch_creation(self, *, service: str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append', options: str = None):
         """Send batch data to Context Broker
 
         :param entities: Entities data
@@ -309,6 +322,7 @@ class cbManager:
         :param subservice: Define subservice to send batch data, defaults to None or auth.subservice defined value
         :param auth: Define authManager, defaults to None
         :param actionType: Batch action type, defaults is append
+        :params options: Options used, default to None
         :raises ValueError: is thrown when some required argument is missing
         :return: Http response code
         """
@@ -349,11 +363,20 @@ class cbManager:
             'actionType': f'{actionType}',
             'entities': entities
         }
-
+        
+        # if cb_flowcontrol, add flowControl flag to options
         if (self.cb_flowcontrol):
-            req_url = f'{self.endpoint}/v2/op/update?options=flowControl'
-        else:
-            req_url = f'{self.endpoint}/v2/op/update'
+            if (options == None):
+                options = 'flowControl'
+            else:
+                # check if flowcontrol is in options.
+                if 'flowControl' not in options:
+                    options = f'{options},flowControl'
+
+        if (options != None and len(options) > 0):
+            req_url = f"{self.endpoint}/v2/op/update?options={options}"
+        else:    
+            req_url = f"{self.endpoint}/v2/op/update"
     
         http = requests.Session()
         retry_strategy = Retry(
