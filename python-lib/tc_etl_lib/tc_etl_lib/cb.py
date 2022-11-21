@@ -97,7 +97,7 @@ class cbManager:
         self.block_size = block_size
 
 
-    def delete_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options_get: str = None, options_send: str = None):
+    def delete_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options_get: list = [], options_send: list = []):
         """Delete data from context broker
 
         :param service: Define service from which entities are deleted, defaults to None
@@ -128,7 +128,7 @@ class cbManager:
         
         self.send_batch(service=service, subservice=subservice, auth=auth, entities=entities, actionType='delete', options=options_send)
 
-    def get_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options: str = None):
+    def get_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options: list = []):
         """Retrieve data from context broker
 
         :param service: Define service from which entities are retrieved, defaults to None
@@ -160,7 +160,7 @@ class cbManager:
             result += data
         return result
 
-    def get_entities_page(self, *, service:str = None, subservice: str = None, auth: authManager = None, offset: int = None, limit: int = None, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options: str = None):
+    def get_entities_page(self, *, service:str = None, subservice: str = None, auth: authManager = None, offset: int = None, limit: int = None, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options: list = []):
         """Retrieve data from context broker
 
         :param service: Define service from which entities are retrieved, defaults to None or auth.service defined value
@@ -227,7 +227,7 @@ class cbManager:
         
         req_url = ""
         if (options != None and len(options) > 0):
-            req_url = f"{self.endpoint}/v2/entities?options={options}"
+            req_url = f"{self.endpoint}/v2/entities?options={','.join(options)}"
         else:    
             req_url = f"{self.endpoint}/v2/entities"
         
@@ -241,7 +241,7 @@ class cbManager:
         return resp.json()
 
 
-    def send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append', options: str = None) -> bool:
+    def send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append', options: list = []) -> bool:
         """Send batch data to context broker with block control
 
         :param auth: Define authManager 
@@ -271,7 +271,7 @@ class cbManager:
             logger.debug(f'- Sending final batch {actionType} of {len(entitiesToSend)} entities')
             self.__send_batch(auth=auth, service=service, subservice=subservice, entities=entitiesToSend, actionType=actionType, options=options)
 
-    def __send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append', options: str = None) -> bool:
+    def __send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append', options: list = []) -> bool:
         """Send batch data to context broker
 
         :param auth: Define authManager 
@@ -316,7 +316,7 @@ class cbManager:
             
         return True 
         
-    def __batch_creation(self, *, service: str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append', options: str = None):
+    def __batch_creation(self, *, service: str = None, subservice: str = None, auth: authManager = None, entities: str, actionType: str = 'append', options: list = []):
         """Send batch data to Context Broker
 
         :param entities: Entities data
@@ -369,14 +369,14 @@ class cbManager:
         # if cb_flowcontrol, add flowControl flag to options
         if (self.cb_flowcontrol):
             if (options == None):
-                options = 'flowControl'
+                options = ['flowControl']
             else:
                 # check if flowcontrol is in options.
                 if 'flowControl' not in options:
-                    options = f'{options},flowControl'
+                    options.append('flowControl')
 
         if (options != None and len(options) > 0):
-            req_url = f"{self.endpoint}/v2/op/update?options={options}"
+            req_url = f"{self.endpoint}/v2/op/update?options={','.join(options)}"
         else:    
             req_url = f"{self.endpoint}/v2/op/update"
     
