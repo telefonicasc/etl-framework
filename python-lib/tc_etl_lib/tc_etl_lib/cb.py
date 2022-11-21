@@ -22,6 +22,8 @@
 ContextBroker routines for Python:
   - cbManager.send_batch
   - cbManager.get_entities_page
+  - cbManager.get_entities
+  - cbManager.delete_entities
 '''
 import requests
 from requests.adapters import HTTPAdapter
