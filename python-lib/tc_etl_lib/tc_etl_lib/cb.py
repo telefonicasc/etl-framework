@@ -36,6 +36,9 @@ import json
 
 from . import authManager
 
+# control urllib3 post and get verify in false
+import urllib3, urllib3.exceptions
+urllib3.disable_warnings(category=urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
 
