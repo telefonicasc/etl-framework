@@ -259,6 +259,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `service`: Se puede indicar al servicio al que se le quiere enviar los datos. Sino se indica, usará el que haya inicializado en el objeto authManager. Sino dispone ninguno de los dos definidos, lanzará un ValueError indicando que necesita definirse el servicio.
         - :param opcional `subservice`: Se puede indicar al subservicio al que se le quiere enviar los datos. Sino se indica, usará el que haya inicializado en el objeto authManager. Sino dispone ninguno de los dos definidos, lanzará un ValueError indicando que necesita definirse el subservicio.
         - :param opcional `actionType`: El tipo de acción que se le va aplicar al batch que se envía al Context Broker. Por defecto es `append`. Referencia en [API NGSIv2 de Orion](http://telefonicaid.github.io/fiware-orion/api/v2/stable/)
+        - :param opcional `options`: Lista de opciones separadas que recibe el Context Broker y que permite cierto comportamiento. Se pueden ver las opciones disponibles en [API NGSIv2 de Orion](https://github.com/telefonicaid/fiware-orion/blob/master/doc/manuals/orion-api.md#update-post-v2opupdate). En el caso de que la opcion `flowControl` se especifique dentro de este parámetro, un `cb_flowcontrol` (en la inicializción de cbManager) a `False` se ignora, quedanco como si `cb_flowcontrol` se hubiese establecido a `True`.
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna varibale del objeto cbManager, para poder realizar la autenticación o envío de datos.
         - :raises [Exception](https://docs.python.org/3/library/exceptions.html#Exception): Se lanza cuando el servicio de Context Broker, responde con un error concreto.
         - :return: True si la operación es correcta (i.e. el CB devolió un code http 204).
@@ -276,6 +277,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `geometry`: Cuando se define un filtro de datos por geolocalización, se ha de especificar un tipo de dibujo que se utiliza para resolver el filtrado. Se pueden consultar los diferentes valores de geometry en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
         - :param opcional `coords`: Cuando se define un filtro de datos por geolocalización, se ha de especificar una lista de coordenadas geograficas separadas por coma. Se pueden consultar los diferentes valores de coords en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
         - :param opcional `id`: Se establece un filtro por Identificador. Si no se especifica, enviará la petición al Context Broker sin el id definido, por lo tanto los datos no serán filtrados por identificador.
+        - :param opcional `options`: Lista de opciones que recibe el Context Broker y que permite cierto comportamiento. Se pueden ver las opciones disponibles en [API NGSIv2 de Orion](https://github.com/telefonicaid/fiware-orion/blob/master/doc/manuals/orion-api.md#list-entities-get-v2entities)  
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna varibale del objeto cbManager, para poder realizar la autenticación o envío de datos.
         - :raises FetchError: Se lanza cuando el servicio de Context Broker, responde con un error concreto.
         - :return: array de datos cuyos elementos son objeto que representan entidades, según el formato descrito en la sección
@@ -293,6 +295,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `geometry`: Cuando se define un filtro de datos por geolocalización, se ha de especificar un tipo de dibujo que se utiliza para resolver el filtrado. Se pueden consultar los diferentes valores de geometry en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
         - :param opcional `coords`: Cuando se define un filtro de datos por geolocalización, se ha de especificar una lista de coordenadas geograficas separadas por coma. Se pueden consultar los diferentes valores de coords en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
         - :param opcional `id`: Se establece un filtro por Identificador. Si no se especifica, enviará la petición al Context Broker sin el id definido, por lo tanto los datos no serán filtrados por identificador.
+        - :param opcional `options`: Lista de opciones que recibe el Context Broker. Se pueden ver las opciones disponibles en [API NGSIv2 de Orion](https://github.com/telefonicaid/fiware-orion/blob/master/doc/manuals/orion-api.md#list-entities-get-v2entities)  
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna varibale del objeto cbManager, para poder realizar la autenticación o envío de datos.
         - :raises FetchError: Se lanza cuando el servicio de Context Broker, responde con un error concreto.
         - :return: array de datos cuyos elementos son objeto que representan entidades, según el formato descrito en la sección
@@ -309,10 +312,16 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `geometry`: Cuando se define un filtro de datos por geolocalización, se ha de especificar un tipo de dibujo que se utiliza para resolver el filtrado. Se pueden consultar los diferentes valores de geometry en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
         - :param opcional `coords`: Cuando se define un filtro de datos por geolocalización, se ha de especificar una lista de coordenadas geograficas separadas por coma. Se pueden consultar los diferentes valores de coords en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
         - :param opcional `id`: Se establece un filtro por Identificador. Si no se especifica, enviará la petición al Context Broker sin el id definido, por lo tanto los datos no serán filtrados por identificador.
+        - :param opcional `options_get`: Cadena de opciones separadas por coma, que recibe el Context Broker cuando va recoger las entidades a eliminar. Se pueden ver las opciones disponibles en [API NGSIv2 de Orion](https://github.com/telefonicaid/fiware-orion/blob/master/doc/manuals/orion-api.md#list-entities-get-v2entities).  
+        - :param opcional `options_send`: Lista de opciones que recibe el Context Broker cuando va a eliminar las entidades. Se pueden ver las opciones disponibles en [API NGSIv2 de Orion](https://github.com/telefonicaid/fiware-orion/blob/master/doc/manuals/orion-api.md#update-post-v2opupdate). En el caso de que la opcion `flowControl` se especifique dentro de este parámetro, un `cb_flowcontrol` (en la inicializción de cbManager) a `False` se ignora, quedanco como si `cb_flowcontrol` se hubiese establecido a `True`.
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna varibale del objeto cbManager, para poder realizar la autenticación o envío de datos.
         - :raises FetchError: Se lanza cuando el servicio de Context Broker, responde con un error concreto.
     
 ## Changelog
+
+- Add: new optional parameter called `options` in get_entities, get_entities_page and send_batch ([#38](https://github.com/telefonicasc/etl-framework/issues/38))
+- Add: new optionals parameters called `options_send` and `options_get` in delete_entities ([#38](https://github.com/telefonicasc/etl-framework/issues/38))
+- Fix: cleaner logs, avoiding printing warnings in the case of unsecure CB API calls
 
 0.4.0 (August 31st, 2022)
 
