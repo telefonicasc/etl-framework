@@ -320,8 +320,8 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
 ## Changelog
 
 - Fix: cleaner logs, avoiding printing warnings in the case of unsecure CB API calls
-- Add: new optional parameter called `options` in get_entities, get_entities_page and send_batch
-- Add: new optionals parameters called `options_send` and `options_get` in delete_entities
+- Add: new optional parameter called `options` in get_entities, get_entities_page and send_batch ([#38](https://github.com/telefonicasc/etl-framework/issues/38))
+- Add: new optionals parameters called `options_send` and `options_get` in delete_entities ([#38](https://github.com/telefonicasc/etl-framework/issues/38))
 
 0.4.0 (August 31st, 2022)
 
