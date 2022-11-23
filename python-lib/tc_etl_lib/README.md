@@ -319,7 +319,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     
 ## Changelog
 
-
+- Disabled urllib3.exceptions.InsecureRequestWarning, the library uses option `verify=False` in request (get and post) to Context Broker, it launches a warning when Context Broker uses https protocol. Library is less verbose and disable this warning in favor to get more clean log.
 - Add: new optional parameter called `options` in get_entities, get_entities_page and send_batch
 - Add: new optionals parameters called `options_send` and `options_get` in delete_entities
 
