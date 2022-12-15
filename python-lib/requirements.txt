@@ -1,4 +1,4 @@
 #
 # fichero de ejemplo de requirements.txt para enlazar con al librería tc_etl_lib
 #
-tc_etl_lib==0.5.0
+tc_etl_lib==0.6.0
