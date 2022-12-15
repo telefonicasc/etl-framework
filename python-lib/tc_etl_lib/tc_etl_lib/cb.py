@@ -67,6 +67,8 @@ class cbManager:
     post_retry_backoff_factor: retry factor delay -> {backoff factor} * (2 ** ({number of total retries} - 1)) (defaul: 20). (ref. urllib3 docs) (default: False)
     sleep_send_batch: sleep X seconds afters send update batch. (default: 0). 
     cb_flowcontrol: Opción del Context Broker, que permite un mejor rendimiento en caso de envío masivo de datos (batch updates). Este mecanismo, requiere arrancar el Context Broker con un flag concreto y en las peticiones de envío de datos, añadir esa opción. Referencia en Fiware Orion Docs (default: False)
+    block_size: maximum size per batch, in bytes. Default is 800kb and it is not recommended to change.
+    batch_size: maximum size per batch, in entites. Default is 0 (no limitiation, other than block_size).
     """
     
     endpoint: str
@@ -80,8 +82,14 @@ class cbManager:
     # see https://fiware-orion.readthedocs.io/en/master/user/known_limitations.html)
     # and it is not recommended to change it
     block_size = 800000
+    # Batch size is entities. Ignored when batch_size = 0.
+    # If > 0 , limits the number of entities per batch.
+    # We might want to limit the amount of entities per batch for
+    # reasons other than block size (e.g to avoid triggering too
+    # many subscriptions per batch and stressing cygnus queues)
+    batch_size = 0
     
-    def __init__(self,*, endpoint: str = None, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, sleep_send_batch: int = 0, cb_flowcontrol: bool = False, block_size: int = 800000) -> None:
+    def __init__(self,*, endpoint: str = None, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, sleep_send_batch: int = 0, cb_flowcontrol: bool = False, block_size: int = 800000, batch_size: int = 0) -> None:
         
         if (endpoint == None):
             raise ValueError(f'You must define <<endpoint>> in cbManager')
@@ -92,6 +100,7 @@ class cbManager:
         self.post_retry_backoff_factor = post_retry_backoff_factor
         self.sleep_send_batch = sleep_send_batch
         self.cb_flowcontrol = cb_flowcontrol
+        self.batch_size = batch_size
         
         # check block_size limit.
         if (int(block_size) > int(800000)):
@@ -263,7 +272,7 @@ class cbManager:
             entitiesToSend.append(entity)
             accumulated_block += len(json.dumps(entity))
             
-            if accumulated_block > self.block_size:
+            if accumulated_block > self.block_size or (self.batch_size > 0 and len(entitiesToSend) >= self.batch_size) :
                 logger.debug(f'- Sending a batch {actionType} of {len(entitiesToSend)} entities')
                 self.__send_batch(auth=auth, service=service, subservice=subservice, entities=entitiesToSend, actionType=actionType, options=options)
                 entitiesToSend = []

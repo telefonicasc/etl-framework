@@ -251,6 +251,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `sleep_send_batch`: Pausa en segundos, que se realiza cada vez que se envia una ráfaga de datos. (default: 0). 
         - :param opcional `cb_flowcontrol`: Opción del Context Broker, que permite un mejor rendimiento en caso de envío masivo de datos (batch updates). Este mecanismo, requiere arrancar el Context Broker con un flag concreto y en las peticiones de envío de datos, añadir esa opción. Referencia en [documentación de Orion](https://fiware-orion.readthedocs.io/en/master/admin/perf_tuning/index.html#updates-flow-control-mechanism) (default: False)
         - :param opcional `block_size`: Cuando se realiza el envío de datos al Context Broker mediante la función de `send_batch`, se realiza envíos en tramos que no excedan el block_size indicado (default: 800000). Se permite modificar el valor de block_size, pero sin superar la limitación de 800000. En caso de indicar un valor que supere ese límite, se lanzará una excepción ValueError indicando que se ha excedido el límite del valor permitido.
+        - :param opcional `batch_size`: Si este parámetro es mayor que 0, cuando se realiza el envío de datos al Context Broker mediante la función de `send_batch`, se realizan envíos en tramos que no excedan el número de entidades indicado (default: 0 - no aplica). En el caso de ser mayor que 0, tanto `block_size` como `batch_size` aplican a la hora de dividir un envío en tramos.
         
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta alguno de los argumentos obligatorios
     - `send_batch`: Función que envía un lote de entidades al Context Broker aplicándoles una acción `actionType` que por defecto es `append`. Se le pasa el authManager, que ya dispone de un listado con todos los tokens por subservicio y usa el correspondiente para realizar la llamada al Context Broker. Si no se dispone de token o ha caducado, se solicita nuevo y luego envía los datos.
@@ -318,6 +319,8 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :raises FetchError: Se lanza cuando el servicio de Context Broker, responde con un error concreto.
     
 ## Changelog
+
+- Add: new optional parameter called `batch_size` in cbManager constructor ([#37](https://github.com/telefonicasc/etl-framework/issues/37))
 
 0.5.0 (November 23rd, 2022)
 
