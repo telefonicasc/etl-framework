@@ -320,6 +320,8 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     
 ## Changelog
 
+- Add: new optional parameter called `batch_size` in cbManager constructor ([#37](https://github.com/telefonicasc/etl-framework/issues/37))
+
 0.5.0 (November 23rd, 2022)
 
 - Add: new optional parameter called `options` in get_entities, get_entities_page and send_batch ([#38](https://github.com/telefonicasc/etl-framework/issues/38))
