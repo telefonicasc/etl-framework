@@ -194,7 +194,7 @@ class TestSQLFileStore(unittest.TestCase):
         self.do_test(expected, "", subservice="/testsrv", chunk_size=3)
 
     def test_append(self):
-        '''Test SQL File splitting batches in smaller chunks'''
+        '''Test SQL File append to existing data'''
         create = """
         CREATE TABLE IF NOT EXISTS myschema.type_a (entityid text, entitytype text, fiwareservicepath text, recvtime timestamp with time zone not null, location geometry, municipality text);
         CREATE TABLE IF NOT EXISTS myschema.type_b (entityid text, entitytype text, fiwareservicepath text, recvtime timestamp with time zone not null, timeinstant timestamp with time zone not null, temperature doule precision);
