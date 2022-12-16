@@ -368,6 +368,8 @@ with new_store() as store:
 
 ## Changelog
 
+- Add: new stores for saving entity batches, `orionStore` and `sqlFileStore` ([#46](https://github.com/telefonicasc/etl-framework/pull/46))
+
 0.6.0 (December 15th, 2022)
 
 - Add: new optional parameter called `batch_size` in cbManager constructor ([#37](https://github.com/telefonicasc/etl-framework/issues/37))
