@@ -104,7 +104,7 @@ class TestSQLFileStore(unittest.TestCase):
         '''test sqlFileStore with given parameters and expectations'''
         with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', delete=False) as tmpFile:
             try:
-                tmpFile.close()
+                tmpFile.close() # we only want the name, not the handle
                 if append_text != "":
                     with open(tmpFile.name, "w+", encoding="utf-8") as outfile:
                         outfile.write(dedent(append_text))
