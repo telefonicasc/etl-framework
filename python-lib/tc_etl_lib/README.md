@@ -336,8 +336,8 @@ La librería además proporciona [context managers](https://docs.python.org/3/re
     - :param: `schema` opcional: Nombre del schema a utilizar en los INSERT. Por defecto es `":target_schema"`, por lo que es al ejecutar el comando `psql` cuando se debe especificar con `-v target_schema=...`. Pero se le puede dar aquí un valor explícito.
     - :param: `namespace` opcional: Prefijo opcional para los nombres de tabla generados a partir del entityType. Si se especifica, el nombre de tabla se construye como `f"{namespace}_{entitytType.lower()}"`
     - :param: `table_names` opcional: mapeo de nombre de entidad a nombre de tabla. Permite especificar nombres de tabla por entidad distintos a los por defecto.
-        - si `table_name[entityType]` existe y es un string != "", se usa como nombre de tabla para el tipo de entidad.
-        - si `table_name[entityType]` no existe, se usa el nombre de tabla por defecto (f"{entitytType.lower()}" o f"{namespace}_{entitytType.lower()}")
+        - si `table_name[entityType]` existe y es un string `!= ""`, se usa como nombre de tabla para el tipo de entidad.
+        - si `table_name[entityType]` no existe, se usa el nombre de tabla por defecto (`f"{entitytType.lower()}"` o `f"{namespace}_{entitytType.lower()}"`)
         - si `table_name[entityType]` existe y es *falsy* (`None`, `""`, etc), las entidades de ese tipo no se escriben al fichero SQL.
     - :param: `chunk_size` opcional: máximo número de líneas a incluir en un solo `INSERT`. Default=10000
     - :param: `append` opcional: en caso de que el fichero exista, `append=True` añade los INSERT mientras que `append=False` sobrescribe el fichero. Default False.
