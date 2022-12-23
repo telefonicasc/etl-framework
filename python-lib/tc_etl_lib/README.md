@@ -368,6 +368,8 @@ with new_store() as store:
 
 ## Changelog
 
+0.7.0 (December 233rd, 2022)
+
 - Add: new stores for saving entity batches, `orionStore` and `sqlFileStore` ([#46](https://github.com/telefonicasc/etl-framework/pull/46))
 
 0.6.0 (December 15th, 2022)
