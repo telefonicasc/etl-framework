@@ -23,7 +23,7 @@ Store API for generic storage of entities
   - orionStore: saves batches to Orion environment
   - sqlFileStore: saves batches to SQL File
 '''
-from typing import Callable, Dict, List, Any, Iterable, Sequence, Optional
+from typing import Callable, Dict, Any, Iterable, Sequence, Optional
 from contextlib import contextmanager
 from pathlib import Path
 from collections import defaultdict
@@ -35,7 +35,7 @@ import psycopg2
 
 
 # A Store is a callable where you can save batches of entities.
-Store = Callable[[List[Any]], None]
+Store = Callable[[Iterable[Any]], None]
 
 @contextmanager
 def orionStore(cb: cbManager, auth: authManager, *, service:str=None, subservice:str=None, actionType:str='append', options:list=[]):
@@ -43,7 +43,7 @@ def orionStore(cb: cbManager, auth: authManager, *, service:str=None, subservice
     Context manager that creates a store to save entities to the given cbManager
     All parameters are the same as for the cbManager.send_batch function
     '''
-    def send_batch(entities: List[Any]):
+    def send_batch(entities: Iterable[Any]):
         cb.send_batch(service=service, subservice=subservice, auth=auth, actionType=actionType, options=options, entities=entities)
     yield send_batch
 
@@ -67,7 +67,7 @@ def sqlFileStore(path: Path, *, subservice:str, schema:str=":target_schema", nam
     handler = path.open(mode=mode, encoding="utf-8")
     some_table_names = table_names or {} # make sure it is not None
     try:
-        def send_batch(entities: List[Any]):
+        def send_batch(entities: Iterable[Any]):
             for chunk in iter_chunk(entities, chunk_size):
                 handler.write(sqlfile_batch(schema=schema, namespace=namespace, table_names=some_table_names, subservice=subservice, entities=chunk))
                 handler.write("\n")

@@ -19,6 +19,6 @@
 # along with IoT orchestrator. If not, see http://www.gnu.org/licenses/.
 #
 
-from .auth import *
-from .cb import *
+from .auth import authManager
+from .cb import FetchError, cbManager
 from .store import Store, orionStore, sqlFileStore

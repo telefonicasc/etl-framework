@@ -25,7 +25,7 @@ Authorization routines for Python:
 
 import requests
 import logging
-from typing import Dict
+from typing import Dict, Optional, cast
 
 logger = logging.getLogger(__name__)
 
@@ -43,23 +43,23 @@ class authManager:
     user: str
     password: str
     service: str
-    subservice: str
+    subservice: Optional[str]
     tokens: Dict[str, str]
 
-    def __init__(self, *, endpoint: str = None, service: str = None, user: str = None, password: str = None,
-                 subservice: str = None) -> None:
+    def __init__(self, *, endpoint: Optional[str] = None, service: Optional[str] = None, user: Optional[str] = None, password: Optional[str] = None,
+                 subservice: Optional[str] = None) -> None:
 
         messageError = []
-        if (endpoint == None):
+        if endpoint is None:
             messageError.append('<<endpoint>>')
 
-        if (service == None):
+        if service is None:
             messageError.append('<<service>>')
 
-        if (user == None):
+        if user is None:
             messageError.append('<<user>>')
 
-        if (password == None):
+        if password is None:
             messageError.append('<<password>>')
 
         if len(messageError) != 0:
@@ -68,10 +68,12 @@ class authManager:
                 defineParams = " and ".join([", ".join(messageError[:-1]), messageError[-1]])
             raise ValueError(f'You must define {defineParams} in authManager')
 
-        self.endpoint = endpoint
-        self.service = service
-        self.user = user
-        self.password = password
+        # At this point, all Optional[str] have been validated to be not None.
+        # cast them to let type checker knows.
+        self.endpoint = cast(str, endpoint)
+        self.service = cast(str, service)
+        self.user = cast(str, user)
+        self.password = cast(str, password)
         self.subservice = subservice
         self.tokens = {}
 
@@ -162,7 +164,7 @@ class authManager:
         logger.debug(f'Authentication token ({detail}) was created successfully')
         return res
 
-    def get_auth_token_subservice(self, *, subservice: str = None):
+    def get_auth_token_subservice(self, *, subservice: Optional[str] = None):
         """Authenticate in a service/subservice and get a token
 
         :param subservice: define subservice to be authenticated, defaults to None
@@ -175,11 +177,14 @@ class authManager:
         if (not hasattr(self, "tokens")):
             self.tokens = {}
 
-        if (subservice == None):
+        if subservice is None:
             if (not hasattr(self, "subservice")):
                 raise ValueError('You must define <<subservice>> in authManager')
             else:
                 subservice = self.subservice
+        # auth.subservice is Optional, it might be None
+        if subservice is None:
+            raise ValueError('You must define <<subservice>>')
 
         res = self._post_auth_request(detail=f"subservice {subservice}", scope={
             "project": {
