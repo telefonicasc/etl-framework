@@ -213,6 +213,13 @@ entities = [
  
 cbm.send_batch(auth=auth, subservice='/energia', entities=entities)
 
+# O, usando un store orion
+with tc.orionStore(cb=cbm, auth=auth, subservice='/energia') as store:
+    store(entities)
+
+# O un store sqlFile
+with tc.sqlFileStore(path="inserts.sql", subservice="/energia", namespace="energy") as store:
+    store(entities)
 ```
 
 ## Funciones disponibles en la librería
@@ -317,8 +324,51 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `options_send`: Lista de opciones que recibe el Context Broker cuando va a eliminar las entidades. Se pueden ver las opciones disponibles en [API NGSIv2 de Orion](https://github.com/telefonicaid/fiware-orion/blob/master/doc/manuals/orion-api.md#update-post-v2opupdate). En el caso de que la opcion `flowControl` se especifique dentro de este parámetro, un `cb_flowcontrol` (en la inicializción de cbManager) a `False` se ignora, quedanco como si `cb_flowcontrol` se hubiese establecido a `True`.
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna varibale del objeto cbManager, para poder realizar la autenticación o envío de datos.
         - :raises FetchError: Se lanza cuando el servicio de Context Broker, responde con un error concreto.
-    
+
+La librería además proporciona [context managers](https://docs.python.org/3/reference/datamodel.html#context-managers) para abstraer la escritura de entidades en formato NGSIv2 a distintos backends (`store`s). Estos son:
+
+- `orionStore`: Genera un store asociado a una instancia particular de `cbManager` y `authManager`. Todas las entidades que se envíen a este store, se almacenarán en el cbManager correspondiente.
+    - todos los parámetros son idénticos a los de la función send_batch de la clase cbManager.
+    - :return: un `callable` que recibe una lista de entidades y las envía a la función `send_batch` del `cb` especificado. Como tal, puede lanzar cualquiera de las excepciones que lanza la función `send_batch` de la clase `cbManager`.
+
+- `sqlFileStore`: Genera un store asociado a un fichero local. Todas las entidades que se envíen a este store se almacenarán como órdenes SQL `INSERT` en el fichero local. Además de los atributos de la entidad, cada `INSERT` añadirá las columnas `fiwareservicepath` y `recvtime` para ser consistente con el formato típico de tabla histórica de entidad, y no dar error de inserción (ya que esas columnas suelen ser NOT NULL).
+    - :param: `subservice`: Nombre de subservicio a escribir en la columna `fiwareservicepath`
+    - :param: `schema` opcional: Nombre del schema a utilizar en los INSERT. Por defecto es `":target_schema"`, por lo que es al ejecutar el comando `psql` cuando se debe especificar con `-v target_schema=...`. Pero se le puede dar aquí un valor explícito.
+    - :param: `namespace` opcional: Prefijo opcional para los nombres de tabla generados a partir del entityType. Si se especifica, el nombre de tabla se construye como `f"{namespace}_{entitytType.lower()}"`
+    - :param: `table_names` opcional: mapeo de nombre de entidad a nombre de tabla. Permite especificar nombres de tabla por entidad distintos a los por defecto.
+        - si `table_name[entityType]` existe y es un string `!= ""`, se usa como nombre de tabla para el tipo de entidad.
+        - si `table_name[entityType]` no existe, se usa el nombre de tabla por defecto (`f"{entitytType.lower()}"` o `f"{namespace}_{entitytType.lower()}"`)
+        - si `table_name[entityType]` existe y es *falsy* (`None`, `""`, etc), las entidades de ese tipo no se escriben al fichero SQL.
+    - :param: `chunk_size` opcional: máximo número de líneas a incluir en un solo `INSERT`. Default=10000
+    - :param: `append` opcional: en caso de que el fichero exista, `append=True` añade los INSERT mientras que `append=False` sobrescribe el fichero. Default False.
+    - :return: un `callable` que recibe una lista de entidades y las escribe como instrucciones sql `INSERT` en el fichero especificado.
+
+El modo de uso de cualquiera de los context managers es idéntico:
+
+```python
+# En primer lugar, se selecciona el store en función del criterio que convenga.
+# por ejemplo, en este caso, una variable `use_file_store`
+if use_file_store == True:
+    new_store = lambda: tc.sqlFileStore(
+        path=Path("my_file_name.sql"),
+        subservice="/my_subservice"
+    )
+else:
+    new_store = lambda: tc.orionStore(
+        cb=my_cb,
+        auth=my_auth,
+        subservice="/my_subservice"
+    )
+
+# A partir de aqui, el código sería independiente del tipo de store usado
+with new_store() as store:
+    entities = ...
+    store(entities)
+```
+
 ## Changelog
+
+- Add: new stores for saving entity batches, `orionStore` and `sqlFileStore` ([#46](https://github.com/telefonicasc/etl-framework/pull/46))
 
 0.6.0 (December 15th, 2022)
 

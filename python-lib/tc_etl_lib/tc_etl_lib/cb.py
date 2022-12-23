@@ -68,7 +68,7 @@ class cbManager:
     sleep_send_batch: sleep X seconds afters send update batch. (default: 0). 
     cb_flowcontrol: Opción del Context Broker, que permite un mejor rendimiento en caso de envío masivo de datos (batch updates). Este mecanismo, requiere arrancar el Context Broker con un flag concreto y en las peticiones de envío de datos, añadir esa opción. Referencia en Fiware Orion Docs (default: False)
     block_size: maximum size per batch, in bytes. Default is 800kb and it is not recommended to change.
-    batch_size: maximum size per batch, in entites. Default is 0 (no limitiation, other than block_size).
+    batch_size: maximum size per batch, in entities. Default is 0 (no limitiation, other than block_size).
     """
     
     endpoint: str

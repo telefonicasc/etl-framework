@@ -37,7 +37,8 @@ LONG_DESC_TYPE = "text/markdown"
 #Paquetes necesarios para que funcione la librería. Se instalarán a la vez si no lo tuvieras ya instalado
 INSTALL_REQUIRES = [
     'requests==2.21.0',
-    'urllib3==1.24.1'
+    'urllib3==1.24.1',
+    'psycopg2-binary>=2.9.5'
 ]
 
 setup(
