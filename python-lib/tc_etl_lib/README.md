@@ -366,6 +366,46 @@ with new_store() as store:
     store(entities)
 ```
 
+## Testing
+
+Como requisito para ejecutar los tests, es necesario instalar pytest con `pip install pytest`
+
+```
+$ pytest python-lib/tc_etl_lib/tc_etl_lib/test_store.py
+================================================================ test session starts =================================================================
+platform linux -- Python 3.9.2, pytest-7.2.0, pluggy-1.0.0
+rootdir: /home/fermin/src/etl-framework/python-lib/tc_etl_lib
+collected 7 items                                                                                                                                    
+
+python-lib/tc_etl_lib/tc_etl_lib/test_store.py .......                                                                                         [100%]
+
+================================================================= 7 passed in 0.32s ==================================================================
+```
+
+Para ejecutar todos los tests se puede utilizar `pytest` sin parámeteros:
+
+```
+$ pytest
+================================================================ test session starts =================================================================
+platform linux -- Python 3.9.2, pytest-7.2.0, pluggy-1.0.0
+rootdir: /home/fermin/src/etl-framework/python-lib/tc_etl_lib
+collected 7 items                                                                                                                                    
+
+python-lib/tc_etl_lib/tc_etl_lib/test_store.py .......                                                                                         [100%]
+
+================================================================= 7 passed in 0.32s ==================================================================
+```
+
+(**FIXME [#3](https://github.com/telefonicasc/etl-framework/issues/3)**: ahora mismo solo tenemos un fichero de tests y queda un poco raro la
+ejecución con `pytest` a secas, pero cuando se acometa ese issue tendremos ya más).
+
+Opcionalmente, se pueden obtener estadísticas de cobertura de código instalando la librería [coverage](https://coverage.readthedocs.io/en/6.4.1/) e invocándola de la siguiente format (importante estar en el mismo directorio que los tests)
+
+```
+$ coverage run -m unittest
+TBD
+```
+
 ## Changelog
 
 0.7.0 (December 233rd, 2022)
