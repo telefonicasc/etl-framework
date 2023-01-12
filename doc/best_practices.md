@@ -29,8 +29,10 @@ La ETL estará contenida en un directorio, cuyos contenidos serán:
     - Referencias. Se pueden adjuntar algunas referencias como Tutorial de virtualenv, etc..
 * `requirements.txt`: dependencias de la ETL. Especialmente significativa es la `[tc_etl_lib](#tc_etl_lib)`, en el caso de ETLs que
   interactúen con la plataforma.
-* `config.example.cfg`: fichero de configuración de ejemplo, según el formato descrito [en la siguiente sección](#etl-config). **Téngase
-  precaución de ofuscar cualquier tipo de información sensible que pueda haber en esta configuración, pe. IPs, passwords, etc.**
+* ~`config.example.cfg`: fichero de configuración de ejemplo, según el formato descrito [en la siguiente sección](#etl-config). **Téngase
+  precaución de ofuscar cualquier tipo de información sensible que pueda haber en esta configuración, pe. IPs, passwords, etc.**~ DEPRECADO.
+  En la actualidad, las buenas prácticas recomiendan [usar configuraion via variables de entorno en vez de con fichero](#etl-config). No obstante,
+  en el caso de que por alguna razón haya que usar un fichero de configuración, ha de seguirse esta recomendación.
 * `etl.py`: el fichero ejecutable de la ETL
 * Otros ficheros `.py` que la ETL pueda necesitar. Idealmente, si la ETL es sencilla, no deberían hacer falta ficheros `.py` extra
 
