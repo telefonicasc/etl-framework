@@ -368,10 +368,25 @@ with new_store() as store:
 
 ## Testing
 
-Como requisito para ejecutar los tests, es necesario instalar pytest con `pip install pytest`
+Se recomienda trabajar en un virtualenv, en el que se instalarán las dependencias
+de la librería:
 
 ```
-$ pytest python-lib/tc_etl_lib/tc_etl_lib/test_store.py
+$ virtualenv venv
+$ source venv/bin/activate
+$ (venv)$ pip install -e python-lib/tc_etl_lib  # directorio en el que está setup.py de la lilbreria
+```
+
+Adicionalmente, instalar las herramientas necesarias para ejecutar los tests:
+
+```
+pip install pytest==7.2.0 coverage==7.0.5
+```
+
+Para ejecutar un solo fichero de tests:
+
+```
+$ (venv)$ pytest python-lib/tc_etl_lib/tc_etl_lib/test_store.py
 ================================================================ test session starts =================================================================
 platform linux -- Python 3.9.2, pytest-7.2.0, pluggy-1.0.0
 rootdir: /home/fermin/src/etl-framework/python-lib/tc_etl_lib
@@ -382,10 +397,10 @@ python-lib/tc_etl_lib/tc_etl_lib/test_store.py .......                          
 ================================================================= 7 passed in 0.32s ==================================================================
 ```
 
-Para ejecutar todos los tests se puede utilizar `pytest` sin parámeteros:
+Para ejecutar todos los tests se puede utilizar `pytest` sin parámetros:
 
 ```
-$ pytest
+$ (venv)$ pytest
 ================================================================ test session starts =================================================================
 platform linux -- Python 3.9.2, pytest-7.2.0, pluggy-1.0.0
 rootdir: /home/fermin/src/etl-framework/python-lib/tc_etl_lib
@@ -399,11 +414,27 @@ python-lib/tc_etl_lib/tc_etl_lib/test_store.py .......                          
 (**FIXME [#3](https://github.com/telefonicasc/etl-framework/issues/3)**: ahora mismo solo tenemos un fichero de tests y queda un poco raro la
 ejecución con `pytest` a secas, pero cuando se acometa ese issue tendremos ya más).
 
-Opcionalmente, se pueden obtener estadísticas de cobertura de código instalando la librería [coverage](https://coverage.readthedocs.io/en/6.4.1/) e invocándola de la siguiente format (importante estar en el mismo directorio que los tests)
+Se pueden obtener estadísticas de cobertura de código de la siguiente forma:
 
 ```
-$ coverage run -m unittest
-TBD
+$ (venv)$ cd python-lib/tc_etl_lib
+$ (venv)$ coverage run -m unittest
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 0.041s
+
+OK
+
+$ (venv)$ coverage report
+Name                       Stmts   Miss  Cover
+----------------------------------------------
+tc_etl_lib/__init__.py         3      0   100%
+tc_etl_lib/auth.py            95     76    20%
+tc_etl_lib/cb.py             178    141    21%
+tc_etl_lib/store.py           80      4    95%
+tc_etl_lib/test_store.py      47      0   100%
+----------------------------------------------
+TOTAL                        403    221    45%
 ```
 
 ## Changelog
