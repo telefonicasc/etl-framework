@@ -49,7 +49,7 @@ Para instalar una versión concreta:
 
 También se puede añadir la depedencia a `requirements.txt`:
 
-        tc_etl_lib==0.1.0
+        tc_etl_lib==0.7.0
 
 he instalar (junto con el resto de depedencias) con el habitual:
 
