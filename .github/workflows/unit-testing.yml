@@ -26,9 +26,6 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.8"
-    - name: Set up virtualenv cache
-      uses: syphar/restore-virtualenv@v1
-      id: cache-virtualenv
     - name: Install pytest tool
       run: pip install pytest==7.2.0
     - name: Install library dependencies
