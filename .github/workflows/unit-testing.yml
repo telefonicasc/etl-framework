@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
 
     # FIXME: it would be great to use cache to avoid re-creating the virtualenv
-    # and installing dependencies every time. We know the syphar/restore-pip-download-cache@v1
-    # action, but it seems it only works if dependencies are in requeriments.txt file
-    # (and in this case we have them in setup.py)
+    # and installing dependencies every time. We know the syphar/restore-virtualenv@v1 and 
+    # syphar/restore-pip-download-cache@v1 actions, but it seems it only works if
+    # dependencies are in requeriments.txt file (and in this case we have them in setup.py)
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.8
