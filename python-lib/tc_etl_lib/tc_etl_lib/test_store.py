@@ -27,7 +27,7 @@ import textwrap
 import os
 import tempfile
 from pathlib import Path
-from .store import sqlFileStore
+from tc_etl_lib import sqlFileStore
 
 TestEntities = [
     {
