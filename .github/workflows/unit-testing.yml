@@ -16,6 +16,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # FIXME: it would be great to use cache to avoid re-creating the virtualenv
+    # and installing dependencies every time. We know the syphar/restore-pip-download-cache@v1
+    # action, but it seems it only works if dependencies are in requeriments.txt file
+    # (and in this case we have them in setup.py)
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.8
@@ -25,13 +29,9 @@ jobs:
     - name: Set up virtualenv cache
       uses: syphar/restore-virtualenv@v1
       id: cache-virtualenv
-    - uses: syphar/restore-pip-download-cache@v1
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
-    - name: Install library dependencies
-      run: pip install -e python-lib/tc_etl_lib
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
     - name: Install pytest tool
       run: pip install pytest==7.2.0
-      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+    - name: Install library dependencies
+      run: pip install -e python-lib/tc_etl_lib
     - name: Test with pytest
       run: pytest -v python-lib/tc_etl_lib/
