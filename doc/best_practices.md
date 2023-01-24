@@ -68,11 +68,13 @@ import logging
 import os
 
 # get ETL_LOG_LEVEL var environment
-logLevel = os.getenv('ETL_LOG_LEVEL', 'INFO')
+# note this is an string which is translated to the actual logLevel
+# number (eg. logging.INFO, logging.DEBUG, etc.) by logging.getLevelName() function
+logLevelString = os.getenv('ETL_LOG_LEVEL', 'INFO')
 
 # sets the logging configuration
 logging.basicConfig(
-    level=logLevel,
+    level=logging.getLevelName(logLevelString),
     format="time=%(asctime)s | lvl=%(levelname)s | comp=ETL-xxxx | op=%(name)s:%(filename)s[%(lineno)d]:%(funcName)s | msg=%(message)s",
     handlers=[
         logging.StreamHandler()
