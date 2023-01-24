@@ -88,7 +88,7 @@ logger.info('lore ipsum...')
 
 reemplazando 'ETL-xxx' por el nombre que se le quiera dar a la ETL.
 
-Se recomienda recoger el nivel de log a través de una variable de entorno llamada `ETL_LOG_LEVEL`, con valor por defecto `INFO`. Los diferentes valores soportados por logging son `CRITICAL`, `FATAL`, `ERROR`, `WARN`, `WARNING`, `INFO`, `DEBUG`, `NOTSET`.
+Se recomienda recoger el nivel de log a través de una variable de entorno llamada `ETL_LOG_LEVEL` como se muestra en el ejemplo más arriba, con valor por defecto `INFO`. Los diferentes valores soportados por logging son `CRITICAL`, `FATAL`, `ERROR`, `WARN`, `WARNING`, `INFO`, `DEBUG`, `NOTSET`.
 
 ## <a name="logging-string"></a> Logging niveles y f-strings
 
