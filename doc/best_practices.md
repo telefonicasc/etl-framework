@@ -68,7 +68,7 @@ import logging
 import os
 
 # get ETL_LOG_LEVEL var environment
-logLevel = os.getenv('ETL_LOG_LEVEL', 'DEBUG')
+logLevel = os.getenv('ETL_LOG_LEVEL', 'INFO')
 
 # sets the logging configuration
 logging.basicConfig(
