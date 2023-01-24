@@ -64,12 +64,15 @@ time=<hora:min:seg:mseg> | lvl=<nivel> | comp=<componente>| op=<archivo>[<linea>
 El formato de log, se puede configurar de la siguiente manera:
 
 ``` Python
-# import logging
+import config # env vars config file
 import logging
+
+# Sets the logging configuration
+logLevel = logging.getLevelName(config.ETL_LOG_LEVEL)
 
 # sets the logging configuration
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logLevel,
     format="time=%(asctime)s | lvl=%(levelname)s | comp=ETL-xxxx | op=%(name)s:%(filename)s[%(lineno)d]:%(funcName)s | msg=%(message)s",
     handlers=[
         logging.StreamHandler()
@@ -83,7 +86,9 @@ logger = logging.getLogger()
 logger.info('lore ipsum...')
 ```
 
-reemplazando 'ETL-xxx' por el nombre que se le quiera dar a la ETL
+reemplazando 'ETL-xxx' por el nombre que se le quiera dar a la ETL.
+
+Se recomienda recoger el nivel de log a través de una variable de entorno llamada `ETL_LOG_LEVEL`, con valor por defecto `INFO`. Los diferentes valores soportados por logging son `CRITICAL`, `FATAL`, `ERROR`, `WARN`, `WARNING`, `INFO`, `DEBUG`, `NOTSET`.
 
 ## <a name="logging-string"></a> Logging niveles y f-strings
 
