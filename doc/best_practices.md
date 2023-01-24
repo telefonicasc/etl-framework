@@ -64,11 +64,14 @@ time=<hora:min:seg:mseg> | lvl=<nivel> | comp=<componente>| op=<archivo>[<linea>
 El formato de log, se puede configurar de la siguiente manera:
 
 ``` Python
-import config # env vars config file
 import logging
+import os
+
+# get ETL_LOG_LEVEL var environment
+ETL_LOG_LEVEL = os.getenv(f"ETL_LOG_LEVEL", "INFO")
 
 # Sets the logging configuration
-logLevel = logging.getLevelName(config.ETL_LOG_LEVEL)
+logLevel = logging.getLevelName(ETL_LOG_LEVEL)
 
 # sets the logging configuration
 logging.basicConfig(
