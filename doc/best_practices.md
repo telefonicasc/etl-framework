@@ -183,6 +183,8 @@ cualquier modificación posterior en tiempo de ejecución del job (pe. mediante 
 en la configuración). Cuando se detecten casos como estos en ETLs legacy, considerar su paso a env vars (tipicamente se ha venido
 usando hasta ahora con configuración sensible, como passwords, etc.).
 
+Otro requisito es que la ETL **permita especificar la ruta a esos ficheros de configuración**, si los necesita. Es decir, la ETL no debe simplemente asumir que sus ficheros de configuración van a estar en el mismo directorio donde esté el código, o en el directorio de trabajo desde el que se ejecute la ETL. En su lugar, debe aceptar algún parámetro o variable de entorno que le indique la ruta a dichos ficheros de configuración.
+
 ## <a name="etl-csv"></a> Manejo de CSV en las ETLs
 
 Para la recogida de datos de CSV en las ETLs, se recomienda usar la librería `pandas`, que dispone de mecanismos de captación de datos, entre ellos importanción de datos desde CSV. [Ref.](https://pandas.pydata.org/docs/user_guide/io.html#io-read-csv-table)
