@@ -123,6 +123,8 @@ El mecanismo de f-String a la hora de formatear los strings (y en este caso usar
 
 Cada ETL tiene su propia configuración, dependiendo de su necesidades a nivel funcional. Es importante parametrizar todo lo posible y que las ETLs sean lo más flexible posible.
 
+El mecanismo recomendado para la configuración de una ETL es del *variables de entorno*.
+
 Se recomienda utilizar grupos de configuración que agrupen variables de un mismo tipo (pe. el grupo `ENVIRONMENT` para la configuración que tenga que ver con el entorno de despliegue, `SETTINGS` para otras configuraciones, etc.) y el uso de nombre con la siguiente estructura:
 
 ```
@@ -169,7 +171,19 @@ protocol = os.getenv('ETL_MYETL_ENVIRONMENT_PROTOCOL', 'http')
 endpoint_cb = os.getenv('ETL_MYETL_ENVIRONMENT_ENDPOINT_CB', '<endpoint_cb>:<port>')
 ```
 
-**NOTA:** la antigua recomendación de configurar la ETL via fichero de configuración `config.cfg` ha quedado deprecada, pero sí aún quiere consultarse puede hacerse en [el tag 0.1.0 de este repositorio](https://github.com/telefonicasc/etl-framework/blob/0.1.0/doc/best_practices.md#-configuraci%C3%B3n-de-la-etl).
+Si bien el mecanismo preferido para configurar ETLs son las variables de entorno, se permite también la configuración vía *ficheros
+de configuración* en casos excepcionales. En concreto:
+
+* ETLs legacy anteriores a la creación de estas buenas práticas (si bien estas ETLs legacy habrían de ser migradas progresivamente)
+* Configuraciones que sería muy complejo especificar en la forma de variable de entorno. Por ejemplo, ficheros JSON de credenciales
+  generados por algunos servicios (como Google) o ficheros grandes de datos estáticos, necesarios para la configuración de la ETL.
+  
+Es un requisito en estos casos que los ficheros de configuración que se usen sean tal cual estén en los repositorios, evitando
+cualquier modificación posterior en tiempo de ejecución del job (pe. mediante comandos `sed` para cambiar algún tipo de placeholder
+en la configuración). Cuando se detecten casos como estos en ETLs legacy, considerar su paso a env vars (tipicamente se ha venido
+usando hasta ahora con configuración sensible, como passwords, etc.).
+
+Otro requisito es que la ETL **permita especificar la ruta a esos ficheros de configuración**, si los necesita. Es decir, la ETL no debe simplemente asumir que sus ficheros de configuración van a estar en el mismo directorio donde esté el código, o en el directorio de trabajo desde el que se ejecute la ETL. En su lugar, debe aceptar algún parámetro o variable de entorno que le indique la ruta a dichos ficheros de configuración.
 
 ## <a name="etl-csv"></a> Manejo de CSV en las ETLs
 
