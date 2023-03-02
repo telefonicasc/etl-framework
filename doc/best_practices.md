@@ -33,6 +33,7 @@ La ETL estará contenida en un directorio, cuyos contenidos serán:
   precaución de ofuscar cualquier tipo de información sensible que pueda haber en esta configuración, pe. IPs, passwords, etc.**~ DEPRECADO.
   En la actualidad, las buenas prácticas recomiendan [usar configuraion via variables de entorno en vez de con fichero](#etl-config). No obstante,
   en el caso de que por alguna razón haya que usar un fichero de configuración, ha de seguirse esta recomendación.
+* `config.py`: fichero de configuración con al recogida de las [variables de entorno](#etl-config). 
 * `etl.py`: el fichero ejecutable de la ETL
 * Otros ficheros `.py` que la ETL pueda necesitar. Idealmente, si la ETL es sencilla, no deberían hacer falta ficheros `.py` extra
 
@@ -169,6 +170,43 @@ import os
 
 protocol = os.getenv('ETL_MYETL_ENVIRONMENT_PROTOCOL', 'http')
 endpoint_cb = os.getenv('ETL_MYETL_ENVIRONMENT_ENDPOINT_CB', '<endpoint_cb>:<port>')
+```
+
+Es habitual y recomendable, que agrupemos las variables de entorno de configuración en un fichero de configuración, llamado `config.py`. Este fichero contiene el mecanismo de recogida de variables de entorno y las asocia a variables que luego se usarán en el ETL. Es reomendable que las comprobaciones relacionadas con la recogida de parámetros, se hagan en este punto y así quede desvinculado luego del propio código de la ETL, a menos que esas comprobaciones dependan de la propia lógica de la etl.
+
+Ejemplo de fichero `config.py`:
+
+``` Python
+import os
+
+protocol = os.getenv('ETL_MYETL_ENVIRONMENT_PROTOCOL', 'http')
+endpoint_cb = os.getenv('ETL_MYETL_ENVIRONMENT_ENDPOINT_CB', '<endpoint_cb>:<port>')
+```
+
+Uso del fichero `config.py` en `etl.py`
+
+``` Python
+import config
+
+logger.info(f'Protocol {config.protocol}')
+```
+
+Ejemplo de como aplicar cierta lógica en la recogida de parámetros. Queremos recoger un parámetro que ha de ser booleano en python para luego usarlo en el código de la etl.py. La lógica de comprobación, se recomienda incorporarla en el propio fichero config.py:
+
+fichero `config.py`:
+``` Python
+import os
+
+check_it = (os.getenv(f"ETL_MYETL_ENVIRONMENT_CHECK_IT", "False").lower() in ('true','t','yes','on', '1'))
+```
+
+fichero `etl.py`:
+``` Python
+import config
+if (config.check_it):
+    logger.info('Check it!')
+else:
+    logger.info('Nothing to do')
 ```
 
 Si bien el mecanismo preferido para configurar ETLs son las variables de entorno, se permite también la configuración vía *ficheros
