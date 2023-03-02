@@ -27,7 +27,7 @@ La ETL estará contenida en un directorio, cuyos contenidos serán:
     - Ejecución de la ETL. Como lanzar la ETL, en caso de que sea por comando o si es necesario programar algún Job de Jenkins, especificar los pasos para crear el job de jenkins.
     - Resultado o Ejemplos. Si es posible algunos ejemplos genéricos de ejecución y resultado esperado.
     - Referencias. Se pueden adjuntar algunas referencias como Tutorial de virtualenv, etc..
-* `requirements.txt`: dependencias de la ETL. Especialmente significativa es la `[tc_etl_lib](#tc_etl_lib)`, en el caso de ETLs que
+* `requirements.txt`: dependencias de la ETL. Especialmente significativa es la [tc_etl_lib](#tc_etl_lib), en el caso de ETLs que
   interactúen con la plataforma. **NOTA:** no se deberían usar `requirements.txt` "generales" en el directorio que contiene el conjunto de ETLs.
 * ~`config.example.cfg`: fichero de configuración de ejemplo, según el formato descrito [en la siguiente sección](#etl-config). **Téngase
   precaución de ofuscar cualquier tipo de información sensible que pueda haber en esta configuración, pe. IPs, passwords, etc.**~ DEPRECADO.
