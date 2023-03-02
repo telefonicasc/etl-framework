@@ -22,13 +22,13 @@ La ETL estará contenida en un directorio, cuyos contenidos serán:
     - Descripción funcional de la ETL.
     - Requisitos de la ETL (versión de python, versión de pip, etc..)
     - Instalación de la ETL. Como crear el entorno virtual de python, lanzar la instalación de librerías con pip y ejecución de la etl (si quiere parámetros en la linea de comandos, etc..).
-    - Configuración de la ETL. Fichero de configuración, que valores tiene y que configuración se ha de modificar. Normalmente se usa un `config.example.cfg` como ejemplo/plantilla, se realiza una copia de este como config.cfg y dentro se incluyen las diferentes secciones de configuración.
+    - Configuración de la ETL. Lista de variables en entorno (y valores por defecto o comportamiento en el caso de no encontrarse la variable de entorno) que usa la ETL
     - Ficheros de carga o adicionales. En ocasiones las ETLs se usan para cargar ficheros de datos concretos. Se debe indicar que tipos de ficheros son, formato, etc..
     - Ejecución de la ETL. Como lanzar la ETL, en caso de que sea por comando o si es necesario programar algún Job de Jenkins, especificar los pasos para crear el job de jenkins.
     - Resultado o Ejemplos. Si es posible algunos ejemplos genéricos de ejecución y resultado esperado.
     - Referencias. Se pueden adjuntar algunas referencias como Tutorial de virtualenv, etc..
 * `requirements.txt`: dependencias de la ETL. Especialmente significativa es la `[tc_etl_lib](#tc_etl_lib)`, en el caso de ETLs que
-  interactúen con la plataforma.
+  interactúen con la plataforma. **NOTA:** no se deberían usar `requirements.txt` "generales" en el directorio que contiene el conjunto de ETLs.
 * ~`config.example.cfg`: fichero de configuración de ejemplo, según el formato descrito [en la siguiente sección](#etl-config). **Téngase
   precaución de ofuscar cualquier tipo de información sensible que pueda haber en esta configuración, pe. IPs, passwords, etc.**~ DEPRECADO.
   En la actualidad, las buenas prácticas recomiendan [usar configuraion via variables de entorno en vez de con fichero](#etl-config). No obstante,
