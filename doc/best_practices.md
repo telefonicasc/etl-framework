@@ -172,7 +172,7 @@ protocol = os.getenv('ETL_MYETL_ENVIRONMENT_PROTOCOL', 'http')
 endpoint_cb = os.getenv('ETL_MYETL_ENVIRONMENT_ENDPOINT_CB', '<endpoint_cb>:<port>')
 ```
 
-Es habitual y recomendable, que agrupemos las variables de entorno de configuración en un fichero de configuración, llamado `config.py`. Este fichero contiene el mecanismo de recogida de variables de entorno y las asocia a variables que luego se usarán en el ETL. Es reomendable que las comprobaciones relacionadas con la recogida de parámetros, se hagan en este punto y así quede desvinculado luego del propio código de la ETL, a menos que esas comprobaciones dependan de la propia lógica de la etl.
+Es habitual y recomendable, que agrupemos las variables de entorno de configuración en un fichero de configuración, llamado `config.py`. Este fichero contiene el mecanismo de recogida de variables de entorno y las asocia a variables que luego se usarán en el ETL, así como establece los valores por defecto en el caso de que la variable no se encuentre. Es reomendable que las comprobaciones relacionadas con la recogida de parámetros, se hagan en este punto y así quede desvinculado luego del propio código de la ETL, a menos que esas comprobaciones dependan de la propia lógica de la etl.
 
 Ejemplo de fichero `config.py`:
 
