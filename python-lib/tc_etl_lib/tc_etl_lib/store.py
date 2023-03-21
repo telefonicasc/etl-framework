@@ -48,7 +48,7 @@ def orionStore(cb: cbManager, auth: authManager, *, service:str=None, subservice
     yield send_batch
 
 @contextmanager
-def sqlFileStore(path: Path, *, subservice:str, schema:str=":target_schema", namespace:str="", table_names:Optional[Dict[str, str]]=None, chunk_size:int=10000, append:bool=False, replace_id:Optional[Sequence[str]]=None):
+def sqlFileStore(path: Path, *, subservice:str, schema:str=":target_schema", namespace:str="", table_names:Optional[Dict[str, str]]=None, chunk_size:int=10000, append:bool=False, replace_id:Optional[Dict[str, Sequence[str]]]=None):
     '''
     Context manager that creates a store to save entities to an SQL File.
     SQL syntax used is postgresql.
@@ -62,34 +62,20 @@ def sqlFileStore(path: Path, *, subservice:str, schema:str=":target_schema", nam
       - if table_name[entityType] exists and is empty, entities with the given type are not saved.
     chunk_size: maximum lines in a single insert statement. Default=10000
     append: append to the file instead of overwriting.
-    replace_id: list of attributes to use to replace the entity's id before saving to the db.
-      These attributes must exist in the entity, otherwise it will raise a KeyError.
+    replace_id: dictionary of `entity type` => `list of replace_id attributes`.
+        For any entity of the given type, the entity id will be replaced by
+        the list of values of the specified attributes, concatenated with "_".
+        This mimics the behaviour of `replaceId` param in historic URBO-DEPLOYER flows.
     '''
     mode = "a+" if append else "w+"
     handler = path.open(mode=mode, encoding="utf-8")
     some_table_names = table_names or {} # make sure it is not None
+    replace_id = replace_id or {} # make sure it is not None
     try:
         def send_batch(entities: Iterable[Any]):
             """Send a batch of entities to the database"""
-            if replace_id is not None and len(replace_id) > 0:
-                def replace(entities):
-                    """
-                    Replace entities_id with concatened list of attribute values.
-                    Mimics the behaviour of replaceId parameter of historic and lastdata
-                    flows in urbo-deployer.
-                    """
-                    for entity in entities:
-                        values: List[str] = []
-                        for attr in replace_id:
-                            if attr == 'id':
-                                values.append(entity['id'])
-                            else:
-                                values.append(str(entity[attr]['value']))
-                        entity['id'] = "_".join(values)
-                        yield entity
-                entities = replace(entities)
             for chunk in iter_chunk(entities, chunk_size):
-                handler.write(sqlfile_batch(schema=schema, namespace=namespace, table_names=some_table_names, subservice=subservice, entities=chunk))
+                handler.write(sqlfile_batch(schema=schema, namespace=namespace, table_names=some_table_names, subservice=subservice, replace_id=replace_id, entities=chunk))
                 handler.write("\n")
         yield send_batch
     finally:
@@ -120,15 +106,26 @@ def sql_escape(obj: Any) -> str:
         adaptor.encoding = 'utf-8'
     return adaptor.getquoted().decode('utf-8')
 
-def sqlfile_values(subservice: str, entity: Dict[str, Any], fields: Iterable[str]) -> str:
+def sqlfile_values(subservice: str, entity: Dict[str, Any], fields: Iterable[str], replace_id:Optional[Sequence[str]]=None) -> str:
     '''
     Generates a string suitable for SQL insert, with all values of the entity
     
     subservice: subservice name
     entity: ngsi entity
-    fields: list of fields to save in the entity (omitting id, type)'''
+    fields: list of fields to save in the entity (omitting id, type)
+    replace_id: optional list of attributes to replace the entity's id
+    '''
+    entityid = entity['id']
+    if replace_id is not None and len(replace_id) > 0:
+        values = []
+        for attr in replace_id:
+            if attr == 'id':
+                values.append(entityid)
+            else:
+                values.append(str(entity[attr]['value']))
+        entityid = "_".join(values)
     sql = [
-        sql_escape(entity['id']),
+        sql_escape(entityid),
         sql_escape(entity['type']),
         sql_escape(subservice),
         "NOW()"
@@ -148,7 +145,7 @@ def sqlfile_values(subservice: str, entity: Dict[str, Any], fields: Iterable[str
         sql.append(value)
     return f"({','.join(sql)})"
 
-def sqlfile_insert(subservice: str, table_name: str, fields: Sequence[str], entities: Iterable[Any]) -> str:
+def sqlfile_insert(subservice: str, table_name: str, fields: Sequence[str], entities: Iterable[Any], replace_id:Optional[Sequence[str]]=None) -> str:
     '''
     Generate SQL INSERT lines from sequence of entities
     
@@ -156,11 +153,12 @@ def sqlfile_insert(subservice: str, table_name: str, fields: Sequence[str], enti
     table_name: SQL table name to use
     fields: sequence of attribute names
     entities: iterable of entities
+    replace_id: optional list of alues to replace the entity's id
     '''
     return "\n".join((
         f"INSERT INTO {table_name} (entityid,entitytype,fiwareservicepath,recvtime,{','.join(fields)}) VALUES",
         ",\n".join(
-            sqlfile_values(subservice, entity, fields)
+            sqlfile_values(subservice, entity, fields, replace_id)
             for entity in entities
         ) + ";"
     ))
@@ -180,7 +178,7 @@ def sql_table_name(schema: str, namespace: str, entity_type: str, table_names: D
     # Tables mapped to some name are prefixed with schema name
     return f"{schema}.{mapped_name}"
 
-def sqlfile_batch(schema: str, namespace: str, table_names: Dict[str, str], subservice: str, entities: Iterable[Any]) -> str:
+def sqlfile_batch(schema: str, namespace: str, table_names: Dict[str, str], subservice: str, replace_id: Dict[str, Sequence[str]], entities: Iterable[Any]) -> str:
     '''
     Generate a single SQL insert batch statement
 
@@ -188,6 +186,7 @@ def sqlfile_batch(schema: str, namespace: str, table_names: Dict[str, str], subs
     namespace: namespace for table names
     table_names: overrides entytyType to table name defaults
     subservice: subservice name
+    replace_id: map of entity type to list of replace_id attributes
     entities: Iterable of entities
     '''
     # Group entities by type
@@ -207,6 +206,6 @@ def sqlfile_batch(schema: str, namespace: str, table_names: Dict[str, str], subs
         table_name = sql_table_name(schema, namespace, entity_type, table_names)
         if table_name:
             table_cols = sorted(fields_by_type[entity_type])
-            sql.append(sqlfile_insert(subservice, table_name, table_cols, typed_entities))
+            sql.append(sqlfile_insert(subservice, table_name, table_cols, typed_entities, replace_id.get(entity_type, None)))
     # and return SQL insert code
     return "\n".join(sql)

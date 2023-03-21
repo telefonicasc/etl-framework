@@ -232,13 +232,31 @@ class TestSQLFileStore(unittest.TestCase):
                     "type": "geo:json",
                     "value": { "type": "Point", "coordinates": [1, 2] }
                 }
+            },
+            {
+                "id": "id_no_singleton",
+                "type": "type_B",
+                "ref": {
+                    "type": "Text",
+                    "value": "id_B"
+                },
+                "municipality": {
+                    "type": "Text",
+                    "value": "NA"
+                },
+                "location": {
+                    "type": "geo:json",
+                    "value": { "type": "Point", "coordinates": [1, 2] }
+                }
             }
         ]
         expected = """
         INSERT INTO myschema.type_a (entityid,entitytype,fiwareservicepath,recvtime,location,municipality,ref) VALUES
         ('id_A','type_A','/testsrv',NOW(),ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [1, 2]}'),'NA','id_A');
+        INSERT INTO myschema.type_b (entityid,entitytype,fiwareservicepath,recvtime,location,municipality,ref) VALUES
+        ('id_no_singleton','type_B','/testsrv',NOW(),ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [1, 2]}'),'NA','id_B');
         """
-        self.do_test(expected, "", entities=entities, replace_id=['ref'], subservice="/testsrv", schema="myschema")
+        self.do_test(expected, "", entities=entities, replace_id={'type_A':['ref']}, subservice="/testsrv", schema="myschema")
 
     def test_singleton_two_ids(self):
         '''Test replace_id with two attributes'''
@@ -268,10 +286,10 @@ class TestSQLFileStore(unittest.TestCase):
         INSERT INTO myschema.type_a (entityid,entitytype,fiwareservicepath,recvtime,location,municipality,primary,secondary) VALUES
         ('id_primary_5','type_A','/testsrv',NOW(),ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [1, 2]}'),'NA','id_primary',5);
         """
-        self.do_test(expected, "", entities=entities, replace_id=['primary', 'secondary'], subservice="/testsrv", schema="myschema")
+        self.do_test(expected, "", entities=entities, replace_id={'type_A':['primary', 'secondary']}, subservice="/testsrv", schema="myschema")
 
     def test_singleton_original_id(self):
-        '''Test replace_id with two attributes'''
+        '''Test replace_id with the original id, plus some attrib'''
         entities  = [
             {
                 "id": "id_singleton",
@@ -294,4 +312,4 @@ class TestSQLFileStore(unittest.TestCase):
         INSERT INTO myschema.type_a (entityid,entitytype,fiwareservicepath,recvtime,location,municipality,ref) VALUES
         ('id_singleton_5','type_A','/testsrv',NOW(),ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [1, 2]}'),'NA',5);
         """
-        self.do_test(expected, "", entities=entities, replace_id=['id', 'ref'], subservice="/testsrv", schema="myschema")
+        self.do_test(expected, "", entities=entities, replace_id={'type_A':['id', 'ref']}, subservice="/testsrv", schema="myschema")
