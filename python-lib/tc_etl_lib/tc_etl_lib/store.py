@@ -23,7 +23,7 @@ Store API for generic storage of entities
   - orionStore: saves batches to Orion environment
   - sqlFileStore: saves batches to SQL File
 '''
-from typing import Callable, Dict, Any, Iterable, Sequence, Optional
+from typing import Callable, Dict, Any, Iterable, Sequence, List, Optional
 from contextlib import contextmanager
 from pathlib import Path
 from collections import defaultdict
@@ -48,7 +48,7 @@ def orionStore(cb: cbManager, auth: authManager, *, service:str=None, subservice
     yield send_batch
 
 @contextmanager
-def sqlFileStore(path: Path, *, subservice:str, schema:str=":target_schema", namespace:str="", table_names:Optional[Dict[str, str]]=None, chunk_size:int=10000, append:bool=False):
+def sqlFileStore(path: Path, *, subservice:str, schema:str=":target_schema", namespace:str="", table_names:Optional[Dict[str, str]]=None, chunk_size:int=10000, append:bool=False, replace_id:Optional[Sequence[str]]=None):
     '''
     Context manager that creates a store to save entities to an SQL File.
     SQL syntax used is postgresql.
@@ -62,12 +62,32 @@ def sqlFileStore(path: Path, *, subservice:str, schema:str=":target_schema", nam
       - if table_name[entityType] exists and is empty, entities with the given type are not saved.
     chunk_size: maximum lines in a single insert statement. Default=10000
     append: append to the file instead of overwriting.
+    replace_id: list of attributes to use to replace the entity's id before saving to the db.
+      These attributes must exist in the entity, otherwise it will raise a KeyError.
     '''
     mode = "a+" if append else "w+"
     handler = path.open(mode=mode, encoding="utf-8")
     some_table_names = table_names or {} # make sure it is not None
     try:
         def send_batch(entities: Iterable[Any]):
+            """Send a batch of entities to the database"""
+            if replace_id is not None and len(replace_id) > 0:
+                def replace(entities):
+                    """
+                    Replace entities_id with concatened list of attribute values.
+                    Mimics the behaviour of replaceId parameter of historic and lastdata
+                    flows in urbo-deployer.
+                    """
+                    for entity in entities:
+                        values: List[str] = []
+                        for attr in replace_id:
+                            if attr == 'id':
+                                values.append(entity['id'])
+                            else:
+                                values.append(str(entity[attr]['value']))
+                        entity['id'] = "_".join(values)
+                        yield entity
+                entities = replace(entities)
             for chunk in iter_chunk(entities, chunk_size):
                 handler.write(sqlfile_batch(schema=schema, namespace=namespace, table_names=some_table_names, subservice=subservice, entities=chunk))
                 handler.write("\n")
