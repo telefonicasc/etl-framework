@@ -100,7 +100,7 @@ def dedent(text: str) -> str:
 class TestSQLFileStore(unittest.TestCase):
     '''Tests for sqlFileStore'''
 
-    def do_test(self, expect: str, append_text: str, **params):
+    def do_test(self, expect: str, append_text: str, entities=TestEntities, **params):
         '''test sqlFileStore with given parameters and expectations'''
         with tempfile.NamedTemporaryFile(mode='w+', encoding='utf-8', delete=False) as tmpFile:
             try:
@@ -109,7 +109,7 @@ class TestSQLFileStore(unittest.TestCase):
                     with open(tmpFile.name, "w+", encoding="utf-8") as outfile:
                         outfile.write(dedent(append_text))
                 with sqlFileStore(Path(tmpFile.name), **params) as store:
-                    store(TestEntities)
+                    store(entities)
                 with open(tmpFile.name, "r", encoding="utf-8") as infile:
                     data = infile.read()
                     self.maxDiff = None
@@ -213,3 +213,103 @@ class TestSQLFileStore(unittest.TestCase):
         ('id_4','type_B','/testsrv',NOW(),'2022-12-15T18:01:00Z',21);
         """
         self.do_test(expected, create, subservice="/testsrv", schema="myschema", chunk_size=3, append=True)
+
+    def test_singleton_one_id(self):
+        '''Test replace_id with a single attribute'''
+        entities  = [
+            {
+                "id": "id_singleton",
+                "type": "type_A",
+                "ref": {
+                    "type": "Text",
+                    "value": "id_A"
+                },
+                "municipality": {
+                    "type": "Text",
+                    "value": "NA"
+                },
+                "location": {
+                    "type": "geo:json",
+                    "value": { "type": "Point", "coordinates": [1, 2] }
+                }
+            },
+            {
+                "id": "id_no_singleton",
+                "type": "type_B",
+                "ref": {
+                    "type": "Text",
+                    "value": "id_B"
+                },
+                "municipality": {
+                    "type": "Text",
+                    "value": "NA"
+                },
+                "location": {
+                    "type": "geo:json",
+                    "value": { "type": "Point", "coordinates": [1, 2] }
+                }
+            }
+        ]
+        expected = """
+        INSERT INTO myschema.type_a (entityid,entitytype,fiwareservicepath,recvtime,location,municipality,ref) VALUES
+        ('id_A','type_A','/testsrv',NOW(),ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [1, 2]}'),'NA','id_A');
+        INSERT INTO myschema.type_b (entityid,entitytype,fiwareservicepath,recvtime,location,municipality,ref) VALUES
+        ('id_no_singleton','type_B','/testsrv',NOW(),ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [1, 2]}'),'NA','id_B');
+        """
+        self.do_test(expected, "", entities=entities, replace_id={'type_A':['ref']}, subservice="/testsrv", schema="myschema")
+
+    def test_singleton_two_ids(self):
+        '''Test replace_id with two attributes'''
+        entities  = [
+            {
+                "id": "id_singleton",
+                "type": "type_A",
+                "primary": {
+                    "type": "Text",
+                    "value": "id_primary"
+                },
+                "secondary": {
+                    "type": "Number",
+                    "value": 5
+                },
+                "municipality": {
+                    "type": "Text",
+                    "value": "NA"
+                },
+                "location": {
+                    "type": "geo:json",
+                    "value": { "type": "Point", "coordinates": [1, 2] }
+                }
+            }
+        ]
+        expected = """
+        INSERT INTO myschema.type_a (entityid,entitytype,fiwareservicepath,recvtime,location,municipality,primary,secondary) VALUES
+        ('id_primary_5','type_A','/testsrv',NOW(),ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [1, 2]}'),'NA','id_primary',5);
+        """
+        self.do_test(expected, "", entities=entities, replace_id={'type_A':['primary', 'secondary']}, subservice="/testsrv", schema="myschema")
+
+    def test_singleton_original_id(self):
+        '''Test replace_id with the original id, plus some attrib'''
+        entities  = [
+            {
+                "id": "id_singleton",
+                "type": "type_A",
+                "ref": {
+                    "type": "Number",
+                    "value": 5
+                },
+                "municipality": {
+                    "type": "Text",
+                    "value": "NA"
+                },
+                "location": {
+                    "type": "geo:json",
+                    "value": { "type": "Point", "coordinates": [1, 2] }
+                }
+            }
+        ]
+        expected = """
+        INSERT INTO myschema.type_a (entityid,entitytype,fiwareservicepath,recvtime,location,municipality,ref) VALUES
+        ('id_singleton_5','type_A','/testsrv',NOW(),ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [1, 2]}'),'NA',5);
+        """
+        self.do_test(expected, "", entities=entities, replace_id={'type_A':['id', 'ref']}, subservice="/testsrv", schema="myschema")

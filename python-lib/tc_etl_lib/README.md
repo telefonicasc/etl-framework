@@ -341,6 +341,9 @@ La librería además proporciona [context managers](https://docs.python.org/3/re
         - si `table_name[entityType]` existe y es *falsy* (`None`, `""`, etc), las entidades de ese tipo no se escriben al fichero SQL.
     - :param: `chunk_size` opcional: máximo número de líneas a incluir en un solo `INSERT`. Default=10000
     - :param: `append` opcional: en caso de que el fichero exista, `append=True` añade los INSERT mientras que `append=False` sobrescribe el fichero. Default False.
+    - :param `replace_id` opcional: diccionario `tipo de entidad` => `lista de atributos replace_id`.
+        Reemplaza el ID de las entidades del tipo o tipos especificados, por un valor construido a partir de la lista de atributos indicados en este parámetro, separados por `_`.
+        Imita el comportamiento del atributo `replaceId` de los FLOW_HISTORIC de URBO DEPLOYER, para poder usar este *store* en ETLs que alimenten *singletons*.
     - :return: un `callable` que recibe una lista de entidades y las escribe como instrucciones sql `INSERT` en el fichero especificado.
 
 El modo de uso de cualquiera de los context managers es idéntico:
@@ -438,6 +441,8 @@ TOTAL                        403    221    45%
 ```
 
 ## Changelog
+
+- Add: new optional parameter called `replace_id` in sqlFileStore context manager ([#58](https://github.com/telefonicasc/etl-framework/pull/58))
 
 0.7.0 (December 233rd, 2022)
 
