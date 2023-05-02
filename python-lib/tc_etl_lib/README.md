@@ -176,9 +176,14 @@ except Exception as err:
 # send entities
 cbm: tc.cb.cbManager = tc.cb.cbManager(endpoint = 'http://<cb_endpoint>:<port>')
 
+# (opcional) solo es necesario usar normalizer si los datos que se usan para
+# construir el entity id pueden tener caracteres no válidos
+# (acentos, paréntesis, etc)
+normalize = tc.normalizer()
+
 entities = [
             {
-                "id": "myEntity1",
+                "id": normalize("myEntity1"),
                 "type": "myType",
                 "description": {
                     "value": "My first happy entity",
@@ -194,7 +199,7 @@ entities = [
                 }
             },
             {
-                "id": "myEntity2",
+                "id": normalize("myEntity2"),
                 "type": "myType",
                 "description": {
                     "value": "My second happy entity",
@@ -324,6 +329,31 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `options_send`: Lista de opciones que recibe el Context Broker cuando va a eliminar las entidades. Se pueden ver las opciones disponibles en [API NGSIv2 de Orion](https://github.com/telefonicaid/fiware-orion/blob/master/doc/manuals/orion-api.md#update-post-v2opupdate). En el caso de que la opcion `flowControl` se especifique dentro de este parámetro, un `cb_flowcontrol` (en la inicializción de cbManager) a `False` se ignora, quedanco como si `cb_flowcontrol` se hubiese establecido a `True`.
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna varibale del objeto cbManager, para poder realizar la autenticación o envío de datos.
         - :raises FetchError: Se lanza cuando el servicio de Context Broker, responde con un error concreto.
+
+- Clase `normalizer`: Esta clase en encarga de normalizar cadenas unicode al formato válido admitido por NGSI.
+   - `__init__`: constructor de objetos de la clase.
+      - :param opcional `replacement`: define el carácter de reemplazo que sustituirá a todos los caracteres no admitidos como parte de un entityid por NGSI ('&', '?', '/', '#' '<', '>', '"', ''', '=', ';', '(', ')'). Esta lista de caracteres se ha extraido de https://github.com/telefonicaid/fiware-orion/blob/master/doc/manuals/orion-api.md#general-syntax-restrictions
+      - :param opcional `override`: diccionario de pares "caracter prohibido": "carácter reemplazo", que permite especificar un reemplazo personalizado para caracteres especiales particulares. Si se usa como carácter reemplazo `""` o `None`, el caracter especial se borra.
+    - `__call__`: Función que ejecuta el reemplazo de los caracteres especiales en el ID. 
+      - :param: obligatorio `text`: Cadena de texto a reemplazar. El normalizador devuelve una nueva cadena de texto con estos cambios:
+        - Convierte los caracteres acentuados (á, é, í, ó, u) en sus variantes sin acento.
+        - Elimina otros caracteres unicode no disponibles en ascii.
+        - Elimina códigos de control ascii.
+        - Reemplaza los caracteres prohibidos '&', '?', '/', '#' '<', '>', '"', ''', '=', ';', '(', ')' con el caracter de reemplazo (por defecto "-", puede cambiarse con los overrides que se indican en el constructor)
+        - Combina espacios en blanco consecutivos, y los remplaza con el carácter de reemplazo.
+        - NOTA: Esta funciçon no recorta la longitud de la cadena devuelta a 256 caracteres, porque el llamante puede querer conservar la cadena entera para por ejemplo guardarla en algún otro atributo, antes de truncarla.
+
+Algunos ejemplos de uso de `normalizer`:
+
+```
+# Reemplazar los espacios por "+" en lugar de "_"
+norm = tc.normalizer(override={" ": "+"})
+norm("text (with spaces)") # devuelve "text+-with+spaces-"
+
+# Eliminar todos los caracteres especiales, excepto los espacios
+norm = tc.normalizer(replacement="", override={" ": "-"})
+norm("text (with spaces)") # devuelve "text-with-spaces"
+```
 
 La librería además proporciona [context managers](https://docs.python.org/3/reference/datamodel.html#context-managers) para abstraer la escritura de entidades en formato NGSIv2 a distintos backends (`store`s). Estos son:
 
