@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright 2022 Telefónica Soluciones de Informática y Comunicaciones de España, S.A.U.
+# Copyright 2023 Telefónica Soluciones de Informática y Comunicaciones de España, S.A.U.
 #
 # This file is part of tc_etl_lib
 #
