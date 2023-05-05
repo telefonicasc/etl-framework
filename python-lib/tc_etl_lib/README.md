@@ -475,6 +475,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+- Add: new class `normalizer` to clean up text strings to be used as NGSI entity IDs, by replacing or removing forbidden characters ([#61](https://github.com/telefonicasc/etl-framework/pull/61))
+
 0.8.0 (March 22nd, 2023)
 
 - Add: new optional parameter called `replace_id` in sqlFileStore context manager ([#58](https://github.com/telefonicasc/etl-framework/pull/58))
