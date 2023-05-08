@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright 2023 Telefónica Soluciones de Informática y Comunicaciones de España, S.A.U.
