@@ -22,3 +22,4 @@
 from .auth import authManager
 from .cb import FetchError, cbManager
 from .store import Store, orionStore, sqlFileStore
+from .normalizer import normalizer
