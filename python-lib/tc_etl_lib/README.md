@@ -45,11 +45,11 @@ Para instalar la última versión:
 
 Para instalar una versión concreta:
 
-        pip install tc_etl_lib==0.1.0
+        pip install tc_etl_lib==0.9.0
 
 También se puede añadir la depedencia a `requirements.txt`:
 
-        tc_etl_lib==0.7.0
+        tc_etl_lib==0.9.0
 
 he instalar (junto con el resto de depedencias) con el habitual:
 
@@ -59,7 +59,7 @@ he instalar (junto con el resto de depedencias) con el habitual:
 
 La librería de tipo `tc_etl_lib-<version>.tar.gz`, se puede instalar en cualquier entorno python con el siguiente comando:
 
-    pip install ./tc_etl_lib/dist/tc_etl_lib-0.1.0.tar.gz
+    pip install ./tc_etl_lib/dist/tc_etl_lib-0.9.0.tar.gz
 
 En este caso, la librería está disponible en ese directorio. Si estuviera disponible en cualquier otra ruta, se debería de reemplazar por la ruta relativa o absoluta correspondiente. Si se quiere instalar sobre un entorno venv, primero has de activar el entorno venv y luego ejecutar el comando de instalación de la librería.
 
@@ -474,6 +474,8 @@ TOTAL                        403    221    45%
 ```
 
 ## Changelog
+
+0.9.0 (May 16th, 2023)
 
 - Add: new class `normalizer` to clean up text strings to be used as NGSI entity IDs, by replacing or removing forbidden characters ([#54](https://github.com/telefonicasc/etl-framework/pull/54))
 
