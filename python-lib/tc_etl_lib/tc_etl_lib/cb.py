@@ -34,38 +34,13 @@ import logging
 import time
 import json
 
-from . import authManager
+from . import authManager, exceptions
 
 # control urllib3 post and get verify in false
 import urllib3, urllib3.exceptions
 urllib3.disable_warnings(category=urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
-
-class FetchError(Exception):
-    """
-    FetchError encapsulates all parameters of an HTTP request and the erroneous response
-    """
-
-    response: requests.Response
-    method: str
-    url: str
-    params: Optional[Any] = None
-    headers: Optional[Any] = None
-    body: Optional[Any] = None
-
-    def __init__(self, response: requests.Response, method: str, url: str, params: Optional[Any] = None, headers: Optional[Any] = None, body: Optional[Any] = None):
-        """Constructor for FetchError class"""
-        self.response = response
-        self.method = method
-        self.url = url
-        self.params = params
-        self.headers = headers
-        self.body = body
-
-    def __str__(self) -> str:
-        return f"Failed to {self.method} {self.url} (headers: {self.headers}, params: {self.params}, body: {self.body}): [{self.response.status_code}] {self.response.text}"
-
 
 class cbManager:
     """ContextBroker Manager
@@ -260,7 +235,7 @@ class cbManager:
             respjson = resp.json()
             logger.error(f'{respjson["name"]}: {respjson["message"]}')
         if resp.status_code < 200 or resp.status_code > 204:
-            raise FetchError(response=resp, method="GET", url=req_url, params=params, headers=headers)
+            raise exceptions.FetchError(response=resp, method="GET", url=req_url, params=params, headers=headers)
 
         return resp.json()
 

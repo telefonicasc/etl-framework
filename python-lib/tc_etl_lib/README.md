@@ -343,6 +343,27 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - Reemplaza todos los espacios en blanco consecutivos por el carácter de reemplazo.
         - NOTA: Esta función no recorta la longitud de la cadena devuelta a 256 caracteres, porque el llamante puede querer conservar la cadena entera para por ejemplo guardarla en algún otro atributo, antes de truncarla.
 
+- Clase `IoT`: En esta clase están las funciones relacionadas con el IoT Agent.
+
+  - `__init__`: constructor de objetos de la clase.
+  - `send_json`: Función que envía un archivo en formato JSON al IoT Agent.
+    - :param obligatorio `sensor_name`: El nombre del sensor.
+    - :param obligatorio `api_key`: La API key correspondiente al sensor.
+    - :param obligatorio `req_url`: La URL del servicio al que se le quiere enviar los datos.
+    - :param obligatorio: `data`: Datos a enviar. La estructura debe tener pares de elementos clave-valor (diccionario).
+    - :raises ValueError: Se lanza cuando los datos a enviar son distintos a un único diccionario.
+    - :raises Excepction: Se lanza una excepción ConnectionError cuando no puede conectarse al servidor. Se lanza una excepción FetchError cuando se produce un error en en la solicitud HTTP.
+    - :return: True si el envío de datos es exitoso.
+  - `send_batch`: Función que envía un archivo en formato JSON al IoT Agent.
+    - :param obligatorio `sensor_name`: El nombre del sensor.
+    - :param obligatorio `api_key`: La API key correspondiente al sensor.
+    - :param obligatorio `req_url`: La URL del servicio al que se le quiere enviar los datos.
+    - :param obligatorio: `time_sleep`: Es el tiempo de espera entre cada envío de datos en segundos.
+    - :param obligatorio: `data`: Datos a enviar. La estructura debe tener pares de elementos clave-valor (diccionario).t
+    - :raises ValueError: Se lanza cuando el tipo de los datos a enviar es incorrecto.
+    - :raises Excepction: Se lanza una excepción ConnectionError cuando no puede conectarse al servidor. Se lanza una excepción FetchError cuando se produce un error en en la solicitud HTTP.
+    - :return: True si el envío de datos es exitoso.
+
 Algunos ejemplos de uso de `normalizer`:
 
 ```
