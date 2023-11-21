@@ -25,11 +25,18 @@ IoT routines for Python:
 '''
 
 from . import exceptions
+import pandas as pd
 import requests
 import tc_etl_lib as tc
 import time
 from typing import Any, Iterable
 
+class SendBatchError(Exception):
+    "SendBatchError is a class that can handle exceptions."
+    def __init__(self, message, original_exception=None, index=None):
+        super().__init__(message)
+        self.original_exception = original_exception
+        self.index = index
 
 class IoT:
     """IoT is a class that allows us to communicate with the IoT Agent."""
@@ -38,10 +45,14 @@ class IoT:
         pass
 
     def send_json(self,
-                  sensor_name: str,
-                  api_key: str,
-                  req_url: str,
-                  data: Any) -> None:
+                sensor_name: str,
+                api_key: str,
+                req_url: str,
+                data: Any) -> None:
+
+        if not isinstance(data, dict):
+                raise ValueError("The 'data' parameter should be a dictionary with key-value pairs.")
+
         params = {
             'i': sensor_name,
             'k': api_key
@@ -51,52 +62,38 @@ class IoT:
         }
 
         try:
-            # Verify if data is a single dictionary.
-            if isinstance(data, dict):
-                resp = requests.post(url=req_url, json=data,
-                                     params=params, headers=headers)
-                if resp.status_code == 200:
-                    return True
-                else:
-                    raise exceptions.FetchError(
-                        response=resp,
-                        method="POST",
-                        url=req_url,
-                        params=params,
-                        headers=headers)
+            resp = requests.post(url=req_url, json=data, params=params, headers=headers)
+            if resp.status_code == 200:
+                return True
             else:
-                raise ValueError(
-                    "The parameter 'data' should be a single dictionary {}.")
+                raise exceptions.FetchError(
+                    response=resp,
+                    method="POST",
+                    url=req_url,
+                    params=params,
+                    headers=headers)
         except requests.exceptions.ConnectionError as e:
             raise e
 
     def send_batch(self,
-                   sensor_name: str,
-                   api_key: str,
-                   req_url: str,
-                   time_sleep: float,
-                   data: Iterable[Any]) -> None:
-        params = {
-            'i': sensor_name,
-            'k': api_key
-        }
-        headers = {
-            "Content-Type": "application/json"
-        }
+                    sensor_name: str,
+                    api_key: str,
+                    req_url: str,
+                    time_sleep: float,
+                    data: Iterable[pd.DataFrame | dict]) -> None:
 
-        try:
-            for i in range(0, len(data)):
-                resp = requests.post(
-                    url=req_url, json=data[i], params=params, headers=headers)
-
-                if resp.status_code == 200:
-                    time.sleep(time_sleep)
-                    return True
-                else:
-                    raise exceptions.FetchError(response=resp,
-                                           method="POST",
-                                           url=req_url,
-                                           params=params,
-                                           headers=headers)
-        except requests.exceptions.ConnectionError as e:
-            raise e
+            if isinstance(data, pd.DataFrame):
+                # Convierte cada fila del DataFrame a un diccionario.
+                for i, row in data.iterrows():
+                    try:
+                        self.send_json(sensor_name, api_key, req_url, row.to_dict())
+                        time.sleep(time_sleep)
+                    except Exception as e:
+                        raise SendBatchError(f"send_batch error. Row that caused the error: {i}\nError detail: {str(e)}", original_exception=e, index=i) from e
+            else:
+                for i, dictionary in enumerate(data):
+                    try:
+                        self.send_json(sensor_name, api_key, req_url, dictionary)
+                        time.sleep(time_sleep)
+                    except Exception as e:
+                        raise SendBatchError(f"send_batch error. Index where the error occurred: {i}\nError detail: {str(e)}", original_exception=e, index=i) from e
