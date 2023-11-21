@@ -29,7 +29,7 @@ import pandas as pd
 import requests
 import tc_etl_lib as tc
 import time
-from typing import Any, Iterable
+from typing import Iterable, Union
 
 class SendBatchError(Exception):
     "SendBatchError is a class that can handle exceptions."
@@ -48,7 +48,7 @@ class IoT:
                 sensor_name: str,
                 api_key: str,
                 req_url: str,
-                data: Any) -> None:
+                data: dict) -> Union[None, bool]:
 
         if not isinstance(data, dict):
                 raise ValueError("The 'data' parameter should be a dictionary with key-value pairs.")
@@ -80,7 +80,7 @@ class IoT:
                     api_key: str,
                     req_url: str,
                     time_sleep: float,
-                    data: Iterable[pd.DataFrame | dict]) -> None:
+                    data: Iterable[pd.DataFrame | dict]) -> Union[None, bool]:
 
             if isinstance(data, pd.DataFrame):
                 # Convierte cada fila del DataFrame a un diccionario.
@@ -97,3 +97,4 @@ class IoT:
                         time.sleep(time_sleep)
                     except Exception as e:
                         raise SendBatchError(f"send_batch error. Index where the error occurred: {i}\nError detail: {str(e)}", original_exception=e, index=i) from e
+            return True
