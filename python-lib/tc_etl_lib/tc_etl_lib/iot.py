@@ -80,7 +80,7 @@ class IoT:
                     api_key: str,
                     req_url: str,
                     time_sleep: float,
-                    data: Iterable[pd.DataFrame | dict]) -> Union[None, bool]:
+                    data: Iterable) -> Union[None, bool]:
 
             if isinstance(data, pd.DataFrame):
                 # Convierte cada fila del DataFrame a un diccionario.
