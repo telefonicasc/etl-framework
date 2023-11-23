@@ -112,6 +112,10 @@ entities = cbm.get_entities_page(subservice='/energia', auth=auth, type='myType'
 
 # have a look to the retrieved entities
 print (json.dumps(entities))
+
+#create an iota manager and use it
+iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>')
+iotam.send_http(data={"<key_1>": "<value_1>", "<key_2>": "<value_2>"})
 ```
 
 Ejemplo de uso de Recogida de todos los datos de tipo SupplyPoint con y sin paginación:
@@ -225,6 +229,10 @@ with tc.orionStore(cb=cbm, auth=auth, subservice='/energia') as store:
 # O un store sqlFile
 with tc.sqlFileStore(path="inserts.sql", subservice="/energia", namespace="energy") as store:
     store(entities)
+
+# Envío de datos en ráfaga al Agente IoT.
+iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>', sleep_send_batch='<time_sleep>')
+iotam.send_batch_http(data=[{"<key_1>": "<value_1>", "<key_2>": "<value_2>"}, {"<key_3>": "<value_3>", "<key_4>": "<value_4>"}])
 ```
 
 ## Funciones disponibles en la librería
@@ -343,26 +351,22 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - Reemplaza todos los espacios en blanco consecutivos por el carácter de reemplazo.
         - NOTA: Esta función no recorta la longitud de la cadena devuelta a 256 caracteres, porque el llamante puede querer conservar la cadena entera para por ejemplo guardarla en algún otro atributo, antes de truncarla.
 
-- Clase `IoT`: En esta clase están las funciones relacionadas con el agente IoT.
+- Clase `iotaManager`: En esta clase están las funciones relacionadas con el agente IoT.
 
   - `__init__`: constructor de objetos de la clase.
-  - `send_json`: Función que envía un archivo en formato JSON al agente IoT.
-    - :param obligatorio `sensor_name`: El nombre del sensor.
+    - :param obligatorio `sensor_id`: El ID del sensor.
     - :param obligatorio `api_key`: La API key correspondiente al sensor.
-    - :param obligatorio `req_url`: La URL del servicio al que se le quiere enviar los datos.
+    - :param obligatorio `endpoint`: La URL del servicio al que se le quiere enviar los datos.
+    - :param opcional `sleep_send_batch`: Es el tiempo de espera entre cada envío de datos en segundos.
+  - `send_http`: Función que envía un archivo en formato JSON al agente IoT por petición HTTP.
     - :param obligatorio: `data`: Datos a enviar. La estructura debe tener pares de elementos clave-valor (diccionario).
-    - :raises ValueError: Se lanza cuando los datos a enviar son distintos a un único diccionario.
-    - :raises Excepction: Se lanza una excepción ConnectionError cuando no puede conectarse al servidor. Se lanza una excepción FetchError cuando se produce un error en en la solicitud HTTP.
-    - :raises ValueError: Se lanza cuando el tipo de los datos a enviar es incorrecto.
-    - :raises Excepction: Se lanza una excepción ConnectionError cuando no puede conectarse al servidor. Se lanza una excepción FetchError cuando se produce un error en en la solicitud HTTP.
+    - :raises [TypeError](https://docs.python.org/3/library/exceptions.html#TypeError): Se lanza cuando el tipo de dato es incorrecto.
+    - :raises [ConnectionError](https://docs.python.org/3/library/exceptions.html#ConnectionError): Se lanza cuando no puede conectarse al servidor.
+    - :raises FetchError: se lanza cuando se produce un error en en la solicitud HTTP.
     - :return: True si el envío de datos es exitoso.
-  - `send_batch`: Función que envía un archivo en formato JSON al agente IoT.
-    - :param obligatorio `sensor_name`: El nombre del sensor.
-    - :param obligatorio `api_key`: La API key correspondiente al sensor.
-    - :param obligatorio `req_url`: La URL del servicio al que se le quiere enviar los datos.
-    - :param obligatorio: `time_sleep`: Es el tiempo de espera entre cada envío de datos en segundos.
+  - `send_batch_http`: Función que envía un conjunto de datos en formato JSON al agente IoT por petición HTTP.
     - :param obligatorio: `data`: Datos a enviar. Puede ser una lista de diccionarios o un DataFrame.
-    - :raises SendBatchError: Se levanta cuando se produce una excepción dentro de `send_json`. Atrapa la excepción original y se guarda y se imprime el índice donde se produjo el error.
+    - :raises SendBatchError: Se levanta cuando se produce una excepción dentro de `send_http`. Atrapa la excepción original y se guarda y se imprime el índice donde se produjo el error.
 
 
 Algunos ejemplos de uso de `normalizer`:

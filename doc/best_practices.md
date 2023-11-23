@@ -48,9 +48,9 @@ Las funciones que actualmente soporta la librería son:
     - modulo `cb`: Módulo que incluye funciones relacionadas con la comunicación con el Context Broker.
         -   `send_batch`: Función que envía un lote de entidades al Context Broker. Recibe un listado con todos los tokens por subservicio y usa el correspondiente para realizar la llamada al Context Broker. Si no se dispone de token o ha caducado, se solicita o renueva el token según el caso y luego envía los datos.
         -   `get_entities_page`: Función que permite la recogida de datos del Context Broker. Permite el uso de ciertos parámetros como offset, limit, orderBy y type para filtrar la recogida de datos.
-    - modulo `iot`: Módulo que incluye funciones relacionadas con la comunicación del agente IoT.
-        - `send_json`: Función que envía un JSON al agente IoT. Recibe el nombre del sensor, su API key correspondiente, la URL del servidor y los datos a enviar.
-        - `send_batch`: Función que envía un archivo en formato JSON al agente IoT. Puede recibir una lista de diccionarios o un DataFrame. En el caso de DataFrames, convierte cada fila en un diccionario y los envía uno por uno. Recibe el nombre del sensor, su API key correspondiente, la URL del servidor, el tiempo de espera en segundos entre envío y envío y los datos a enviar.
+    - modulo `iota`: Módulo que incluye funciones relacionadas con la comunicación con el agente IoT.
+        - `send_http`: Función que envía un JSON al agente IoT por una petición HTTP.
+        - `send_batch_http`: Función que envía un un conjunto de datos en formato JSON al agente IoT por una petición HTTP. Puede recibir una lista de diccionarios o un DataFrame. En el caso de DataFrames, convierte cada fila en un diccionario y los envía uno por uno cada cierto tiempo definido en `sleep_send_batch`.
 
 Se puede encontrar más detalles de la librería en la documentación de esta. [Ref.](../python-lib/tc_etl_lib/README.md)
 

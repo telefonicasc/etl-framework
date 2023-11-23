@@ -19,9 +19,9 @@
 # along with IoT orchestrator. If not, see http://www.gnu.org/licenses/.
 
 '''
-IoT routines for Python:
-  - iot.send_json
-  - iot.send_batch
+IoT Agent routines for Python:
+  - iotaManager.send_http
+  - iotaManager.send_batch_http
 '''
 
 from . import exceptions
@@ -29,7 +29,7 @@ import pandas as pd
 import requests
 import tc_etl_lib as tc
 import time
-from typing import Iterable, Union
+from typing import Iterable, Optional, Union
 
 class SendBatchError(Exception):
     "SendBatchError is a class that can handle exceptions."
@@ -38,63 +38,67 @@ class SendBatchError(Exception):
         self.original_exception = original_exception
         self.index = index
 
-class IoT:
-    """IoT is a class that allows us to communicate with the IoT Agent."""
+class iotaManager:
+    """IoT Agent Manager.
 
-    def __init__(self):
-        pass
+    endpoint: define service endpoint cb (example: https://<service>:<port>)
+    timeout: timeout in seconds (default: 10)
+    """
 
-    def send_json(self,
-                sensor_name: str,
-                api_key: str,
-                req_url: str,
+    endpoint: str
+    sensor_id: str
+    api_key: str
+    sleep_send_batch: float
+
+    def __init__(self, endpoint: str, sensor_id: str, api_key: str, sleep_send_batch: float = 0):
+        self.endpoint = endpoint
+        self.sensor_id = sensor_id
+        self.api_key = api_key
+        self.sleep_send_batch = sleep_send_batch
+
+    def send_http(self,
                 data: dict) -> Union[None, bool]:
 
         if not isinstance(data, dict):
-                raise ValueError("The 'data' parameter should be a dictionary with key-value pairs.")
+                raise TypeError("The 'data' parameter should be a dictionary with key-value pairs.")
 
         params = {
-            'i': sensor_name,
-            'k': api_key
+            'i': self.sensor_id,
+            'k': self.api_key
         }
         headers = {
             "Content-Type": "application/json"
         }
 
         try:
-            resp = requests.post(url=req_url, json=data, params=params, headers=headers)
+            resp = requests.post(url=self.endpoint, json=data, params=params, headers=headers)
             if resp.status_code == 200:
                 return True
             else:
                 raise exceptions.FetchError(
                     response=resp,
                     method="POST",
-                    url=req_url,
+                    url=self.endpoint,
                     params=params,
                     headers=headers)
         except requests.exceptions.ConnectionError as e:
             raise e
 
-    def send_batch(self,
-                    sensor_name: str,
-                    api_key: str,
-                    req_url: str,
-                    time_sleep: float,
-                    data: Iterable) -> Union[None, bool]:
+    def send_batch_http(self, data: Iterable) -> Union[None, bool]:
 
             if isinstance(data, pd.DataFrame):
                 # Convierte cada fila del DataFrame a un diccionario.
                 for i, row in data.iterrows():
                     try:
-                        self.send_json(sensor_name, api_key, req_url, row.to_dict())
-                        time.sleep(time_sleep)
+                        self.send_http(row.to_dict())
+                        time.sleep(self.sleep_send_batch)
                     except Exception as e:
-                        raise SendBatchError(f"send_batch error. Row that caused the error: {i}\nError detail: {str(e)}", original_exception=e, index=i) from e
+                        raise SendBatchError(f"send_batch_http error. Row that caused the error: {i}\nError detail: {str(e)}", original_exception=e, index=i) from e
             else:
                 for i, dictionary in enumerate(data):
                     try:
-                        self.send_json(sensor_name, api_key, req_url, dictionary)
-                        time.sleep(time_sleep)
+                        self.send_http(dictionary)
+                        time.sleep(self.sleep_send_batch)
                     except Exception as e:
-                        raise SendBatchError(f"send_batch error. Index where the error occurred: {i}\nError detail: {str(e)}", original_exception=e, index=i) from e
+                        raise SendBatchError(f"send_batch_http error. Index where the error occurred: {i}\nError detail: {str(e)}", original_exception=e, index=i) from e
             return True
