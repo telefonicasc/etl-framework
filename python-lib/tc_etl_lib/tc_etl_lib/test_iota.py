@@ -18,7 +18,7 @@
 # along with IoT orchestrator. If not, see http://www.gnu.org/licenses/.
 
 '''
-IoT Agent tests
+IoT Agent tests.
 '''
 
 from . import exceptions

@@ -41,8 +41,10 @@ class SendBatchError(Exception):
 class iotaManager:
     """IoT Agent Manager.
 
-    endpoint: define service endpoint cb (example: https://<service>:<port>)
-    timeout: timeout in seconds (default: 10)
+    endpoint: define service endpoint iota (example: https://<service>:<port>).
+    sensor_id: sensor ID.
+    api_key: API key of the corresponding sensor.
+    sleep_send_batch: time sleep in seconds (default: 0).
     """
 
     endpoint: str
@@ -87,7 +89,7 @@ class iotaManager:
     def send_batch_http(self, data: Iterable) -> Union[None, bool]:
 
             if isinstance(data, pd.DataFrame):
-                # Convierte cada fila del DataFrame a un diccionario.
+                # Convert each row of the DataFrame to a dictionary.
                 for i, row in data.iterrows():
                     try:
                         self.send_http(row.to_dict())
