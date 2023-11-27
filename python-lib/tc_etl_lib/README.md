@@ -112,10 +112,6 @@ entities = cbm.get_entities_page(subservice='/energia', auth=auth, type='myType'
 
 # have a look to the retrieved entities
 print (json.dumps(entities))
-
-#create an iota manager and use it
-iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>')
-iotam.send_http(data={"<key_1>": "<value_1>", "<key_2>": "<value_2>"})
 ```
 
 Ejemplo de uso de Recogida de todos los datos de tipo SupplyPoint con y sin paginación:
@@ -229,6 +225,14 @@ with tc.orionStore(cb=cbm, auth=auth, subservice='/energia') as store:
 # O un store sqlFile
 with tc.sqlFileStore(path="inserts.sql", subservice="/energia", namespace="energy") as store:
     store(entities)
+```
+
+Ejemplo de uso de la clase iotaManager
+
+```
+#create an iota manager and use it
+iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>')
+iotam.send_http(data={"<key_1>": "<value_1>", "<key_2>": "<value_2>"})
 
 # Envío de datos en ráfaga al Agente IoT.
 iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>', sleep_send_batch='<time_sleep>')
@@ -357,7 +361,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `sensor_id`: El ID del sensor.
     - :param obligatorio `api_key`: La API key correspondiente al sensor.
     - :param obligatorio `endpoint`: La URL del servicio al que se le quiere enviar los datos.
-    - :param opcional `sleep_send_batch`: Es el tiempo de espera entre cada envío de datos en segundos.
+    - :param opcional `sleep_send_batch`: Es el tiempo de espera entre cada envío de datos en segundos (default: 0).
   - `send_http`: Función que envía un archivo en formato JSON al agente IoT por petición HTTP.
     - :param obligatorio: `data`: Datos a enviar. La estructura debe tener pares de elementos clave-valor (diccionario).
     - :raises [TypeError](https://docs.python.org/3/library/exceptions.html#TypeError): Se lanza cuando el tipo de dato es incorrecto.
@@ -500,6 +504,10 @@ TOTAL                        403    221    45%
 ```
 
 ## Changelog
+
+0.10.0 (November 27th, 2023)
+
+- Add: new class `iotaManager` to deal with IoT Agent interactions, with methods `send_http` and `send_batch_http`([#70](https://github.com/telefonicasc/etl-framework/pull/70))
 
 0.9.0 (May 16th, 2023)
 
