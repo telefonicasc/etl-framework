@@ -505,8 +505,6 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
-0.10.0 (November 27th, 2023)
-
 - Add: new class `iotaManager` to deal with IoT Agent interactions, with methods `send_http` and `send_batch_http`([#70](https://github.com/telefonicasc/etl-framework/pull/70))
 
 0.9.0 (May 16th, 2023)
