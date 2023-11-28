@@ -20,6 +20,8 @@
 #
 
 from .auth import authManager
-from .cb import FetchError, cbManager
+from .cb import cbManager
+from .exceptions import FetchError
+from .iota import iotaManager
 from .store import Store, orionStore, sqlFileStore
 from .normalizer import normalizer

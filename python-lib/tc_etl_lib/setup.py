@@ -38,7 +38,8 @@ LONG_DESC_TYPE = "text/markdown"
 INSTALL_REQUIRES = [
     'requests==2.21.0',
     'urllib3==1.24.1',
-    'psycopg2-binary>=2.9.5'
+    'psycopg2-binary>=2.9.5',
+    'pandas==2.0.3'
 ]
 
 setup(
