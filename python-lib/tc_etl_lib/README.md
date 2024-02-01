@@ -505,6 +505,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+- Fix: close session upon finalization to avoid warnings ([#76](https://github.com/telefonicasc/etl-framework/pull/76))
+
 0.10.0 (November 29th, 2023)
 
 - Add: new class `iotaManager` to deal with IoT Agent interactions, with methods `send_http` and `send_batch_http`([#55](https://github.com/telefonicasc/etl-framework/issues/55))
