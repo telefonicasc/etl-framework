@@ -95,7 +95,10 @@ class cbManager:
         self.block_size = block_size
 
     def __del__(self):
-        self.session.close()
+        try:
+            self.session.close()
+        except Exception:  # pylint: disable=broad-except
+            pass
 
     def delete_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options_get: list = [], options_send: list = []):
         """Delete data from context broker
