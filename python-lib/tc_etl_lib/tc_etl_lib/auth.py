@@ -91,7 +91,7 @@ class authManager:
         if (hasattr(self, "service")):
             logger.info(f'service: {self.service}')
         if (hasattr(self, "subservice")):
-            logger.info(f'service: {self.subservice}')
+            logger.info(f'subservice: {self.subservice}')
         if (hasattr(self, "user")):
             logger.info(f'user: {self.user}')
         if (hasattr(self, "password")):
