@@ -505,6 +505,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+0.11.0 (February 2nd, 2024)
+
 - Fix: close session upon finalization to avoid warnings ([#76](https://github.com/telefonicasc/etl-framework/pull/76))
 
 0.10.0 (November 29th, 2023)
