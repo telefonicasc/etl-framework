@@ -72,6 +72,7 @@ class cbManager:
     # reasons other than block size (e.g to avoid triggering too
     # many subscriptions per batch and stressing cygnus queues)
     batch_size = 0
+    session = None
 
     def __init__(self,*, endpoint: Optional[str] = None, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, sleep_send_batch: int = 0, cb_flowcontrol: bool = False, block_size: int = 800000, batch_size: int = 0) -> None:
 
@@ -85,6 +86,7 @@ class cbManager:
         self.sleep_send_batch = sleep_send_batch
         self.cb_flowcontrol = cb_flowcontrol
         self.batch_size = batch_size
+        self.session = requests.Session()
 
         # check block_size limit.
         if (int(block_size) > int(800000)):
@@ -92,6 +94,11 @@ class cbManager:
 
         self.block_size = block_size
 
+    def __del__(self):
+        try:
+            self.session.close()
+        except Exception:  # pylint: disable=broad-except
+            logger.error(f'Error closing session with endpoint: {self.endpoint}')
 
     def delete_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options_get: list = [], options_send: list = []):
         """Delete data from context broker
@@ -390,7 +397,7 @@ class cbManager:
         else:
             req_url = f"{self.endpoint}/v2/op/update"
 
-        http = requests.Session()
+        http = self.session
         retry_strategy = Retry(
             total=self.post_retry_connect,
             read=self.post_retry_connect,
