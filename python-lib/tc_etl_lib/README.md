@@ -358,7 +358,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
 - Clase `iotaManager`: En esta clase están las funciones relacionadas con el agente IoT.
 
   - `__init__`: constructor de objetos de la clase.
-    - :param obligatorio `sensor_id`: El ID del sensor.
+    - :param obligatorio `device_id`: El ID del sensor.
     - :param obligatorio `api_key`: La API key correspondiente al sensor.
     - :param obligatorio `endpoint`: La URL del servicio al que se le quiere enviar los datos.
     - :param opcional `sleep_send_batch`: Es el tiempo de espera entre cada envío de datos en segundos (default: 0).

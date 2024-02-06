@@ -42,19 +42,19 @@ class iotaManager:
     """IoT Agent Manager.
 
     endpoint: define service endpoint iota (example: https://<service>:<port>).
-    sensor_id: sensor ID.
+    device_id: sensor ID.
     api_key: API key of the corresponding sensor.
     sleep_send_batch: time sleep in seconds (default: 0).
     """
 
     endpoint: str
-    sensor_id: str
+    device_id: str
     api_key: str
     sleep_send_batch: float
 
     def __init__(self, endpoint: str, sensor_id: str, api_key: str, sleep_send_batch: float = 0):
         self.endpoint = endpoint
-        self.sensor_id = sensor_id
+        self.device_id = device_id
         self.api_key = api_key
         self.sleep_send_batch = sleep_send_batch
 
@@ -65,7 +65,7 @@ class iotaManager:
                 raise TypeError("The 'data' parameter should be a dictionary with key-value pairs.")
 
         params = {
-            'i': self.sensor_id,
+            'i': self.device_id,
             'k': self.api_key
         }
         headers = {
