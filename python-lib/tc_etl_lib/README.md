@@ -505,7 +505,7 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
-- Fix: rename sensor_id to device_it in iotManager to align with the term used in IOTA library ([#77](https://github.com/telefonicasc/etl-framework/pull/77))
+- Fix: rename sensor_id to device_id in iotManager to align with the term used in IOTA library ([#77](https://github.com/telefonicasc/etl-framework/pull/77))
 
 0.11.0 (February 2nd, 2024)
 
