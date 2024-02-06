@@ -231,11 +231,11 @@ Ejemplo de uso de la clase iotaManager
 
 ```
 #create an iota manager and use it
-iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>')
+iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', device_id='<device_id>', api_key='<api_key>')
 iotam.send_http(data={"<key_1>": "<value_1>", "<key_2>": "<value_2>"})
 
 # Envío de datos en ráfaga al Agente IoT.
-iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>', sleep_send_batch='<time_sleep>')
+iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', device_id='<device_id>', api_key='<api_key>', sleep_send_batch='<time_sleep>')
 iotam.send_batch_http(data=[{"<key_1>": "<value_1>", "<key_2>": "<value_2>"}, {"<key_3>": "<value_3>", "<key_4>": "<value_4>"}])
 ```
 
@@ -504,6 +504,8 @@ TOTAL                        403    221    45%
 ```
 
 ## Changelog
+
+- Fix: rename sensor_id to device_it in iotManager to align with the term used in IOTA library ([#77](https://github.com/telefonicasc/etl-framework/pull/76))
 
 0.11.0 (February 2nd, 2024)
 

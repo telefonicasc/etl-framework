@@ -52,7 +52,7 @@ class iotaManager:
     api_key: str
     sleep_send_batch: float
 
-    def __init__(self, endpoint: str, sensor_id: str, api_key: str, sleep_send_batch: float = 0):
+    def __init__(self, endpoint: str, device_id: str, api_key: str, sleep_send_batch: float = 0):
         self.endpoint = endpoint
         self.device_id = device_id
         self.api_key = api_key
