@@ -231,11 +231,11 @@ Ejemplo de uso de la clase iotaManager
 
 ```
 #create an iota manager and use it
-iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>')
+iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', device_id='<device_id>', api_key='<api_key>')
 iotam.send_http(data={"<key_1>": "<value_1>", "<key_2>": "<value_2>"})
 
 # Envío de datos en ráfaga al Agente IoT.
-iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>', sleep_send_batch='<time_sleep>')
+iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', device_id='<device_id>', api_key='<api_key>', sleep_send_batch='<time_sleep>')
 iotam.send_batch_http(data=[{"<key_1>": "<value_1>", "<key_2>": "<value_2>"}, {"<key_3>": "<value_3>", "<key_4>": "<value_4>"}])
 ```
 
@@ -358,8 +358,8 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
 - Clase `iotaManager`: En esta clase están las funciones relacionadas con el agente IoT.
 
   - `__init__`: constructor de objetos de la clase.
-    - :param obligatorio `sensor_id`: El ID del sensor.
-    - :param obligatorio `api_key`: La API key correspondiente al sensor.
+    - :param obligatorio `device_id`: El ID del device.
+    - :param obligatorio `api_key`: La API key correspondiente al device.
     - :param obligatorio `endpoint`: La URL del servicio al que se le quiere enviar los datos.
     - :param opcional `sleep_send_batch`: Es el tiempo de espera entre cada envío de datos en segundos (default: 0).
   - `send_http`: Función que envía un archivo en formato JSON al agente IoT por petición HTTP.
@@ -504,6 +504,8 @@ TOTAL                        403    221    45%
 ```
 
 ## Changelog
+
+- Fix: rename sensor_id to device_id in iotManager to align with the term used in IOTA library ([#77](https://github.com/telefonicasc/etl-framework/pull/77))
 
 0.11.0 (February 2nd, 2024)
 
