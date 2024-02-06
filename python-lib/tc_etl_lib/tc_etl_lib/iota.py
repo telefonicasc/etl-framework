@@ -42,8 +42,8 @@ class iotaManager:
     """IoT Agent Manager.
 
     endpoint: define service endpoint iota (example: https://<service>:<port>).
-    device_id: sensor ID.
-    api_key: API key of the corresponding sensor.
+    device_id: device ID.
+    api_key: API key of the corresponding device.
     sleep_send_batch: time sleep in seconds (default: 0).
     """
 
