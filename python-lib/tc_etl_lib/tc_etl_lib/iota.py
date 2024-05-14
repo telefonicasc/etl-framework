@@ -64,7 +64,7 @@ class iotaManager:
     post_retry_backoff_factor: int = 20
     session = None
 
-    def __init__(self, endpoint: str, device_id: str, api_key: str, sleep_send_batch: float = 0, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20):
+    def __init__(self, endpoint: str, device_id: str, api_key: str, sleep_send_batch: float = 0, timeout: int = 10, post_retry_connect: int = 3, post_retry_backoff_factor: int = 20, session: requests.Session = None):
         self.endpoint = endpoint
         self.device_id = device_id
         self.api_key = api_key
@@ -72,7 +72,10 @@ class iotaManager:
         self.post_retry_connect = post_retry_connect
         self.post_retry_backoff_factor = post_retry_backoff_factor
         self.timeout = timeout
-        self.session = requests.Session()
+        if session is None:
+            self.session = requests.Session()
+        else:
+            self.session = session
 
     def __del__(self):
         try:
