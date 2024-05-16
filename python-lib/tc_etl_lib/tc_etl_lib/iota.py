@@ -101,7 +101,7 @@ class iotaManager:
             total=self.post_retry_connect,
             read=self.post_retry_connect,
             backoff_factor=self.post_retry_backoff_factor,
-            status_forcelist=(404, 429, 500, 502, 503, 504),
+            status_forcelist=(429, 500, 502, 503, 504),
             method_whitelist=('HEAD', 'GET', 'OPTIONS', 'POST')
         )
 
