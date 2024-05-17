@@ -34,8 +34,9 @@ class TestIotaManager(unittest.TestCase):
     def test_send_http_success(self):
         """A success message should be displayed when
         HTTP request is executed successfully."""
-        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key')
-        with patch('requests.post') as mock_post:
+        session = requests.Session()
+        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key', session=session)
+        with patch.object(session, 'post') as mock_post:
             fake_response = Mock()
             # Simulates a successful code status.
             fake_response.status_code = 200
@@ -45,8 +46,9 @@ class TestIotaManager(unittest.TestCase):
 
     def test_send_http_connection_error(self):
         """Should raise an exception when there is a server connection error."""
-        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key')
-        with patch('requests.post') as mock_post:
+        session = requests.Session()
+        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key', session=session)
+        with patch.object(session, 'post') as mock_post:
             mock_post.side_effect = requests.exceptions.ConnectionError()
             with pytest.raises(requests.exceptions.ConnectionError):
                 iot.send_http(data={"key": "value"})
@@ -73,8 +75,9 @@ class TestIotaManager(unittest.TestCase):
 
     def test_send_http_unauthorized(self):
         """Should raise an exception when the request is unauthorized."""
-        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key')
-        with patch('requests.post') as mock_post:
+        session = requests.Session()
+        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key', session=session)
+        with patch.object(session, 'post') as mock_post:
             mock_post.return_value.status_code = 401
             with pytest.raises(exceptions.FetchError) as exc_info:
                 iot.send_http(data={"key": "value"})
@@ -84,8 +87,9 @@ class TestIotaManager(unittest.TestCase):
 
     def test_send_http_not_found(self):
         """Should raise an exception when the request is not found."""
-        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key')
-        with patch('requests.post') as mock_post:
+        session = requests.Session()
+        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key', session=session)
+        with patch.object(session, 'post') as mock_post:
             mock_post.return_value.status_code = 404
             with pytest.raises(exceptions.FetchError) as exc_info:
                 iot.send_http(data={"key": "value"})
@@ -96,8 +100,9 @@ class TestIotaManager(unittest.TestCase):
 
     def test_send_http_server_error(self):
         """Should raise an exception if there is a server error."""
-        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key')
-        with patch('requests.post') as mock_post:
+        session = requests.Session()
+        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key', session=session)
+        with patch.object(session, 'post') as mock_post:
             mock_post.return_value.status_code = 500
             with pytest.raises(exceptions.FetchError) as exc_info:
                 iot.send_http(data={"key": "value"})
@@ -115,8 +120,9 @@ class TestIotaManager(unittest.TestCase):
 
     def test_send_batch_http_dict_value_error(self):
         """Should raise TypeError and then raise SendBatchError with the index that failed."""
-        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key', sleep_send_batch=0.25)
-        with patch('requests.post') as mock_post:
+        session = requests.Session()
+        iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key', sleep_send_batch=0.25, session=session)
+        with patch.object(session, 'post') as mock_post:
             mock_post.return_value.status_code = 200
             with self.assertRaises(SendBatchError) as context:
                 iot.send_batch_http(data=[{"key_1": "value_1"}, 2])
@@ -128,8 +134,9 @@ class TestIotaManager(unittest.TestCase):
 
     def test_send_batch_http_connection_error(self):
             """Should raise a ConnectionError exception and then raise SedBatchError with the index that failed."""
-            iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key', sleep_send_batch=0.25)
-            with patch('requests.post') as mock_post:
+            session = requests.Session()
+            iot = iotaManager(endpoint='http://fakeurl.com', device_id='fake_device_id', api_key='fake_api_key', sleep_send_batch=0.25, session=session)
+            with patch.object(session, 'post') as mock_post:
                 mock_success = MagicMock()
                 mock_success.status_code = 200
 
