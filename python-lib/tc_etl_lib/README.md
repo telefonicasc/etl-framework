@@ -45,11 +45,11 @@ Para instalar la última versión:
 
 Para instalar una versión concreta:
 
-        pip install tc_etl_lib==0.11.0
+        pip install tc_etl_lib==0.12.0
 
 También se puede añadir la depedencia a `requirements.txt`:
 
-        tc_etl_lib==0.11.0
+        tc_etl_lib==0.12.0
 
 he instalar (junto con el resto de depedencias) con el habitual:
 
@@ -59,7 +59,7 @@ he instalar (junto con el resto de depedencias) con el habitual:
 
 La librería de tipo `tc_etl_lib-<version>.tar.gz`, se puede instalar en cualquier entorno python con el siguiente comando:
 
-    pip install ./tc_etl_lib/dist/tc_etl_lib-0.11.0.tar.gz
+    pip install ./tc_etl_lib/dist/tc_etl_lib-0.12.0.tar.gz
 
 En este caso, la librería está disponible en ese directorio. Si estuviera disponible en cualquier otra ruta, se debería de reemplazar por la ruta relativa o absoluta correspondiente. Si se quiere instalar sobre un entorno venv, primero has de activar el entorno venv y luego ejecutar el comando de instalación de la librería.
 
@@ -507,6 +507,8 @@ TOTAL                        403    221    45%
 ```
 
 ## Changelog
+
+0.12.0 (May 20th, 2024)
 
 - Add: new optional parameters `timeout`, `post_retry_connect`, `post_retry_backoff_factor` in the iotaManager constructor used in the timeout/retry logic in send_http and send_batch_http ([#72](https://github.com/telefonicasc/etl-framework/issues/72))
 
