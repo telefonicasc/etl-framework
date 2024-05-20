@@ -510,6 +510,8 @@ TOTAL                        403    221    45%
 
 - Add: new optional parameters `timeout`, `post_retry_connect`, `post_retry_backoff_factor` in the iotaManager constructor used in the timeout/retry logic in send_http and send_batch_http ([#72](https://github.com/telefonicasc/etl-framework/issues/72))
 
+- Fix: improve INFO log traces ([#82](https://github.com/telefonicasc/etl-framework/pull/82))
+
 - Fix: rename sensor_id to device_id in iotManager to align with the term used in IOTA library ([#77](https://github.com/telefonicasc/etl-framework/pull/77))
 
 0.11.0 (February 2nd, 2024)
