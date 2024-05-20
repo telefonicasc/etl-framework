@@ -231,11 +231,11 @@ Ejemplo de uso de la clase iotaManager
 
 ```
 #create an iota manager and use it
-iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>')
+iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', device_id='<device_id>', api_key='<api_key>')
 iotam.send_http(data={"<key_1>": "<value_1>", "<key_2>": "<value_2>"})
 
 # Envío de datos en ráfaga al Agente IoT.
-iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', sensor_id='<sensor_id>', api_key='<api_key>', sleep_send_batch='<time_sleep>')
+iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', device_id='<device_id>', api_key='<api_key>', sleep_send_batch='<time_sleep>')
 iotam.send_batch_http(data=[{"<key_1>": "<value_1>", "<key_2>": "<value_2>"}, {"<key_3>": "<value_3>", "<key_4>": "<value_4>"}])
 ```
 
@@ -271,7 +271,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param obligatorio `endpoint`: define el endpoint del context broker (ejemplo: https://`<service>`:`<port>`). Se debe especificar en el constructor del objeto de tipo cbManager, sino avisará con una excepción ValueError.
         - :param opcional `timeout`: timeout definido en segundos (default: 10).
         - :param opcional `post_retry_connect`: Número de reintentos a la hora de realizar un envío de datos (default: 3)
-        - :param opcional `post_retry_backoff_factor`: Factor que se usa, para esperar varios segundos tras enviar una ráfaga de datos. (default: 0)
+        - :param opcional `post_retry_backoff_factor`: Factor que se usa, para esperar varios segundos tras enviar una ráfaga de datos. (default: 20)
         - :param opcional `sleep_send_batch`: Pausa en segundos, que se realiza cada vez que se envia una ráfaga de datos. (default: 0). 
         - :param opcional `cb_flowcontrol`: Opción del Context Broker, que permite un mejor rendimiento en caso de envío masivo de datos (batch updates). Este mecanismo, requiere arrancar el Context Broker con un flag concreto y en las peticiones de envío de datos, añadir esa opción. Referencia en [documentación de Orion](https://fiware-orion.readthedocs.io/en/master/admin/perf_tuning/index.html#updates-flow-control-mechanism) (default: False)
         - :param opcional `block_size`: Cuando se realiza el envío de datos al Context Broker mediante la función de `send_batch`, se realiza envíos en tramos que no excedan el block_size indicado (default: 800000). Se permite modificar el valor de block_size, pero sin superar la limitación de 800000. En caso de indicar un valor que supere ese límite, se lanzará una excepción ValueError indicando que se ha excedido el límite del valor permitido.
@@ -358,9 +358,12 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
 - Clase `iotaManager`: En esta clase están las funciones relacionadas con el agente IoT.
 
   - `__init__`: constructor de objetos de la clase.
-    - :param obligatorio `sensor_id`: El ID del sensor.
-    - :param obligatorio `api_key`: La API key correspondiente al sensor.
+    - :param obligatorio `device_id`: El ID del device.
+    - :param obligatorio `api_key`: La API key correspondiente al device.
     - :param obligatorio `endpoint`: La URL del servicio al que se le quiere enviar los datos.
+    - :param opcional `timeout`: timeout definido en segundos (default: 10).
+    - :param opcional `post_retry_connect`: Número de reintentos a la hora de realizar un envío de datos (default: 3)
+    - :param opcional `post_retry_backoff_factor`: Factor que se usa, para esperar varios segundos tras enviar una ráfaga de datos. (default: 20)
     - :param opcional `sleep_send_batch`: Es el tiempo de espera entre cada envío de datos en segundos (default: 0).
   - `send_http`: Función que envía un archivo en formato JSON al agente IoT por petición HTTP.
     - :param obligatorio: `data`: Datos a enviar. La estructura debe tener pares de elementos clave-valor (diccionario).
@@ -505,7 +508,11 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+- Add: new optional parameters `timeout`, `post_retry_connect`, `post_retry_backoff_factor` in the iotaManager constructor used in the timeout/retry logic in send_http and send_batch_http ([#72](https://github.com/telefonicasc/etl-framework/issues/72))
+
 - Fix: improve INFO log traces ([#82](https://github.com/telefonicasc/etl-framework/pull/82))
+
+- Fix: rename sensor_id to device_id in iotManager to align with the term used in IOTA library ([#77](https://github.com/telefonicasc/etl-framework/pull/77))
 
 0.11.0 (February 2nd, 2024)
 
