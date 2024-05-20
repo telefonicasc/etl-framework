@@ -505,6 +505,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+- Fix: improve INFO log traces ([#82](https://github.com/telefonicasc/etl-framework/pull/82))
+
 0.11.0 (February 2nd, 2024)
 
 - Fix: close session upon finalization to avoid warnings ([#76](https://github.com/telefonicasc/etl-framework/pull/76))
