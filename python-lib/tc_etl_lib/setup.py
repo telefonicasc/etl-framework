@@ -44,7 +44,8 @@ INSTALL_REQUIRES = [
     # Con pandas < 2.2.2 y numpy >= 2.0.0, se produce el error:
     # ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
     # La última release de numpy antes de 2.0.0 es 1.26.4.
-    'numpy==1.26.4'
+    # La última release de numpy compatible con python 3.8 es 1.24.4
+    'numpy==1.24.4'
 ]
 
 setup(
