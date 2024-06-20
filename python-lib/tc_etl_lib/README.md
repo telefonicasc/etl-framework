@@ -508,6 +508,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+- Fix: anchor numpy version to 1.24.4 (latest compatible with python 3.8 and pandas < 2.2.2)
+
 0.12.0 (May 20th, 2024)
 
 - Add: new optional parameters `timeout`, `post_retry_connect`, `post_retry_backoff_factor` in the iotaManager constructor used in the timeout/retry logic in send_http and send_batch_http ([#72](https://github.com/telefonicasc/etl-framework/issues/72))
