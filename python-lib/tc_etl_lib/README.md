@@ -508,7 +508,7 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
-- Fix: anchor numpy version to 1.24.4 (latest compatible with python 3.8 and pandas < 2.2.2)
+- Fix: anchor numpy version to 1.24.4 (latest compatible with python 3.8 and pandas < 2.2.2) ([#89](https://github.com/telefonicasc/etl-framework/issues/89))
 
 0.12.0 (May 20th, 2024)
 
