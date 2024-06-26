@@ -91,7 +91,7 @@ Una vez añadida esa referencia en requeriments.txt, se puede instalar con el co
 
 ## Uso de la librería
 
-El uso de la librería, una vez se ha instalado en el venv (es recomendable instalar y ejecutar esta libreria desde un entorno virtual, por ejemplo, usnado la libería estándar de Python [venv](https://docs.python.org/3/library/venv.html) ), es similar al resto de librerías que dispondrías en python. A continuación mostramos un ejemplo de referencia:
+El uso de la librería, una vez se ha instalado en el venv (es recomendable instalar y ejecutar esta libreria desde un entorno virtual, por ejemplo, usando la libería estándar de Python [venv](https://docs.python.org/3/library/venv.html) ), es similar al resto de librerías que dispondrías en python. A continuación mostramos un ejemplo de referencia:
 
 ```python    
 # import library
