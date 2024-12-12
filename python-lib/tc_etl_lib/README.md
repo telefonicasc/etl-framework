@@ -449,7 +449,7 @@ $ (venv)$ pip install -e python-lib/tc_etl_lib  # directorio en el que está set
 Adicionalmente, instalar las herramientas necesarias para ejecutar los tests:
 
 ```
-pip install pytest==7.2.0 coverage==7.0.5
+pip install pytest==8.3.4 coverage==7.6.9
 ```
 
 Para ejecutar un solo fichero de tests:
@@ -457,7 +457,7 @@ Para ejecutar un solo fichero de tests:
 ```
 $ (venv)$ pytest python-lib/tc_etl_lib/tc_etl_lib/test_store.py
 ================================================================ test session starts =================================================================
-platform linux -- Python 3.9.2, pytest-7.2.0, pluggy-1.0.0
+platform linux -- Python 3.9.2, pytest-8.3.4, pluggy-1.0.0
 rootdir: /home/fermin/src/etl-framework/python-lib/tc_etl_lib
 collected 7 items                                                                                                                                    
 
@@ -471,7 +471,7 @@ Para ejecutar todos los tests se puede utilizar `pytest` sin parámetros:
 ```
 $ (venv)$ pytest
 ================================================================ test session starts =================================================================
-platform linux -- Python 3.9.2, pytest-7.2.0, pluggy-1.0.0
+platform linux -- Python 3.9.2, pytest-8.3.4, pluggy-1.0.0
 rootdir: /home/fermin/src/etl-framework/python-lib/tc_etl_lib
 collected 7 items                                                                                                                                    
 

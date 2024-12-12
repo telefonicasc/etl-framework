@@ -36,16 +36,11 @@ LONG_DESC_TYPE = "text/markdown"
 
 #Paquetes necesarios para que funcione la librería. Se instalarán a la vez si no lo tuvieras ya instalado
 INSTALL_REQUIRES = [
-    'requests==2.21.0',
-    'urllib3==1.24.1',
+    'requests==2.28.2',
+    'urllib3==1.26.16',
     'psycopg2-binary>=2.9.5',
-    'pandas==2.0.3',
-    # Pandas < 2.2.2 requiere numpy < 2.0.0, ver https://pandas.pydata.org/docs/whatsnew/v2.2.2.html
-    # Con pandas < 2.2.2 y numpy >= 2.0.0, se produce el error:
-    # ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
-    # La última release de numpy antes de 2.0.0 es 1.26.4.
-    # La última release de numpy compatible con python 3.8 es 1.24.4
-    'numpy==1.24.4'
+    'pandas==2.2.2',
+    'numpy==2.2.0'
 ]
 
 setup(
