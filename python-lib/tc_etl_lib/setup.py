@@ -38,7 +38,7 @@ LONG_DESC_TYPE = "text/markdown"
 #Dos listas separadas (para Python >=3.12 y para Python <3.12)
 INSTALL_REQUIRES = [
     'requests==2.21.0',
-    'urllib3==1.24.1',
+    'urllib3==1.26.16',
     'psycopg2-binary>=2.9.5',
     'pandas==2.0.3',
     # Pandas < 2.2.2 requiere numpy < 2.0.0, ver https://pandas.pydata.org/docs/whatsnew/v2.2.2.html
