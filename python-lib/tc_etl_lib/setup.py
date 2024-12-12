@@ -66,7 +66,7 @@ setup(
     author_email=AUTHOR_EMAIL,
     url=URL,
     extras_require={
-        ':python_version<"3.12"': INSTALL_REQUIRES
+        ':python_version<"3.12"': INSTALL_REQUIRES,
         ':python_version>="3.12"': INSTALL_REQUIRES_PYTHON_3_12
     },
     license=LICENSE,
