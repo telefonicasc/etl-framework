@@ -37,7 +37,7 @@ LONG_DESC_TYPE = "text/markdown"
 #Paquetes necesarios para que funcione la librería. Se instalarán a la vez si no lo tuvieras ya instalado
 #Dos listas separadas (para Python >=3.12 y para Python <3.12)
 INSTALL_REQUIRES = [
-    'requests==2.21.0',
+    'requests== 2.25.1',
     'urllib3==1.26.16',
     'psycopg2-binary>=2.9.5',
     'pandas==2.0.3',
