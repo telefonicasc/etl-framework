@@ -45,11 +45,11 @@ Para instalar la última versión:
 
 Para instalar una versión concreta:
 
-        pip install tc_etl_lib==0.13.0
+        pip install tc_etl_lib==0.14.0
 
 También se puede añadir la depedencia a `requirements.txt`:
 
-        tc_etl_lib==0.13.0
+        tc_etl_lib==0.14.0
 
 he instalar (junto con el resto de depedencias) con el habitual:
 
@@ -59,7 +59,7 @@ he instalar (junto con el resto de depedencias) con el habitual:
 
 La librería de tipo `tc_etl_lib-<version>.tar.gz`, se puede instalar en cualquier entorno python con el siguiente comando:
 
-    pip install ./tc_etl_lib/dist/tc_etl_lib-0.13.0.tar.gz
+    pip install ./tc_etl_lib/dist/tc_etl_lib-0.14.0.tar.gz
 
 En este caso, la librería está disponible en ese directorio. Si estuviera disponible en cualquier otra ruta, se debería de reemplazar por la ruta relativa o absoluta correspondiente. Si se quiere instalar sobre un entorno venv, primero has de activar el entorno venv y luego ejecutar el comando de instalación de la librería.
 
@@ -508,11 +508,13 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+0.14.0 (December 13th, 2024)
+
 - Add: support for Python 3.12 (keeping also compatibility with Python 3.8)
 - Fix: upgrade requests from 2.21.0 to 2.25.1 (for Python 3.8 case)
 - Fix: upgrade urllib3 from 1.24.1 to 1.26.16 (for Python 3.8 case)
 
-0.13.0 (Jun 26th, 2024)
+0.13.0 (June 26th, 2024)
 
 - Fix: anchor numpy version to 1.24.4 (latest compatible with python 3.8 and pandas < 2.2.2) ([#89](https://github.com/telefonicasc/etl-framework/issues/89))
 

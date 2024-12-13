@@ -23,7 +23,7 @@ from setuptools import find_packages, setup
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '0.13.0.post'
+VERSION = '0.14.0'
 PACKAGE_NAME = 'tc_etl_lib'
 AUTHOR = ''
 AUTHOR_EMAIL = ''
