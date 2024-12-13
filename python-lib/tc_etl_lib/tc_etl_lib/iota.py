@@ -102,7 +102,7 @@ class iotaManager:
             read=self.post_retry_connect,
             backoff_factor=self.post_retry_backoff_factor,
             status_forcelist=(429, 500, 502, 503, 504),
-            method_whitelist=('HEAD', 'GET', 'OPTIONS', 'POST')
+            allowed_methods=('HEAD', 'GET', 'OPTIONS', 'POST')
         )
 
         adapter = HTTPAdapter(max_retries=retry_strategy)

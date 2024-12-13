@@ -4,31 +4,33 @@ name: Unit testing
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 permissions:
   contents: read
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.12]
 
     # FIXME: it would be great to use cache to avoid re-creating the virtualenv
-    # and installing dependencies every time. We know the syphar/restore-virtualenv@v1 and 
+    # and installing dependencies every time. We know the syphar/restore-virtualenv@v1 and
     # syphar/restore-pip-download-cache@v1 actions, but it seems it only works if
     # dependencies are in requeriments.txt file (and in this case we have them in setup.py)
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.8"
-    - name: Install pytest tool
-      run: pip install pytest==7.2.0
-    - name: Install library dependencies
-      run: pip install -e python-lib/tc_etl_lib
-    - name: Test with pytest
-      run: pytest -v python-lib/tc_etl_lib/
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install pytest tool
+        run: pip install pytest==8.3.4
+      - name: Install library dependencies
+        run: pip install -e python-lib/tc_etl_lib
+      - name: Test with pytest
+        run: pytest -v python-lib/tc_etl_lib/
