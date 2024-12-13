@@ -509,6 +509,8 @@ TOTAL                        403    221    45%
 ## Changelog
 
 - Add: support for Python 3.12 (keeping also compatibility with Python 3.8)
+- Fix: upgrade requests from 2.21.0 to 2.25.1 (for Python 3.8 case)
+- Fix: upgrade urllib3 from 1.24.1 to 1.26.16', (for Python 3.8 case)
 
 0.13.0 (Jun 26th, 2024)
 
