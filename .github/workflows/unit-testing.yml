@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.8, 3.12]
+        python-version: [3.8, 3.9, 3.10, 3.11, 3.12]
 
     # FIXME: it would be great to use cache to avoid re-creating the virtualenv
     # and installing dependencies every time. We know the syphar/restore-virtualenv@v1 and
