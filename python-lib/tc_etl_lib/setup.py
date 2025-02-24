@@ -49,11 +49,11 @@ INSTALL_REQUIRES = [
     'numpy==1.24.4'
 ]
 INSTALL_REQUIRES_PYTHON_3_12 = [
-    'requests==2.28.2',
-    'urllib3==1.26.16',
+    'requests>=2.28.2',
+    'urllib3>=1.26.16',
     'psycopg2-binary>=2.9.5',
-    'pandas==2.2.2',
-    'numpy==2.2.0'
+    'pandas>=2.2.2',
+    'numpy>=2.2.0'
 ]
 
 setup(
