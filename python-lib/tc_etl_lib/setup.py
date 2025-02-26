@@ -30,14 +30,13 @@ AUTHOR = ''
 AUTHOR_EMAIL = ''
 URL = ''
 
-LICENSE = ''  # Tipo de licencia
-DESCRIPTION = 'Librería común para uso en ETL'  # Descripción corta
-# Referencia al documento README con una descripción más elaborada
-LONG_DESCRIPTION = (HERE / "README.md").read_text(encoding='utf-8')
+LICENSE = ''  #Tipo de licencia
+DESCRIPTION = 'Librería común para uso en ETL'  #Descripción corta
+LONG_DESCRIPTION = (HERE / "README.md").read_text(encoding='utf-8') #Referencia al documento README con una descripción más elaborada
 LONG_DESC_TYPE = "text/markdown"
 
-# Paquetes necesarios para que funcione la librería. Se instalarán a la vez si no lo tuvieras ya instalado
-# Dos listas separadas (para Python >=3.12 y para Python <3.12)
+#Paquetes necesarios para que funcione la librería. Se instalarán a la vez si no lo tuvieras ya instalado
+#Dos listas separadas (para Python >=3.12 y para Python <3.12)
 INSTALL_REQUIRES = [
     'requests==2.25.1',
     'urllib3==1.26.16',
