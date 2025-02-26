@@ -19,6 +19,7 @@
 # along with IoT orchestrator. If not, see http://www.gnu.org/licenses/.
 
 import pathlib
+
 from setuptools import find_packages, setup
 
 HERE = pathlib.Path(__file__).parent
@@ -29,13 +30,14 @@ AUTHOR = ''
 AUTHOR_EMAIL = ''
 URL = ''
 
-LICENSE = '' #Tipo de licencia
-DESCRIPTION = 'Librería común para uso en ETL' # Descripción corta
-LONG_DESCRIPTION = (HERE / "README.md").read_text(encoding='utf-8') #Referencia al documento README con una descripción más elaborada
+LICENSE = ''  # Tipo de licencia
+DESCRIPTION = 'Librería común para uso en ETL'  # Descripción corta
+# Referencia al documento README con una descripción más elaborada
+LONG_DESCRIPTION = (HERE / "README.md").read_text(encoding='utf-8')
 LONG_DESC_TYPE = "text/markdown"
 
-#Paquetes necesarios para que funcione la librería. Se instalarán a la vez si no lo tuvieras ya instalado
-#Dos listas separadas (para Python >=3.12 y para Python <3.12)
+# Paquetes necesarios para que funcione la librería. Se instalarán a la vez si no lo tuvieras ya instalado
+# Dos listas separadas (para Python >=3.12 y para Python <3.12)
 INSTALL_REQUIRES = [
     'requests==2.25.1',
     'urllib3==1.26.16',
@@ -49,7 +51,7 @@ INSTALL_REQUIRES = [
     'numpy==1.24.4'
 ]
 INSTALL_REQUIRES_PYTHON_3_12 = [
-    'requests==2.28.2',
+    'requests>=2.28.2,<2.33.0',
     'urllib3==1.26.16',
     'psycopg2-binary>=2.9.5',
     'pandas==2.2.2',
