@@ -30,7 +30,7 @@ AUTHOR_EMAIL = ''
 URL = ''
 
 LICENSE = '' #Tipo de licencia
-DESCRIPTION = 'Librería común para uso en ETL' #Descripción corta
+DESCRIPTION = 'Librería común para uso en ETL' # Descripción corta
 LONG_DESCRIPTION = (HERE / "README.md").read_text(encoding='utf-8') #Referencia al documento README con una descripción más elaborada
 LONG_DESC_TYPE = "text/markdown"
 
