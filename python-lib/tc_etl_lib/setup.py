@@ -19,7 +19,6 @@
 # along with IoT orchestrator. If not, see http://www.gnu.org/licenses/.
 
 import pathlib
-
 from setuptools import find_packages, setup
 
 HERE = pathlib.Path(__file__).parent
@@ -30,8 +29,8 @@ AUTHOR = ''
 AUTHOR_EMAIL = ''
 URL = ''
 
-LICENSE = ''  #Tipo de licencia
-DESCRIPTION = 'Librería común para uso en ETL'  #Descripción corta
+LICENSE = '' #Tipo de licencia
+DESCRIPTION = 'Librería común para uso en ETL' #Descripción corta
 LONG_DESCRIPTION = (HERE / "README.md").read_text(encoding='utf-8') #Referencia al documento README con una descripción más elaborada
 LONG_DESC_TYPE = "text/markdown"
 
