@@ -508,6 +508,10 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+0.15.0 (February 27th, 2025)
+
+- Fix: change request==2.28.2 to requests>=2.28.2,<2.33.0 in package requirements (Python 3.12+ case)
+
 0.14.0 (December 13th, 2024)
 
 - Add: support for Python 3.12 (keeping also compatibility with Python 3.8)
