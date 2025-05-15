@@ -358,13 +358,14 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
 - Clase `iotaManager`: En esta clase están las funciones relacionadas con el agente IoT.
 
   - `__init__`: constructor de objetos de la clase.
+    - :param obligatorio `endpoint`: La URL del servicio al que se le quiere enviar los datos.
     - :param obligatorio `device_id`: El ID del device.
     - :param obligatorio `api_key`: La API key correspondiente al device.
-    - :param obligatorio `endpoint`: La URL del servicio al que se le quiere enviar los datos.
+    - :param opcional `sleep_send_batch`: Es el tiempo de espera entre cada envío de datos en segundos (default: 0).
     - :param opcional `timeout`: timeout definido en segundos (default: 10).
     - :param opcional `post_retry_connect`: Número de reintentos a la hora de realizar un envío de datos (default: 3)
     - :param opcional `post_retry_backoff_factor`: Factor que se usa, para esperar varios segundos tras enviar una ráfaga de datos. (default: 20)
-    - :param opcional `sleep_send_batch`: Es el tiempo de espera entre cada envío de datos en segundos (default: 0).
+    - :param opcional `session`: Objeto requests.Session reutilizable para optimizar conexiones HTTP. Si no se proporciona, se crea una nueva sesión por defecto.
   - `send_http`: Función que envía un archivo en formato JSON al agente IoT por petición HTTP.
     - :param obligatorio: `data`: Datos a enviar. La estructura debe tener pares de elementos clave-valor (diccionario).
     - :raises [TypeError](https://docs.python.org/3/library/exceptions.html#TypeError): Se lanza cuando el tipo de dato es incorrecto.
