@@ -71,5 +71,9 @@ setup(
     },
     license=LICENSE,
     packages=find_packages(),
+    # See https://peps.python.org/pep-0561/
+    package_data={
+        'tc_etl_lib': ['py.typed']
+    },
     include_package_data=True
 )

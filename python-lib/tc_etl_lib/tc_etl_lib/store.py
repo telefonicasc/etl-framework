@@ -38,7 +38,7 @@ import psycopg2
 Store = Callable[[Iterable[Any]], None]
 
 @contextmanager
-def orionStore(cb: cbManager, auth: authManager, *, service:str=None, subservice:str=None, actionType:str='append', options:list=[]):
+def orionStore(cb: cbManager, auth: authManager, *, service: Optional[str]=None, subservice: Optional[str]=None, actionType:str='append', options:list=[]):
     '''
     Context manager that creates a store to save entities to the given cbManager
     All parameters are the same as for the cbManager.send_batch function
@@ -70,12 +70,12 @@ def sqlFileStore(path: Path, *, subservice:str, schema:str=":target_schema", nam
     mode = "a+" if append else "w+"
     handler = path.open(mode=mode, encoding="utf-8")
     some_table_names = table_names or {} # make sure it is not None
-    replace_id = replace_id or {} # make sure it is not None
+    some_replace_id = replace_id or {} # make sure it is not None
     try:
         def send_batch(entities: Iterable[Any]):
             """Send a batch of entities to the database"""
             for chunk in iter_chunk(entities, chunk_size):
-                handler.write(sqlfile_batch(schema=schema, namespace=namespace, table_names=some_table_names, subservice=subservice, replace_id=replace_id, entities=chunk))
+                handler.write(sqlfile_batch(schema=schema, namespace=namespace, table_names=some_table_names, subservice=subservice, replace_id=some_replace_id, entities=chunk))
                 handler.write("\n")
         yield send_batch
     finally:

@@ -27,7 +27,7 @@ ContextBroker routines for Python:
 '''
 import requests
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+from urllib3.util.retry import Retry
 from typing import Iterable, List, Any, Optional
 
 import logging
@@ -100,7 +100,7 @@ class cbManager:
         except Exception:  # pylint: disable=broad-except
             logger.error(f'Error closing session with endpoint: {self.endpoint}')
 
-    def delete_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options_get: list = [], options_send: list = []):
+    def delete_entities(self, *, service: Optional[str] = None, subservice: Optional[str] = None, auth: Optional[authManager] = None, limit: int = 100, type: Optional[str] = None, q: Optional[str] = None, mq: Optional[str] = None, georel: Optional[str] = None, geometry: Optional[str] = None, coords: Optional[str] = None, id: Optional[str] = None, options_get: list = [], options_send: list = []):
         """Delete data from context broker
 
         :param service: Define service from which entities are deleted, defaults to None
@@ -131,7 +131,7 @@ class cbManager:
 
         self.send_batch(service=service, subservice=subservice, auth=auth, entities=entities, actionType='delete', options=options_send)
 
-    def get_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options: list = []):
+    def get_entities(self, *, service: Optional[str] = None, subservice: Optional[str] = None, auth: Optional[authManager] = None, limit: int = 100, type: Optional[str] = None, orderBy: Optional[str] = None, q: Optional[str] = None, mq: Optional[str] = None, georel: Optional[str] = None, geometry: Optional[str] = None, coords: Optional[str] = None, id: Optional[str] = None, options: list = []):
         """Retrieve data from context broker
 
         :param service: Define service from which entities are retrieved, defaults to None
@@ -247,7 +247,7 @@ class cbManager:
         return resp.json()
 
 
-    def send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: Iterable[Any], actionType: str = 'append', options: list = []) -> bool:
+    def send_batch(self, *, service: Optional[str] = None, subservice: Optional[str] = None, auth: Optional[authManager] = None, entities: Iterable[Any], actionType: str = 'append', options: list = []) -> bool:
         """Send batch data to context broker with block control
 
         :param auth: Define authManager
@@ -285,7 +285,7 @@ class cbManager:
 
         return True
 
-    def __send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: List[Any], actionType: str = 'append', options: list = []) -> bool:
+    def __send_batch(self, *, service: Optional[str] = None, subservice: Optional[str] = None, auth: Optional[authManager] = None, entities: List[Any], actionType: str = 'append', options: list = []) -> bool:
         """Send batch data to context broker
 
         :param auth: Define authManager
@@ -330,7 +330,7 @@ class cbManager:
 
         return True
 
-    def __batch_creation(self, *, service: str = None, subservice: str = None, auth: authManager = None, entities: List[Any], actionType: str = 'append', options: list = []):
+    def __batch_creation(self, *, service: Optional[str] = None, subservice: Optional[str] = None, auth: Optional[authManager] = None, entities: List[Any], actionType: str = 'append', options: list = []):
         """Send batch data to Context Broker
 
         :param entities: Entities data
