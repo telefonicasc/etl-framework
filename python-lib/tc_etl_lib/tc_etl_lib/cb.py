@@ -131,7 +131,7 @@ class cbManager:
 
         self.send_batch(service=service, subservice=subservice, auth=auth, entities=entities, actionType='delete', options=options_send)
 
-    def get_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, options: list = []):
+    def get_entities(self, *, service: str = None, subservice: str = None, auth: authManager = None, limit: int = 100, type: str = None, orderBy: str = None, q: str = None, mq: str = None, georel: str = None, geometry: str = None, coords: str = None, id: str = None, idPattern: str = None, options: list = []):
         """Retrieve data from context broker
 
         :param service: Define service from which entities are retrieved, defaults to None
@@ -158,12 +158,12 @@ class cbManager:
         data = ['go!']
         while (data != []) :
             offset = (pg-1)*limit
-            data = self.get_entities_page(service=service, subservice=subservice, auth=auth, offset = offset, limit = limit, type = type, orderBy = orderBy, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id, options = options)
+            data = self.get_entities_page(service=service, subservice=subservice, auth=auth, offset = offset, limit = limit, type = type, orderBy = orderBy, q = q, mq = mq, georel = georel, geometry = geometry, coords = coords, id = id, idPattern = idPattern, options = options)
             pg += 1
             result += data
         return result
 
-    def get_entities_page(self, *, service: Optional[str] = None, subservice: Optional[str] = None, auth: Optional[authManager] = None, offset: Optional[int] = None, limit: Optional[int] = None, type: Optional[str] = None, orderBy: Optional[str] = None, q: Optional[str] = None, mq: Optional[str] = None, georel: Optional[str] = None, geometry: Optional[str] = None, coords: Optional[str] = None, id: Optional[str] = None, options: list = []):
+    def get_entities_page(self, *, service: Optional[str] = None, subservice: Optional[str] = None, auth: Optional[authManager] = None, offset: Optional[int] = None, limit: Optional[int] = None, type: Optional[str] = None, orderBy: Optional[str] = None, q: Optional[str] = None, mq: Optional[str] = None, georel: Optional[str] = None, geometry: Optional[str] = None, coords: Optional[str] = None, id: Optional[str] = None, idPattern: Optional[str] = None, options: list = []):
         """Retrieve data from context broker
 
         :param service: Define service from which entities are retrieved, defaults to None or auth.service defined value
@@ -229,7 +229,7 @@ class cbManager:
                 raise ValueError('If use geographical queries, you must define georel, geometry and coords in params')
 
 
-        params = {"offset": offset, "limit": limit, "type": type, "orderBy": orderBy, "q": q, "mq": mq, "georel": georel, "geometry": geometry, "coords": coords, "id": id}
+        params = {"offset": offset, "limit": limit, "type": type, "orderBy": orderBy, "q": q, "mq": mq, "georel": georel, "geometry": geometry, "coords": coords, "id": id, "idPattern": idPattern}
 
         req_url = ""
         if (options is not None and len(options) > 0):
