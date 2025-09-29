@@ -146,6 +146,7 @@ class cbManager:
         :param geometry: Allows to define the reference shape to be used when resolving the query. (point | polygon | line | box), defaults to None
         :param coords: Must be a string containing a semicolon-separated list of pairs of geographical coordinates in accordance with the geometry specified, defaults to None
         :param id: Retrieve entities filtering by Identity, defaults to None
+        :param idPattern: Retrieve entities filtering by Identity pattern, must be a regex, defaults to None
         :param options: Options used to retrive entities, defaults to None
         :raises ValueError: is thrown when some required argument is missing
         :raises FetchError: is thrown when the response from the cb indicates an error
@@ -179,6 +180,7 @@ class cbManager:
         :param geometry: Allows to define the reference shape to be used when resolving the query. (point | polygon | line | box), defaults to None
         :param coords: Must be a string containing a semicolon-separated list of pairs of geographical coordinates in accordance with the geometry specified, defaults to None
         :param id: Retrieve entities filtering by Identity, defaults to None
+        :param idPattern: Retrieve entities filtering by Identity, defaults to None
         :param options: Options used, defaults to None
         :raises ValueError: is thrown when some required argument is missing
         :raises FetchError: is thrown when the response from the cb indicates an error
