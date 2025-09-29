@@ -512,7 +512,7 @@ TOTAL                        403    221    45%
 
 0.16.0 (September 29th, 2025)
 
-- Fix: Add: new optional parameter `idPattern` in cbManager's methods get_entities and get_entities_page used to filter entities by Identity pattern
+- Add: new optional parameter `idPattern` in cbManager's methods get_entities and get_entities_page used to filter entities by Identity pattern
 
 0.15.0 (Feburary 27th, 2025)
 
