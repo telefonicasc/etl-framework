@@ -302,6 +302,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `geometry`: Cuando se define un filtro de datos por geolocalización, se ha de especificar un tipo de dibujo que se utiliza para resolver el filtrado. Se pueden consultar los diferentes valores de geometry en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
         - :param opcional `coords`: Cuando se define un filtro de datos por geolocalización, se ha de especificar una lista de coordenadas geograficas separadas por coma. Se pueden consultar los diferentes valores de coords en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
         - :param opcional `id`: Se establece un filtro por Identificador. Si no se especifica, enviará la petición al Context Broker sin el id definido, por lo tanto los datos no serán filtrados por identificador.
+        - :param opcional `idPattern`: Se establece un filtro por patrón de identificador, el cual debe ser una expresión regular. Si no se especifica, enviará la petición al Context Broker sin patrón de id definido, por lo tanto los datos no serán filtrados por identificador.
         - :param opcional `options`: Lista de opciones que recibe el Context Broker y que permite cierto comportamiento. Se pueden ver las opciones disponibles en [API NGSIv2 de Orion](https://github.com/telefonicaid/fiware-orion/blob/master/doc/manuals/orion-api.md#list-entities-get-v2entities)  
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna varibale del objeto cbManager, para poder realizar la autenticación o envío de datos.
         - :raises FetchError: Se lanza cuando el servicio de Context Broker, responde con un error concreto.
@@ -320,6 +321,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
         - :param opcional `geometry`: Cuando se define un filtro de datos por geolocalización, se ha de especificar un tipo de dibujo que se utiliza para resolver el filtrado. Se pueden consultar los diferentes valores de geometry en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
         - :param opcional `coords`: Cuando se define un filtro de datos por geolocalización, se ha de especificar una lista de coordenadas geograficas separadas por coma. Se pueden consultar los diferentes valores de coords en [NGSIv2 API](http://telefonicaid.github.io/fiware-orion/api/v2/stable)
         - :param opcional `id`: Se establece un filtro por Identificador. Si no se especifica, enviará la petición al Context Broker sin el id definido, por lo tanto los datos no serán filtrados por identificador.
+        - :param opcional `idPattern`: Se establece un filtro por patrón de identificador, el cual debe ser una expresión regular. Si no se especifica, enviará la petición al Context Broker sin patrón de id definido, por lo tanto los datos no serán filtrados por identificador.
         - :param opcional `options`: Lista de opciones que recibe el Context Broker. Se pueden ver las opciones disponibles en [API NGSIv2 de Orion](https://github.com/telefonicaid/fiware-orion/blob/master/doc/manuals/orion-api.md#list-entities-get-v2entities)  
         - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta algún argumento o inicializar alguna varibale del objeto cbManager, para poder realizar la autenticación o envío de datos.
         - :raises FetchError: Se lanza cuando el servicio de Context Broker, responde con un error concreto.
@@ -508,6 +510,8 @@ TOTAL                        403    221    45%
 ```
 
 ## Changelog
+
+- Add: new optional parameter `idPattern` in cbManager's methods get_entities and get_entities_page used to filter entities by Identity pattern
 
 0.15.0 (Feburary 27th, 2025)
 
