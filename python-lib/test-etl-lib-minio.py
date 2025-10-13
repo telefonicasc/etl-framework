@@ -23,9 +23,9 @@ from tc_etl_lib.minio import minioManager
 # declare authManager
 minio_client = minioManager(endpoint='localhost:9000',
                             access_key='admin',
-                            secret_key='admin123',
-                            source_file='test-file.txt',
-                            bucket_name='python-test-bucket',
-                            destination_file='my-test-file.txt',
-                            processing_method=print)
-minio_client.getProcessedFile()
+                            secret_key='admin123')
+
+minio_client.getProcessedFile(source_file='test-file.txt',
+                              bucket_name='python-test-bucket',
+                              destination_file='/output/example.txt',
+                              processing_method=print)
