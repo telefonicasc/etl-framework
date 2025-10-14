@@ -62,33 +62,6 @@ class minioManager:
         self.access_key = cast(str, access_key)
         self.secret_key = cast(str, secret_key)
 
-    def getProcessedFile(self, bucket_name, destination_file, chunk_size, processing_method):
-        """Retrieves a file in chunks and applies a function to each chunk
-
-        :param bucket_name: name of the bucket where the file is located
-        :param destination_file: name of the file to retrieve (include path without bucket_name)
-        :param chunk_size: size in bytes of the chunks to retrieve
-        :param processing_method: method to apply to each chunk of the retrieved file
-        """
-        client = self.initClient()
-
-        file_size = client.stat_object(
-            bucket_name, object_name=destination_file).size
-
-        for offset in range(0, file_size, chunk_size):
-            # Get the file
-            try:
-                response = client.get_object(
-                    bucket_name, destination_file, offset, length=chunk_size)
-                # response.read returns bytes
-                processing_method(response.read())
-            except Exception as e:
-                print(f'An error occurred. {e}')
-
-        print("Processing ended")
-        response.close()
-        response.release_conn()
-
     def initClient(self):
         """
         Create a MinIO client with the class endpoint, its access key and secret key.
@@ -150,3 +123,30 @@ class minioManager:
             source_file, "successfully uploaded as object",
             destination_file, "to bucket", bucket_name,
         )
+
+    def getProcessedFile(self, bucket_name, destination_file, chunk_size, processing_method):
+        """Retrieves a file in chunks and applies a function to each chunk
+
+        :param bucket_name: name of the bucket where the file is located
+        :param destination_file: name of the file to retrieve (include path without bucket_name)
+        :param chunk_size: size in bytes of the chunks to retrieve
+        :param processing_method: method to apply to each chunk of the retrieved file
+        """
+        client = self.initClient()
+
+        file_size = client.stat_object(
+            bucket_name, object_name=destination_file).size
+
+        for offset in range(0, file_size, chunk_size):
+            # Get the file
+            try:
+                response = client.get_object(
+                    bucket_name, destination_file, offset, length=chunk_size)
+                # response.read returns bytes
+                processing_method(response.read())
+            except Exception as e:
+                print(f'An error occurred. {e}')
+
+        print("Processing ended")
+        response.close()
+        response.release_conn()
