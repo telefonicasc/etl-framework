@@ -32,10 +32,6 @@ class minioManager:
     endpoint: define minio endpoint
     access_key: str
     secret_key: str
-    source_file: path to the file to upload
-    bucket_name: destination bucket on the MinIO server
-    destination_file: destination filename on the MinIO server
-    processing_method: method to apply to each chunk of the file to retrieve
     """
     endpoint: str
     access_key: str
@@ -53,9 +49,6 @@ class minioManager:
         if secret_key is None:
             messageError.append('<<secret_key>>')
 
-        if access_key is None:
-            messageError.append('<<access_key>>')
-
         if len(messageError) != 0:
             defineParams = messageError[0]
             if len(messageError) != 1:
@@ -69,30 +62,34 @@ class minioManager:
         self.access_key = cast(str, access_key)
         self.secret_key = cast(str, secret_key)
 
-    def getProcessedFile(self, bucket_name, destination_file, source_file, processing_method):
+    def getProcessedFile(self, bucket_name, destination_file, chunk_size, processing_method):
         """Retrieves a file in chunks and applies a function to each chunk
 
         :param bucket_name: name of the bucket where the file is located
         :param destination_file: name of the file to retrieve (include path without bucket_name)
+        :param chunk_size: size in bytes of the chunks to retrieve
         :param processing_method: method to apply to each chunk of the retrieved file
-        :return: the processed file
         """
-        client = self.__initClient()
+        client = self.initClient()
 
-        # Development purposes
-        self.__createBucket(client, bucket_name)
-        self.__uploadFile(client, bucket_name, destination_file, source_file)
+        file_size = client.stat_object(
+            bucket_name, object_name=destination_file).size
 
-        # Get the file
-        try:
-            response = client.get_object(
-                bucket_name, destination_file, offset=0, length=9)
-            processing_method(response.read())
-        finally:
-            response.close()
-            response.release_conn()
+        for offset in range(0, file_size, chunk_size):
+            # Get the file
+            try:
+                response = client.get_object(
+                    bucket_name, destination_file, offset, length=chunk_size)
+                # response.read returns bytes
+                processing_method(response.read())
+            except Exception as e:
+                print(f'An error occurred. {e}')
 
-    def __initClient(self):
+        print("Processing ended")
+        response.close()
+        response.release_conn()
+
+    def initClient(self):
         """
         Create a MinIO client with the class endpoint, its access key and secret key.
         """
@@ -105,9 +102,12 @@ class minioManager:
             secure=False
         )
 
-    def __createBucket(self, client, bucket_name):
+    def createBucket(self, client, bucket_name):
         """
         Create the bucket if it doesn't exist.
+
+        :param client: MinIO client to access the file
+        :param bucket_name: name of the bucket where the file is located
         """
         found = client.bucket_exists(bucket_name)
         if not found:
@@ -116,7 +116,21 @@ class minioManager:
         else:
             print("Bucket", bucket_name, "already exists")
 
-    def __uploadFile(self, client, bucket_name, destination_file, source_file):
+    def removeBucket(self, client, bucket_name):
+        """
+        Remove the bucket if it exists.
+
+        :param client: MinIO client to access the file
+        :param bucket_name: name of the bucket where the file is located
+        """
+        found = client.bucket_exists(bucket_name)
+        if found:
+            client.remove_bucket(bucket_name)
+            print("Removed bucket", bucket_name)
+        else:
+            print("Bucket", bucket_name, "doesn't exist")
+
+    def uploadFile(self, client, bucket_name, destination_file, source_file):
         """
         Upload the file, renaming it in the process
 
@@ -124,6 +138,9 @@ class minioManager:
         :param destination_file: name of the file to retrieve (include path without bucket_name)
         :param source_file: name of the file to upload (include path without bucket_name)
         """
+        # Bucket must exist before uploading file
+        self.createBucket(client, bucket_name)
+
         client.fput_object(
             bucket_name,
             object_name=destination_file,
