@@ -20,12 +20,37 @@
 
 from tc_etl_lib.minio import minioManager
 
-# declare authManager
-minio_client = minioManager(endpoint='localhost:9000',
-                            access_key='admin',
-                            secret_key='admin123')
+# declare minioManager
+minio_manager = minioManager(endpoint='localhost:9000',
+                             access_key='admin',
+                             secret_key='admin123')
+minio_client = minio_manager.initClient()
 
-minio_client.getProcessedFile(source_file='test-file.txt',
-                              bucket_name='python-test-bucket',
-                              destination_file='/output/example.txt',
-                              processing_method=print)
+# Upload test-file.txt to python-test-bucket/output/example.txt
+# Important: the bucket must already exist, so 
+minio_manager.uploadFile(minio_client, bucket_name='python-test-bucket',
+                         destination_file='/output/example.txt',
+                         source_file="test-file.txt")
+
+# Retrieve example.txt and apply print method to each 3 bytes
+minio_manager.getProcessedFile(bucket_name='python-test-bucket',
+                               destination_file='/output/example.txt',
+                               chunk_size=3,
+                               processing_method=print)
+
+# Custom method that writes the file chunks in a CSV (he receives and writes bytes)
+def customCSVProcessingMethod(file_chunk):
+    fichero_procesado = open("salida.csv", "ab")
+    fichero_procesado.write(file_chunk)
+    fichero_procesado.close()
+
+# Upload CSV
+minio_manager.uploadFile(minio_client, bucket_name='python-test-bucket',
+                         destination_file='/output/reallyBigFile.csv',
+                         source_file="movimientos_padronales_20250822_v2.csv")
+
+# Retrieve reallyBigFile.csv and apply customCSVProcessingMethod method to each 1000000 bytes
+minio_manager.getProcessedFile(bucket_name='python-test-bucket',
+                               destination_file='/output/reallyBigFile.csv',
+                               chunk_size=1000000,
+                               processing_method=customCSVProcessingMethod)
