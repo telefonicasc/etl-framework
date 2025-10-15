@@ -107,6 +107,7 @@ class minioManager:
         """
         Upload the file, renaming it in the process
 
+        :param client: MinIO client to access the file
         :param bucket_name: name of the bucket where the file is located
         :param destination_file: name of the file to retrieve (include path without bucket_name)
         :param source_file: name of the file to upload (include path without bucket_name)
@@ -124,16 +125,15 @@ class minioManager:
             destination_file, "to bucket", bucket_name,
         )
 
-    def getProcessedFile(self, bucket_name, destination_file, chunk_size, processing_method):
+    def getProcessedFile(self, client, bucket_name, destination_file, chunk_size, processing_method):
         """Retrieves a file in chunks and applies a function to each chunk
 
+        :param client: MinIO client to access the file
         :param bucket_name: name of the bucket where the file is located
         :param destination_file: name of the file to retrieve (include path without bucket_name)
         :param chunk_size: size in bytes of the chunks to retrieve
         :param processing_method: method to apply to each chunk of the retrieved file
         """
-        client = self.initClient()
-
         file_size = client.stat_object(
             bucket_name, object_name=destination_file).size
 

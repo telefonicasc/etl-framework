@@ -33,7 +33,8 @@ minio_manager.uploadFile(minio_client, bucket_name='python-test-bucket',
                          source_file="test-file.txt")
 
 # Retrieve example.txt and apply print method to each 3 bytes
-minio_manager.getProcessedFile(bucket_name='python-test-bucket',
+minio_manager.getProcessedFile(minio_client,
+                               bucket_name='python-test-bucket',
                                destination_file='/output/example.txt',
                                chunk_size=3,
                                processing_method=print)
@@ -50,7 +51,8 @@ minio_manager.uploadFile(minio_client, bucket_name='python-test-bucket',
                          source_file="movimientos_padronales_20250822_v2.csv")
 
 # Retrieve reallyBigFile.csv and apply customCSVProcessingMethod method to each 1000000 bytes
-minio_manager.getProcessedFile(bucket_name='python-test-bucket',
+minio_manager.getProcessedFile(minio_client,
+                               bucket_name='python-test-bucket',
                                destination_file='/output/reallyBigFile.csv',
                                chunk_size=1000000,
                                processing_method=customCSVProcessingMethod)
