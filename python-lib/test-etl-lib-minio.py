@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with IoT orchestrator. If not, see http://www.gnu.org/licenses/.
 
-from tc_etl_lib.minio import minioManager
+from tc_etl_lib.minioManager import minioManager
 
 # declare minioManager
 minio_manager = minioManager(endpoint='localhost:9000',
