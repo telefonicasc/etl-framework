@@ -239,6 +239,39 @@ iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoi
 iotam.send_batch_http(data=[{"<key_1>": "<value_1>", "<key_2>": "<value_2>"}, {"<key_3>": "<value_3>", "<key_4>": "<value_4>"}])
 ```
 
+Ejemplo de uso de la clase minioManager
+
+```python
+# import library
+import tc_etl_lib as tc
+
+# declare minioManager and get initialized client
+minio_manager = tc.minioManager(endpoint='<minio_endpoint>:<port>',
+                             access_key='<user>',
+                             secret_key='<password>')
+minio_client = minio_manager.initClient()
+
+
+# Upload test-file.txt to python-test-bucket/output/example.txt
+minio_manager.uploadFile(minio_client, bucket_name='python-test-bucket',
+                         destination_file='/output/example.txt',
+                         source_file="test-file.txt")
+
+# Retrieve example.txt and apply print method to each 3 bytes chunk
+minio_manager.getProcessedFile(minio_client,
+                               bucket_name='python-test-bucket',
+                               destination_file='/output/example.txt',
+                               chunk_size=3,
+                               processing_method=print)
+
+# You can define your own custom processing method and use it in the processing_method argument of the getProcessedFile method
+def customProcessingMethod(file_chunk):
+    # code to apply to the chunk of the file or to locally save the file
+
+# Remove the bucket created in the upload file method
+minio_manager.removeBucket(minio_client, "python-test-bucket")
+```
+
 ## Funciones disponibles en la librería
 
 La librería está creada con diferentes clases dependiendo de la funcionalidad deseada.
@@ -378,6 +411,32 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio: `data`: Datos a enviar. Puede ser una lista de diccionarios o un DataFrame.
     - :raises SendBatchError: Se levanta cuando se produce una excepción dentro de `send_http`. Atrapa la excepción original y se guarda y se imprime el índice donde se produjo el error.
 
+- Clase `minioManager`: En esta clase están las funciones relacionadas con la solución de almacenamiento de objetos MinIO.
+
+  - `__init__`: constructor de objetos de la clase.
+    - :param obligatorio `endpoint`: enpoint de acceso a MinIO
+    - :param obligatorio `access_key`: usuario necesario para hacer login en MinIO
+    - :param obligatorio `secret_key`: contraseña necesaria para hacer login en MinIO
+  - `initClient`: inicializa un cliente de MinIO
+    - :return: cliente autenticado de MinIO.
+  - `createBucket`: comprueba si existe el bucket y si no lo crea.
+    - :param obligatorio `client`: cliente de MinIO.
+    - :param obligatorio `bucket_name`: nombre del bucket a crear.
+  - `removeBucket`: comprueba si existe el bucket y si existe lo borra.
+    - :param obligatorio `client`: cliente de MinIO.
+    - :param obligatorio `bucket_name`: nombre del bucket a borrar.
+  - `uploadFile`: sube un fichero a MinIO. Si el bucket al que se sube no existe se crea previamente.
+    - :param obligatorio `client`: cliente de MinIO.
+    - :param obligatorio `bucket_name`: nombre del bucket donde se va a subir el fichero.
+    - :param obligatorio `destination_file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
+    - :param obligatorio `source_file`: nombre del fichero local a subir (puede incluir el path).
+    - :return: objeto con el estado de la subida del fichero.
+  - `getProcessedFile`: procesa un fichero de MinIO por fragmentos y le aplica a cada fragmento la función provista.
+    - :param obligatorio `client`: cliente de MinIO.
+    - :param obligatorio `bucket_name`: nombre del bucket donde se va a buscar el fichero.
+    - :param obligatorio `destination_file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
+    - :param obligatorio `chunk_size`: tamaño en bytes de cada fragmento del fichero a recuperar.
+    - :param obligatorio `processing_method`: método a aplicar a cada fragmento del fichero.
 
 Algunos ejemplos de uso de `normalizer`:
 
@@ -510,6 +569,9 @@ TOTAL                        403    221    45%
 ```
 
 ## Changelog
+
+0.17.0 (October 16th, 2025)
+- Add: new class `minioManager` to manage MinIO connection and file processing
 
 0.16.0 (September 29th, 2025)
 

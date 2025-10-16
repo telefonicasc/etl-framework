@@ -30,8 +30,8 @@ class minioManager:
     """Minio Manager
 
     endpoint: define minio endpoint
-    access_key: str
-    secret_key: str
+    access_key: user to log in to minio
+    secret_key: password to log in to minio
     """
     endpoint: str
     access_key: str
@@ -65,6 +65,8 @@ class minioManager:
     def initClient(self):
         """
         Create a MinIO client with the class endpoint, its access key and secret key.
+        
+        :return authenticated MinIO client
         """
         return Minio(
             self.endpoint,
@@ -106,8 +108,9 @@ class minioManager:
 
         :param client: MinIO client to access the file
         :param bucket_name: name of the bucket where the file is located
-        :param destination_file: name of the file to retrieve (include path without bucket_name)
-        :param source_file: name of the file to upload (include path without bucket_name)
+        :param destination_file: name of the file to retrieve (can include path without bucket_name)
+        :param source_file: name of the file to upload (can include path)
+        :return object with the status of the upload
         """
         # Bucket must exist before uploading file
         self.createBucket(client, bucket_name)
@@ -127,7 +130,7 @@ class minioManager:
 
         :param client: MinIO client to access the file
         :param bucket_name: name of the bucket where the file is located
-        :param destination_file: name of the file to retrieve (include path without bucket_name)
+        :param destination_file: name of the file to retrieve (can include path without bucket_name)
         :param chunk_size: size in bytes of the chunks to retrieve
         :param processing_method: method to apply to each chunk of the retrieved file
         """
