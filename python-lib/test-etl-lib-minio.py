@@ -21,9 +21,9 @@
 from tc_etl_lib.minioManager import minioManager
 
 # declare minioManager
-minio_manager = minioManager(endpoint='localhost:9000',
-                             access_key='admin',
-                             secret_key='admin123')
+minio_manager = minioManager(endpoint='<minio_endpoint>:<port>',
+                             access_key='<user>',
+                             secret_key='<password>')
 minio_client = minio_manager.initClient()
 
 # Upload test-file.txt to python-test-bucket/output/example.txt
