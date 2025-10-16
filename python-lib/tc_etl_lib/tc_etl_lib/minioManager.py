@@ -69,10 +69,7 @@ class minioManager:
         return Minio(
             self.endpoint,
             self.access_key,
-            self.secret_key,
-            # TODO This flag is EXCLUSIVELY for developpment purposes, it uses http instead of https because the
-            # local server doesnt have tsl configured. Change for production
-            secure=False
+            self.secret_key
         )
 
     def createBucket(self, client, bucket_name):
