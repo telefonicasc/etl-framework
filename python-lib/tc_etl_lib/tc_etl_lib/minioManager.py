@@ -115,14 +115,14 @@ class minioManager:
         # Bucket must exist before uploading file
         self.createBucket(client, bucket_name)
 
-        client.fput_object(
+        print(
+            "Uploading", source_file, "as object",
+            destination_file, "to bucket", bucket_name,
+        )
+        return client.fput_object(
             bucket_name,
             object_name=destination_file,
             file_path=source_file,
-        )
-        print(
-            source_file, "successfully uploaded as object",
-            destination_file, "to bucket", bucket_name,
         )
 
     def getProcessedFile(self, client, bucket_name, destination_file, chunk_size, processing_method):
@@ -135,18 +135,20 @@ class minioManager:
         :param processing_method: method to apply to each chunk of the retrieved file
         """
         file_size = client.stat_object(
-            bucket_name, object_name=destination_file).size
+            bucket_name, object_name=destination_file).size or 0
 
+        response = None
         for offset in range(0, file_size, chunk_size):
             # Get the file
             try:
                 response = client.get_object(
                     bucket_name, destination_file, offset, length=chunk_size)
-                # response.read returns bytes
-                processing_method(response.read())
+                # response.data returns bytes
+                processing_method(response.data)
             except Exception as e:
                 print(f'An error occurred. {e}')
 
         print("Processing ended")
-        response.close()
-        response.release_conn()
+        if response:
+            response.close()
+            response.release_conn()
