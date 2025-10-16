@@ -27,7 +27,6 @@ minio_manager = tc.minioManager(endpoint='<minio_endpoint>:<port>',
 minio_client = minio_manager.initClient()
 
 # Upload test-file.txt to python-test-bucket/output/example.txt
-# Important: the bucket must already exist, so 
 minio_manager.uploadFile(minio_client, bucket_name='python-test-bucket',
                          destination_file='/output/example.txt',
                          source_file="test-file.txt")
