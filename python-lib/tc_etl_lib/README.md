@@ -249,17 +249,15 @@ import tc_etl_lib as tc
 minio_manager = tc.minioManager(endpoint='<minio_endpoint>:<port>',
                              access_key='<user>',
                              secret_key='<password>')
-minio_client = minio_manager.initClient()
 
 
 # Upload test-file.txt to python-test-bucket/output/example.txt
-minio_manager.uploadFile(minio_client, bucket_name='python-test-bucket',
+minio_manager.uploadFile(bucket_name='python-test-bucket',
                          destination_file='/output/example.txt',
                          source_file="test-file.txt")
 
 # Retrieve example.txt and apply print method to each 3 bytes chunk
-minio_manager.getProcessedFile(minio_client,
-                               bucket_name='python-test-bucket',
+minio_manager.getProcessedFile(bucket_name='python-test-bucket',
                                destination_file='/output/example.txt',
                                chunk_size=3,
                                processing_method=print)
@@ -417,22 +415,16 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `endpoint`: enpoint de acceso a MinIO
     - :param obligatorio `access_key`: usuario necesario para hacer login en MinIO
     - :param obligatorio `secret_key`: contraseña necesaria para hacer login en MinIO
-  - `initClient`: inicializa un cliente de MinIO
-    - :return: cliente autenticado de MinIO.
   - `createBucket`: comprueba si existe el bucket y si no lo crea.
-    - :param obligatorio `client`: cliente de MinIO.
     - :param obligatorio `bucket_name`: nombre del bucket a crear.
   - `removeBucket`: comprueba si existe el bucket y si existe lo borra.
-    - :param obligatorio `client`: cliente de MinIO.
     - :param obligatorio `bucket_name`: nombre del bucket a borrar.
   - `uploadFile`: sube un fichero a MinIO. Si el bucket al que se sube no existe se crea previamente.
-    - :param obligatorio `client`: cliente de MinIO.
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a subir el fichero.
     - :param obligatorio `destination_file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `source_file`: nombre del fichero local a subir (puede incluir el path).
     - :return: objeto con el estado de la subida del fichero.
   - `getProcessedFile`: procesa un fichero de MinIO por fragmentos y le aplica a cada fragmento la función provista.
-    - :param obligatorio `client`: cliente de MinIO.
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a buscar el fichero.
     - :param obligatorio `destination_file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `chunk_size`: tamaño en bytes de cada fragmento del fichero a recuperar.

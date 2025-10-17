@@ -32,10 +32,12 @@ class minioManager:
     endpoint: define minio endpoint
     access_key: user to log in to minio
     secret_key: password to log in to minio
+    client: authenticated MinIO client
     """
     endpoint: str
     access_key: str
     secret_key: str
+    client: Minio
 
     def __init__(self, endpoint: Optional[str] = None, access_key: Optional[str] = None, secret_key: Optional[str] = None):
 
@@ -61,8 +63,9 @@ class minioManager:
         self.endpoint = cast(str, endpoint)
         self.access_key = cast(str, access_key)
         self.secret_key = cast(str, secret_key)
+        self.client = self.__initClient()
 
-    def initClient(self):
+    def __initClient(self):
         """
         Create a MinIO client with the class endpoint, its access key and secret key.
         
@@ -71,77 +74,74 @@ class minioManager:
         return Minio(
             self.endpoint,
             self.access_key,
-            self.secret_key
+            self.secret_key,
+            secure = False
         )
 
-    def createBucket(self, client, bucket_name):
+    def createBucket(self, bucket_name):
         """
         Create the bucket if it doesn't exist.
 
-        :param client: MinIO client to access the file
         :param bucket_name: name of the bucket where the file is located
         """
-        found = client.bucket_exists(bucket_name)
+        found = self.client.bucket_exists(bucket_name)
         if not found:
-            client.make_bucket(bucket_name)
+            self.client.make_bucket(bucket_name)
             print("Created bucket", bucket_name)
         else:
             print("Bucket", bucket_name, "already exists")
 
-    def removeBucket(self, client, bucket_name):
+    def removeBucket(self, bucket_name):
         """
         Remove the bucket if it exists.
 
-        :param client: MinIO client to access the file
         :param bucket_name: name of the bucket where the file is located
         """
-        found = client.bucket_exists(bucket_name)
+        found = self.client.bucket_exists(bucket_name)
         if found:
-            client.remove_bucket(bucket_name)
+            self.client.remove_bucket(bucket_name)
             print("Removed bucket", bucket_name)
         else:
             print("Bucket", bucket_name, "doesn't exist")
 
-    def uploadFile(self, client, bucket_name, destination_file, source_file):
+    def uploadFile(self, bucket_name, destination_file, source_file):
         """
         Upload the file, renaming it in the process
 
-        :param client: MinIO client to access the file
         :param bucket_name: name of the bucket where the file is located
         :param destination_file: name of the file to retrieve (can include path without bucket_name)
         :param source_file: name of the file to upload (can include path)
         :return object with the status of the upload
         """
         # Bucket must exist before uploading file
-        self.createBucket(client, bucket_name)
+        self.createBucket(bucket_name)
 
         print(
             "Uploading", source_file, "as object",
             destination_file, "to bucket", bucket_name,
         )
-        return client.fput_object(
+        return self.client.fput_object(
             bucket_name,
             object_name=destination_file,
             file_path=source_file,
         )
 
-    def getProcessedFile(self, client, bucket_name, destination_file, chunk_size, processing_method):
+    def getProcessedFile(self, bucket_name, destination_file, chunk_size, processing_method):
         """Retrieves a file in chunks and applies a function to each chunk
 
-        :param client: MinIO client to access the file
         :param bucket_name: name of the bucket where the file is located
         :param destination_file: name of the file to retrieve (can include path without bucket_name)
         :param chunk_size: size in bytes of the chunks to retrieve
         :param processing_method: method to apply to each chunk of the retrieved file
         """
-        file_size = client.stat_object(
+        file_size = self.client.stat_object(
             bucket_name, object_name=destination_file).size or 0
 
         response = None
         for offset in range(0, file_size, chunk_size):
             # Get the file
             try:
-                response = client.get_object(
+                response = self.client.get_object(
                     bucket_name, destination_file, offset, length=chunk_size)
                 # response.data returns bytes
                 processing_method(response.data)

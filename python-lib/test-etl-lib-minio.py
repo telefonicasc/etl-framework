@@ -24,34 +24,31 @@ import tc_etl_lib as tc
 minio_manager = tc.minioManager(endpoint='<minio_endpoint>:<port>',
                              access_key='<user>',
                              secret_key='<password>')
-minio_client = minio_manager.initClient()
 
 # Upload test-file.txt to python-test-bucket/output/example.txt
-minio_manager.uploadFile(minio_client, bucket_name='python-test-bucket',
+minio_manager.uploadFile(bucket_name='python-test-bucket',
                          destination_file='/output/example.txt',
                          source_file="test-file.txt")
 
 # Retrieve example.txt and apply print method to each 3 bytes
-minio_manager.getProcessedFile(minio_client,
-                               bucket_name='python-test-bucket',
+minio_manager.getProcessedFile(bucket_name='python-test-bucket',
                                destination_file='/output/example.txt',
                                chunk_size=3,
                                processing_method=print)
 
 # Custom method that writes the file chunks in a CSV (he receives and writes bytes)
 def customCSVProcessingMethod(file_chunk):
-    fichero_procesado = open("salida.csv", "ab")
-    fichero_procesado.write(file_chunk)
-    fichero_procesado.close()
+    processed_file = open("salida.csv", "ab")
+    processed_file.write(file_chunk)
+    processed_file.close()
 
 # Upload CSV
-minio_manager.uploadFile(minio_client, bucket_name='python-test-bucket',
+minio_manager.uploadFile(bucket_name='python-test-bucket',
                          destination_file='/output/reallyBigFile.csv',
                          source_file="movimientos_padronales_20250822_v2.csv")
 
 # Retrieve reallyBigFile.csv and apply customCSVProcessingMethod method to each 1000000 bytes
-minio_manager.getProcessedFile(minio_client,
-                               bucket_name='python-test-bucket',
+minio_manager.getProcessedFile(bucket_name='python-test-bucket',
                                destination_file='/output/reallyBigFile.csv',
                                chunk_size=1000000,
                                processing_method=customCSVProcessingMethod)
