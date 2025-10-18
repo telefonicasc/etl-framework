@@ -56,7 +56,7 @@ class minioManager:
             if len(messageError) != 1:
                 defineParams = " and ".join(
                     [", ".join(messageError[:-1]), messageError[-1]])
-            raise ValueError(f'You must define {defineParams} in authManager')
+            raise ValueError(f'You must define {defineParams} in minioManager')
 
         # At this point, all Optional[str] have been validated to be not None.
         # cast them to let type checker knows.
@@ -74,8 +74,7 @@ class minioManager:
         return Minio(
             self.endpoint,
             self.access_key,
-            self.secret_key,
-            secure = False
+            self.secret_key
         )
 
     def createBucket(self, bucket_name):
@@ -126,23 +125,23 @@ class minioManager:
             file_path=source_file,
         )
 
-    def getProcessedFile(self, bucket_name, destination_file, chunk_size, processing_method):
+    def getProcessedFile(self, bucket_name, file, processing_method, chunk_size = 500000):
         """Retrieves a file in chunks and applies a function to each chunk
 
         :param bucket_name: name of the bucket where the file is located
-        :param destination_file: name of the file to retrieve (can include path without bucket_name)
+        :param file: name of the file to retrieve (can include path without bucket_name)
         :param chunk_size: size in bytes of the chunks to retrieve
         :param processing_method: method to apply to each chunk of the retrieved file
         """
         file_size = self.client.stat_object(
-            bucket_name, object_name=destination_file).size or 0
+            bucket_name, object_name=file).size or 0
 
         response = None
         for offset in range(0, file_size, chunk_size):
             # Get the file
             try:
                 response = self.client.get_object(
-                    bucket_name, destination_file, offset, length=chunk_size)
+                    bucket_name, file, offset, chunk_size)
                 # response.data returns bytes
                 processing_method(response.data)
             except Exception as e:

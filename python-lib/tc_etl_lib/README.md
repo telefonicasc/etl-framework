@@ -256,15 +256,15 @@ minio_manager.uploadFile(bucket_name='python-test-bucket',
                          destination_file='/output/example.txt',
                          source_file="test-file.txt")
 
-# Retrieve example.txt and apply print method to each 3 bytes chunk
+# You can define your own custom processing method and use it in the processing_method argument of the getProcessedFile method
+def process_chunk(file_chunk):
+    print(file_chunk)
+
+# Retrieve example.txt and apply custom method to each 3 bytes chunk
 minio_manager.getProcessedFile(bucket_name='python-test-bucket',
                                destination_file='/output/example.txt',
                                chunk_size=3,
-                               processing_method=print)
-
-# You can define your own custom processing method and use it in the processing_method argument of the getProcessedFile method
-def customProcessingMethod(file_chunk):
-    # code to apply to the chunk of the file or to locally save the file
+                               processing_method=process_chunk)
 
 # Remove the bucket created in the upload file method
 minio_manager.removeBucket(minio_client, "python-test-bucket")
@@ -415,20 +415,20 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `endpoint`: enpoint de acceso a MinIO
     - :param obligatorio `access_key`: usuario necesario para hacer login en MinIO
     - :param obligatorio `secret_key`: contraseña necesaria para hacer login en MinIO
-  - `createBucket`: comprueba si existe el bucket y si no lo crea.
+  - `createBucket`: crea el bucket si no existe, si existe lanza un mensaje informativo.
     - :param obligatorio `bucket_name`: nombre del bucket a crear.
-  - `removeBucket`: comprueba si existe el bucket y si existe lo borra.
+  - `removeBucket`: borra el bucket si existe, si no existe lanza un mensaje informativo.
     - :param obligatorio `bucket_name`: nombre del bucket a borrar.
-  - `uploadFile`: sube un fichero a MinIO. Si el bucket al que se sube no existe se crea previamente.
+  - `uploadFile`: sube un fichero a MinIO (si ya existe lo sobreescribe). Si el bucket al que se sube no existe se crea previamente.
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a subir el fichero.
     - :param obligatorio `destination_file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `source_file`: nombre del fichero local a subir (puede incluir el path).
     - :return: objeto con el estado de la subida del fichero.
   - `getProcessedFile`: procesa un fichero de MinIO por fragmentos y le aplica a cada fragmento la función provista.
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a buscar el fichero.
-    - :param obligatorio `destination_file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
-    - :param obligatorio `chunk_size`: tamaño en bytes de cada fragmento del fichero a recuperar.
+    - :param obligatorio `file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `processing_method`: método a aplicar a cada fragmento del fichero.
+    - :param optional `chunk_size`: tamaño en bytes de cada fragmento del fichero a recuperar.
 
 Algunos ejemplos de uso de `normalizer`:
 
@@ -562,8 +562,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
-0.17.0 (October 16th, 2025)
-- Add: new class `minioManager` to manage MinIO connection and file processing
+
+- Add: new class `minioManager` to manage MinIO connection and file processing ([#109](https://github.com/telefonicasc/etl-framework/issues/109))
 
 0.16.0 (September 29th, 2025)
 

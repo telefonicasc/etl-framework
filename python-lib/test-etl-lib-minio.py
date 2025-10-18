@@ -32,13 +32,13 @@ minio_manager.uploadFile(bucket_name='python-test-bucket',
 
 # Retrieve example.txt and apply print method to each 3 bytes
 minio_manager.getProcessedFile(bucket_name='python-test-bucket',
-                               destination_file='/output/example.txt',
-                               chunk_size=3,
-                               processing_method=print)
+                               file='/output/example.txt',
+                               processing_method=print,
+                               chunk_size=3)
 
 # Custom method that writes the file chunks in a CSV (he receives and writes bytes)
 def customCSVProcessingMethod(file_chunk):
-    processed_file = open("salida.csv", "ab")
+    processed_file = open("out.csv", "ab")
     processed_file.write(file_chunk)
     processed_file.close()
 
@@ -49,6 +49,6 @@ minio_manager.uploadFile(bucket_name='python-test-bucket',
 
 # Retrieve reallyBigFile.csv and apply customCSVProcessingMethod method to each 1000000 bytes
 minio_manager.getProcessedFile(bucket_name='python-test-bucket',
-                               destination_file='/output/reallyBigFile.csv',
-                               chunk_size=1000000,
-                               processing_method=customCSVProcessingMethod)
+                               file='/output/reallyBigFile.csv',
+                               processing_method=customCSVProcessingMethod,
+                               chunk_size=1000000)
