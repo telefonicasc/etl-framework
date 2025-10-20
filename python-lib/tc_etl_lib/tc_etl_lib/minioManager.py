@@ -35,14 +35,16 @@ class minioManager:
     endpoint: define minio endpoint
     access_key: user to log in to minio
     secret_key: password to log in to minio
+    secure: flag to select if the connection to MinIO is https or http (True by default)
     client: authenticated MinIO client
     """
     endpoint: str
     access_key: str
     secret_key: str
+    secure: bool
     client: Minio
 
-    def __init__(self, endpoint: Optional[str] = None, access_key: Optional[str] = None, secret_key: Optional[str] = None):
+    def __init__(self, endpoint: Optional[str] = None, access_key: Optional[str] = None, secret_key: Optional[str] = None, secure = True):
 
         messageError = []
         if endpoint is None:
@@ -66,6 +68,7 @@ class minioManager:
         self.endpoint = cast(str, endpoint)
         self.access_key = cast(str, access_key)
         self.secret_key = cast(str, secret_key)
+        self.secure = secure
         self.client = self.__initClient()
 
     def __initClient(self):
@@ -77,7 +80,8 @@ class minioManager:
         return Minio(
             self.endpoint,
             self.access_key,
-            self.secret_key
+            self.secret_key,
+            secure=self.secure
         )
 
     def createBucket(self, bucket_name):

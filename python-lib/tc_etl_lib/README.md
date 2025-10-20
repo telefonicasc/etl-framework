@@ -415,6 +415,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `endpoint`: enpoint de acceso a MinIO
     - :param obligatorio `access_key`: usuario necesario para hacer login en MinIO
     - :param obligatorio `secret_key`: contraseña necesaria para hacer login en MinIO
+    - :param optional `secure`: flag para indicar si la conexión con MinIO usa https (True) o http (False)
     - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta alguno de los argumentos obligatorios.
   - `createBucket`: crea el bucket si no existe, si existe lanza un mensaje informativo.
     - :param obligatorio `bucket_name`: nombre del bucket a crear.
