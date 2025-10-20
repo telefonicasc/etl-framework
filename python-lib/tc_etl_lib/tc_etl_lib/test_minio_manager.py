@@ -75,7 +75,7 @@ def test_uploadFile(minio_mock):
     assert result == "Upload successful"
 
 
-def test_getProcessedFile(minio_mock):
+def test_processFile(minio_mock):
     minio_manager = initMinioManager()
     bucket_name = 'test-bucket'
     file = "test-minioManager-file.txt"
@@ -107,7 +107,7 @@ def test_getProcessedFile(minio_mock):
 
     mocked_return = obectStat()
     with mock.patch('pytest_minio_mock.plugin.MockMinioObject.stat_object', return_value=mocked_return) as irrelevant:
-        minio_manager.getProcessedFile(minio_client,
+        minio_manager.processFile(minio_client,
                                        bucket_name,
                                        destination_file=file,
                                        chunk_size=9,

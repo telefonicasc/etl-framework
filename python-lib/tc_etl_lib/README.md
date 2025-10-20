@@ -256,12 +256,12 @@ minio_manager.uploadFile(bucket_name='python-test-bucket',
                          destination_file='/output/example.txt',
                          source_file="test-file.txt")
 
-# You can define your own custom processing method and use it in the processing_method argument of the getProcessedFile method
+# You can define your own custom processing method and use it in the processing_method argument of the processFile method
 def process_chunk(file_chunk):
     print(file_chunk)
 
 # Retrieve example.txt and apply custom method to each 3 bytes chunk
-minio_manager.getProcessedFile(bucket_name='python-test-bucket',
+minio_manager.processFile(bucket_name='python-test-bucket',
                                destination_file='/output/example.txt',
                                chunk_size=3,
                                processing_method=process_chunk)
@@ -425,7 +425,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `destination_file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `source_file`: nombre del fichero local a subir (puede incluir el path).
     - :return: objeto con el estado de la subida del fichero.
-  - `getProcessedFile`: procesa un fichero de MinIO por fragmentos y le aplica a cada fragmento la función provista.
+  - `processFile`: procesa un fichero de MinIO por fragmentos y le aplica a cada fragmento la función provista.
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a buscar el fichero.
     - :param obligatorio `file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `processing_method`: método a aplicar a cada fragmento del fichero.

@@ -126,7 +126,7 @@ class minioManager:
             file_path=source_file,
         )
 
-    def getProcessedFile(self, bucket_name, file, processing_method, chunk_size=500000):
+    def processFile(self, bucket_name, file, processing_method, chunk_size=500000):
         """Retrieves a file in chunks and applies a function to each chunk
 
         :param bucket_name: name of the bucket where the file is located
