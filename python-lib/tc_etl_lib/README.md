@@ -430,7 +430,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a buscar el fichero.
     - :param obligatorio `file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `processing_method`: método a aplicar a cada fragmento del fichero.
-    - :param optional `chunk_size`: tamaño en bytes de cada fragmento del fichero a recuperar.
+    - :param optional `chunk_size`: tamaño en bytes de cada fragmento del fichero a recuperar. Por defecto 500000 bytes (500kB / 0,5mB) si se omite el argumento
     - :raises [Exception](https://docs.python.org/3/library/exceptions.html#Exception): Se lanza cuando se captura una excepción en el procesamiento del fichero
 
 Algunos ejemplos de uso de `normalizer`:
