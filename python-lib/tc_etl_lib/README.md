@@ -415,6 +415,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `endpoint`: enpoint de acceso a MinIO
     - :param obligatorio `access_key`: usuario necesario para hacer login en MinIO
     - :param obligatorio `secret_key`: contraseña necesaria para hacer login en MinIO
+    - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta alguno de los argumentos obligatorios.
   - `createBucket`: crea el bucket si no existe, si existe lanza un mensaje informativo.
     - :param obligatorio `bucket_name`: nombre del bucket a crear.
   - `removeBucket`: borra el bucket si existe, si no existe lanza un mensaje informativo.
@@ -429,6 +430,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `processing_method`: método a aplicar a cada fragmento del fichero.
     - :param optional `chunk_size`: tamaño en bytes de cada fragmento del fichero a recuperar.
+    - :raises [Exception](https://docs.python.org/3/library/exceptions.html#Exception): Se lanza cuando se captura una excepción en el procesamiento del fichero
 
 Algunos ejemplos de uso de `normalizer`:
 

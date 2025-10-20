@@ -24,6 +24,9 @@ Minio routines for Python:
 """
 from minio import Minio
 from typing import Optional, cast
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class minioManager:
@@ -68,7 +71,7 @@ class minioManager:
     def __initClient(self):
         """
         Create a MinIO client with the class endpoint, its access key and secret key.
-        
+
         :return authenticated MinIO client
         """
         return Minio(
@@ -86,9 +89,9 @@ class minioManager:
         found = self.client.bucket_exists(bucket_name)
         if not found:
             self.client.make_bucket(bucket_name)
-            print("Created bucket", bucket_name)
+            logger.debug(f'Created bucket ({bucket_name})')
         else:
-            print("Bucket", bucket_name, "already exists")
+            logger.debug(f'Bucket {bucket_name} already exists')
 
     def removeBucket(self, bucket_name):
         """
@@ -99,9 +102,9 @@ class minioManager:
         found = self.client.bucket_exists(bucket_name)
         if found:
             self.client.remove_bucket(bucket_name)
-            print("Removed bucket", bucket_name)
+            logger.debug(f'Removed bucket {bucket_name}')
         else:
-            print("Bucket", bucket_name, "doesn't exist")
+            logger.debug(f'Bucket {bucket_name} doesnt exist')
 
     def uploadFile(self, bucket_name, destination_file, source_file):
         """
@@ -115,17 +118,15 @@ class minioManager:
         # Bucket must exist before uploading file
         self.createBucket(bucket_name)
 
-        print(
-            "Uploading", source_file, "as object",
-            destination_file, "to bucket", bucket_name,
-        )
+        logger.debug(
+            f'Uploading {source_file} as object {destination_file} to bucket {bucket_name}')
         return self.client.fput_object(
             bucket_name,
             object_name=destination_file,
             file_path=source_file,
         )
 
-    def getProcessedFile(self, bucket_name, file, processing_method, chunk_size = 500000):
+    def getProcessedFile(self, bucket_name, file, processing_method, chunk_size=500000):
         """Retrieves a file in chunks and applies a function to each chunk
 
         :param bucket_name: name of the bucket where the file is located
@@ -145,9 +146,9 @@ class minioManager:
                 # response.data returns bytes
                 processing_method(response.data)
             except Exception as e:
-                print(f'An error occurred. {e}')
+                raise Exception(f'An error occured while processing the file: {e}')
 
-        print("Processing ended")
+        logger.debug(f'Processing ended.')
         if response:
             response.close()
             response.release_conn()
