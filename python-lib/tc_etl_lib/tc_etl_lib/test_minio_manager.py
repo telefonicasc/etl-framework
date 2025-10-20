@@ -37,19 +37,17 @@ def initMinioManager():
 def test_createBucket(minio_mock):
     minio_manager = initMinioManager()
 
-    minio_client = minio_manager.initClient()
-    minio_manager.createBucket(minio_client, "test_bucket")
-    buckets = minio_client.list_buckets()
+    minio_manager.createBucket("test_bucket")
+    buckets = minio_manager.client.list_buckets()
     assert len(buckets) == 1
 
 
 def test_removeBucket(minio_mock):
     minio_manager = initMinioManager()
 
-    minio_client = minio_manager.initClient()
-    minio_manager.createBucket(minio_client, "test_bucket")
-    minio_manager.removeBucket(minio_client, "test_bucket")
-    buckets = minio_client.list_buckets()
+    minio_manager.createBucket("test_bucket")
+    minio_manager.removeBucket("test_bucket")
+    buckets = minio_manager.client.list_buckets()
     assert len(buckets) == 0
 
 
@@ -63,9 +61,8 @@ def test_uploadFile(minio_mock):
     fichero_test.write("Test text")
     fichero_test.close()
 
-    minio_client = minio_manager.initClient()
-    minio_manager.createBucket(minio_client, bucket_name)
-    result = minio_manager.uploadFile(minio_client, bucket_name,
+    minio_manager.createBucket(bucket_name)
+    result = minio_manager.uploadFile(bucket_name,
                                       destination_file=file,
                                       source_file=file)
 
@@ -86,11 +83,9 @@ def test_processFile(minio_mock):
     fichero_test.write("Test text")
     fichero_test.close()
 
-    minio_client = minio_manager.initClient()
+    minio_manager.createBucket(bucket_name)
 
-    minio_manager.createBucket(minio_client, bucket_name)
-
-    minio_manager.uploadFile(minio_client, bucket_name,
+    minio_manager.uploadFile(bucket_name,
                              destination_file=file,
                              source_file=file)
 
@@ -107,11 +102,10 @@ def test_processFile(minio_mock):
 
     mocked_return = obectStat()
     with mock.patch('pytest_minio_mock.plugin.MockMinioObject.stat_object', return_value=mocked_return) as irrelevant:
-        minio_manager.processFile(minio_client,
-                                       bucket_name,
-                                       destination_file=file,
-                                       chunk_size=9,
-                                       processing_method=test_processingMethod)
+        minio_manager.processFile(bucket_name,
+                                  file=file,
+                                  chunk_size=9,
+                                  processing_method=test_processingMethod)
 
     # Reads the out file
     out_file = open(out_file_name, "r")
