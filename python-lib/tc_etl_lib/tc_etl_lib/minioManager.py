@@ -131,8 +131,8 @@ class minioManager:
 
         :param bucket_name: name of the bucket where the file is located
         :param file: name of the file to retrieve (can include path without bucket_name)
-        :param chunk_size: size in bytes of the chunks to retrieve
         :param processing_method: method to apply to each chunk of the retrieved file
+        :param chunk_size: size in bytes of the chunks to retrieve (500000 by default)
         """
         file_size = self.client.stat_object(
             bucket_name, object_name=file).size or 0
