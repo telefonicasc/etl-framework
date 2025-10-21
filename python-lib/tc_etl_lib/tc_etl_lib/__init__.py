@@ -25,4 +25,4 @@ from .exceptions import FetchError
 from .iota import iotaManager
 from .store import Store, orionStore, sqlFileStore
 from .normalizer import normalizer
-from .minioManager import minioManager
+from .minio import minioManager

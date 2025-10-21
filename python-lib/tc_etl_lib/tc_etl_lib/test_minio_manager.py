@@ -23,7 +23,7 @@ MinIO Manager tests.
 
 from pytest_minio_mock.plugin import minio_mock
 from unittest import mock
-from tc_etl_lib.minioManager import minioManager
+from tc_etl_lib.minio import minioManager
 import os
 
 
@@ -91,8 +91,6 @@ def test_processFile(minio_mock):
 
     # Custom processing method that saves locally the minio file
     def test_processingMethod(file_chunk):
-        print("===File chunk===")
-        print(file_chunk)
         fichero_procesado = open(out_file_name, "ab")
         fichero_procesado.write(file_chunk)
         fichero_procesado.close()
