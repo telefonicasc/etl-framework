@@ -27,32 +27,32 @@ from tc_etl_lib.minio import minioManager
 import os
 
 
-def initMinioManager():
+def init_minio_manager():
     return minioManager(
         endpoint='localhost:9000',
         access_key='admin',
         secret_key='admin123')
 
 
-def test_createBucket(minio_mock):
-    minio_manager = initMinioManager()
+def test_create_bucket(minio_mock):
+    minio_manager = init_minio_manager()
 
-    minio_manager.createBucket("test_bucket")
+    minio_manager.create_bucket("test_bucket")
     buckets = minio_manager.client.list_buckets()
     assert len(buckets) == 1
 
 
-def test_removeBucket(minio_mock):
-    minio_manager = initMinioManager()
+def test_remove_bucket(minio_mock):
+    minio_manager = init_minio_manager()
 
-    minio_manager.createBucket("test_bucket")
-    minio_manager.removeBucket("test_bucket")
+    minio_manager.create_bucket("test_bucket")
+    minio_manager.remove_bucket("test_bucket")
     buckets = minio_manager.client.list_buckets()
     assert len(buckets) == 0
 
 
-def test_uploadFile(minio_mock):
-    minio_manager = initMinioManager()
+def test_upload_file(minio_mock):
+    minio_manager = init_minio_manager()
     bucket_name = 'test-bucket'
     file = 'test_minioManager_file.txt'
 
@@ -61,8 +61,8 @@ def test_uploadFile(minio_mock):
     fichero_test.write("Test text")
     fichero_test.close()
 
-    minio_manager.createBucket(bucket_name)
-    result = minio_manager.uploadFile(bucket_name,
+    minio_manager.create_bucket(bucket_name)
+    result = minio_manager.upload_file(bucket_name,
                                       destination_file=file,
                                       source_file=file)
 
@@ -72,8 +72,8 @@ def test_uploadFile(minio_mock):
     assert result == "Upload successful"
 
 
-def test_processFile(minio_mock):
-    minio_manager = initMinioManager()
+def test_process_file(minio_mock):
+    minio_manager = init_minio_manager()
     bucket_name = 'test-bucket'
     file = "test-minioManager-file.txt"
     out_file_name = "out.txt"
@@ -83,9 +83,9 @@ def test_processFile(minio_mock):
     fichero_test.write("Test text")
     fichero_test.close()
 
-    minio_manager.createBucket(bucket_name)
+    minio_manager.create_bucket(bucket_name)
 
-    minio_manager.uploadFile(bucket_name,
+    minio_manager.upload_file(bucket_name,
                              destination_file=file,
                              source_file=file)
 

@@ -253,22 +253,22 @@ minio_manager = tc.minioManager(endpoint='<minio_endpoint>:<port>',
 
 # Upload test-file.txt to python-test-bucket/output/example.txt
 # note test-file.txt must exist in the same directory where this example is run
-minio_manager.uploadFile(bucket_name='python-test-bucket',
+minio_manager.upload_file(bucket_name='python-test-bucket',
                          destination_file='/output/example.txt',
                          source_file="test-file.txt")
 
-# You can define your own custom processing method and use it in the processing_method argument of the processFile method
+# You can define your own custom processing method and use it in the processing_method argument of the process_file method
 def process_chunk(file_chunk):
     print(file_chunk)
 
 # Retrieve example.txt and apply custom method to each 3 bytes chunk
-minio_manager.processFile(bucket_name='python-test-bucket',
+minio_manager.process_file(bucket_name='python-test-bucket',
                                destination_file='/output/example.txt',
                                chunk_size=3,
                                processing_method=process_chunk)
 
 # Remove the bucket created in the upload file method
-minio_manager.removeBucket(minio_client, "python-test-bucket")
+minio_manager.remove_bucket(minio_client, "python-test-bucket")
 ```
 
 ## Funciones disponibles en la librería
@@ -418,16 +418,16 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `secret_key`: contraseña necesaria para hacer login en MinIO
     - :param optional `secure`: flag para indicar si la conexión con MinIO usa https (True) o http (False). Por defecto se considera `True` si se omite el parámetro.
     - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta alguno de los argumentos obligatorios.
-  - `createBucket`: crea el bucket si no existe, si existe no hace nada.
+  - `create_bucket`: crea el bucket si no existe, si existe no hace nada.
     - :param obligatorio `bucket_name`: nombre del bucket a crear.
-  - `removeBucket`: borra el bucket si existe, si no hace nada.
+  - `remove_bucket`: borra el bucket si existe, si no hace nada.
     - :param obligatorio `bucket_name`: nombre del bucket a borrar.
-  - `uploadFile`: sube un fichero a MinIO (si ya existe lo sobreescribe). Si el bucket al que se sube no existe se crea previamente.
+  - `upload_file`: sube un fichero a MinIO (si ya existe lo sobreescribe). Si el bucket al que se sube no existe se crea previamente.
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a subir el fichero.
     - :param obligatorio `destination_file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `source_file`: nombre del fichero local a subir (puede incluir el path).
     - :return: objeto con el estado de la subida del fichero.
-  - `processFile`: procesa un fichero de MinIO por fragmentos y le aplica a cada fragmento la función provista.
+  - `process_file`: procesa un fichero de MinIO por fragmentos y le aplica a cada fragmento la función provista.
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a buscar el fichero.
     - :param obligatorio `file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `processing_method`: método a aplicar a cada fragmento del fichero.

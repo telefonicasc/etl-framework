@@ -44,7 +44,7 @@ class minioManager:
     secure: bool
     client: Minio
 
-    def __init__(self, endpoint: Optional[str] = None, access_key: Optional[str] = None, secret_key: Optional[str] = None, secure = True):
+    def __init__(self, endpoint: Optional[str] = None, access_key: Optional[str] = None, secret_key: Optional[str] = None, secure=True):
 
         messageError = []
         if endpoint is None:
@@ -69,9 +69,9 @@ class minioManager:
         self.access_key = cast(str, access_key)
         self.secret_key = cast(str, secret_key)
         self.secure = secure
-        self.client = self.__initClient()
+        self.client = self.__init_client()
 
-    def __initClient(self):
+    def __init_client(self):
         """
         Create a MinIO client with the class endpoint, its access key and secret key.
 
@@ -84,7 +84,7 @@ class minioManager:
             secure=self.secure
         )
 
-    def createBucket(self, bucket_name):
+    def create_bucket(self, bucket_name):
         """
         Create the bucket if it doesn't exist.
 
@@ -97,7 +97,7 @@ class minioManager:
         else:
             logger.debug(f'Bucket {bucket_name} already exists')
 
-    def removeBucket(self, bucket_name):
+    def remove_bucket(self, bucket_name):
         """
         Remove the bucket if it exists.
 
@@ -110,7 +110,7 @@ class minioManager:
         else:
             logger.debug(f'Bucket {bucket_name} doesnt exist')
 
-    def uploadFile(self, bucket_name, destination_file, source_file):
+    def upload_file(self, bucket_name, destination_file, source_file):
         """
         Upload the file, renaming it in the process
 
@@ -120,7 +120,7 @@ class minioManager:
         :return object with the status of the upload
         """
         # Bucket must exist before uploading file
-        self.createBucket(bucket_name)
+        self.create_bucket(bucket_name)
 
         logger.debug(
             f'Uploading {source_file} as object {destination_file} to bucket {bucket_name}')
@@ -130,7 +130,7 @@ class minioManager:
             file_path=source_file,
         )
 
-    def processFile(self, bucket_name, file, processing_method, chunk_size=500000):
+    def process_file(self, bucket_name, file, processing_method, chunk_size=500000):
         """Retrieves a file in chunks and applies a function to each chunk
 
         :param bucket_name: name of the bucket where the file is located
@@ -150,7 +150,8 @@ class minioManager:
                 # response.data returns bytes
                 processing_method(response.data)
             except Exception as e:
-                raise Exception(f'An error occured while processing the file: {e}')
+                raise Exception(
+                    f'An error occured while processing the file: {e}')
 
         logger.debug(f'Processing ended.')
         if response:
