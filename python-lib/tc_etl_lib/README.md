@@ -252,6 +252,7 @@ minio_manager = tc.minioManager(endpoint='<minio_endpoint>:<port>',
 
 
 # Upload test-file.txt to python-test-bucket/output/example.txt
+# note test-file.txt must exist in the same directory where this example is run
 minio_manager.uploadFile(bucket_name='python-test-bucket',
                          destination_file='/output/example.txt',
                          source_file="test-file.txt")
@@ -417,9 +418,9 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `secret_key`: contraseña necesaria para hacer login en MinIO
     - :param optional `secure`: flag para indicar si la conexión con MinIO usa https (True) o http (False). Por defecto se considera `True` si se omite el parámetro.
     - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta alguno de los argumentos obligatorios.
-  - `createBucket`: crea el bucket si no existe, si existe lanza un mensaje informativo.
+  - `createBucket`: crea el bucket si no existe, si existe no hace nada.
     - :param obligatorio `bucket_name`: nombre del bucket a crear.
-  - `removeBucket`: borra el bucket si existe, si no existe lanza un mensaje informativo.
+  - `removeBucket`: borra el bucket si existe, si no hace nada.
     - :param obligatorio `bucket_name`: nombre del bucket a borrar.
   - `uploadFile`: sube un fichero a MinIO (si ya existe lo sobreescribe). Si el bucket al que se sube no existe se crea previamente.
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a subir el fichero.
@@ -430,7 +431,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a buscar el fichero.
     - :param obligatorio `file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
     - :param obligatorio `processing_method`: método a aplicar a cada fragmento del fichero.
-    - :param optional `chunk_size`: tamaño en bytes de cada fragmento del fichero a recuperar. Por defecto 500000 bytes (500kB / 0,5mB) si se omite el argumento
+    - :param optional `chunk_size`: tamaño en bytes de cada fragmento del fichero a recuperar. Por defecto 500000 bytes si se omite el argumento
     - :raises [Exception](https://docs.python.org/3/library/exceptions.html#Exception): Se lanza cuando se captura una excepción en el procesamiento del fichero
 
 Algunos ejemplos de uso de `normalizer`:
