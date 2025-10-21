@@ -100,7 +100,7 @@ def test_process_file(minio_mock):
 
     mocked_return = obectStat()
     with mock.patch('pytest_minio_mock.plugin.MockMinioObject.stat_object', return_value=mocked_return) as irrelevant:
-        minio_manager.processFile(bucket_name,
+        minio_manager.process_file(bucket_name,
                                   file=file,
                                   chunk_size=9,
                                   processing_method=test_processingMethod)
