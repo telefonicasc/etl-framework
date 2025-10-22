@@ -48,7 +48,7 @@ INSTALL_REQUIRES = [
     # La última release de numpy compatible con python 3.8 es 1.24.4
     'numpy==1.24.4',
     'minio==7.2.7',
-    'boto3==1.40.55'
+    'boto3==1.37.38'
 
 ]
 INSTALL_REQUIRES_PYTHON_3_12 = [
