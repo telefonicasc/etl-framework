@@ -25,6 +25,7 @@ Minio routines for Python:
 from minio import Minio
 from typing import Optional, cast
 import logging
+import boto3
 
 logger = logging.getLogger(__name__)
 
@@ -77,11 +78,13 @@ class minioManager:
 
         :return authenticated MinIO client
         """
-        return Minio(
-            self.endpoint,
-            self.access_key,
-            self.secret_key,
-            secure=self.secure
+        return boto3.client(
+            's3',
+            endpoint_url=self.endpoint,
+            aws_access_key_id=self.access_key,
+            aws_secret_access_key=self.secret_key,
+            aws_session_token=None,
+            verify=False
         )
 
     def create_bucket(self, bucket_name):

@@ -47,7 +47,9 @@ INSTALL_REQUIRES = [
     # La última release de numpy antes de 2.0.0 es 1.26.4.
     # La última release de numpy compatible con python 3.8 es 1.24.4
     'numpy==1.24.4',
-    'minio==7.2.7'
+    'minio==7.2.7',
+    'boto3==1.40.55'
+
 ]
 INSTALL_REQUIRES_PYTHON_3_12 = [
     'requests>=2.28.2,<2.33.0',
@@ -55,7 +57,8 @@ INSTALL_REQUIRES_PYTHON_3_12 = [
     'psycopg2-binary>=2.9.5',
     'pandas==2.2.2',
     'numpy==2.2.0',
-    'minio==7.2.18'
+    'minio==7.2.18',
+    'boto3==1.40.55'
 ]
 
 setup(
