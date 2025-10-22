@@ -420,7 +420,7 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta alguno de los argumentos obligatorios.
   - `create_bucket`: crea el bucket si no existe, si existe no hace nada.
     - :param obligatorio `bucket_name`: nombre del bucket a crear.
-  - `remove_bucket`: borra el bucket si existe, si no hace nada.
+  - `remove_bucket`: borra el bucket si existe, si no existe no hace nada.
     - :param obligatorio `bucket_name`: nombre del bucket a borrar.
   - `upload_file`: sube un fichero a MinIO (si ya existe lo sobreescribe). Si el bucket al que se sube no existe se crea previamente.
     - :param obligatorio `bucket_name`: nombre del bucket donde se va a subir el fichero.
