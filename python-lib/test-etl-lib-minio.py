@@ -21,7 +21,7 @@
 import tc_etl_lib as tc
 
 # declare minioManager
-minio_manager = tc.minioManager(endpoint='<minio_endpoint>:<port>',
+minio_manager = tc.s3Manager(endpoint='<http/https>://<minio_endpoint>:<port>',
                              access_key='<user>',
                              secret_key='<password>')
 
