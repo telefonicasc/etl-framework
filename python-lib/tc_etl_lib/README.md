@@ -239,6 +239,38 @@ iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoi
 iotam.send_batch_http(data=[{"<key_1>": "<value_1>", "<key_2>": "<value_2>"}, {"<key_3>": "<value_3>", "<key_4>": "<value_4>"}])
 ```
 
+Ejemplo de uso de la clase minioManager
+
+```python
+# import library
+import tc_etl_lib as tc
+
+# declare minioManager and get initialized client
+minio_manager = tc.minioManager(endpoint='<minio_endpoint>:<port>',
+                             access_key='<user>',
+                             secret_key='<password>')
+
+
+# Upload test-file.txt to python-test-bucket/output/example.txt
+# note test-file.txt must exist in the same directory where this example is run
+minio_manager.upload_file(bucket_name='python-test-bucket',
+                         destination_file='/output/example.txt',
+                         source_file="test-file.txt")
+
+# You can define your own custom processing method and use it in the processing_method argument of the process_file method
+def process_chunk(file_chunk):
+    print(file_chunk)
+
+# Retrieve example.txt and apply custom method to each 3 bytes chunk
+minio_manager.process_file(bucket_name='python-test-bucket',
+                               destination_file='/output/example.txt',
+                               chunk_size=3,
+                               processing_method=process_chunk)
+
+# Remove the bucket created in the upload file method
+minio_manager.remove_bucket(minio_client, "python-test-bucket")
+```
+
 ## Funciones disponibles en la librería
 
 La librería está creada con diferentes clases dependiendo de la funcionalidad deseada.
@@ -378,6 +410,29 @@ La librería está creada con diferentes clases dependiendo de la funcionalidad 
     - :param obligatorio: `data`: Datos a enviar. Puede ser una lista de diccionarios o un DataFrame.
     - :raises SendBatchError: Se levanta cuando se produce una excepción dentro de `send_http`. Atrapa la excepción original y se guarda y se imprime el índice donde se produjo el error.
 
+- Clase `minioManager`: En esta clase están las funciones relacionadas con la solución de almacenamiento de objetos MinIO.
+
+  - `__init__`: constructor de objetos de la clase.
+    - :param obligatorio `endpoint`: enpoint de acceso a MinIO
+    - :param obligatorio `access_key`: usuario necesario para hacer login en MinIO
+    - :param obligatorio `secret_key`: contraseña necesaria para hacer login en MinIO
+    - :param optional `secure`: flag para indicar si la conexión con MinIO usa https (True) o http (False). Por defecto se considera `True` si se omite el parámetro.
+    - :raises [ValueError](https://docs.python.org/3/library/exceptions.html#ValueError): Se lanza cuando le falta alguno de los argumentos obligatorios.
+  - `create_bucket`: crea el bucket si no existe, si existe no hace nada.
+    - :param obligatorio `bucket_name`: nombre del bucket a crear.
+  - `remove_bucket`: borra el bucket si existe, si no existe no hace nada.
+    - :param obligatorio `bucket_name`: nombre del bucket a borrar.
+  - `upload_file`: sube un fichero a MinIO (si ya existe lo sobreescribe). Si el bucket al que se sube no existe se crea previamente.
+    - :param obligatorio `bucket_name`: nombre del bucket donde se va a subir el fichero.
+    - :param obligatorio `destination_file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
+    - :param obligatorio `source_file`: nombre del fichero local a subir (puede incluir el path).
+    - :return: objeto con el estado de la subida del fichero.
+  - `process_file`: procesa un fichero de MinIO por fragmentos y le aplica a cada fragmento la función provista.
+    - :param obligatorio `bucket_name`: nombre del bucket donde se va a buscar el fichero.
+    - :param obligatorio `file`: nombre del fichero en MinIO (puede incluir el path SIN el nombre del bucket al inicio).
+    - :param obligatorio `processing_method`: método a aplicar a cada fragmento del fichero.
+    - :param optional `chunk_size`: tamaño en bytes de cada fragmento del fichero a recuperar. Por defecto 500000 bytes si se omite el argumento
+    - :raises [Exception](https://docs.python.org/3/library/exceptions.html#Exception): Se lanza cuando se captura una excepción en el procesamiento del fichero
 
 Algunos ejemplos de uso de `normalizer`:
 
@@ -510,6 +565,9 @@ TOTAL                        403    221    45%
 ```
 
 ## Changelog
+
+
+- Add: new class `minioManager` to manage MinIO connection and file processing ([#109](https://github.com/telefonicasc/etl-framework/issues/109))
 
 0.16.0 (September 29th, 2025)
 
