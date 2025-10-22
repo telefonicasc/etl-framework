@@ -18,24 +18,24 @@
 # along with IoT orchestrator. If not, see http://www.gnu.org/licenses/.
 
 '''
-MinIO Manager tests.
+S3 Manager tests.
 '''
 
 from pytest_minio_mock.plugin import minio_mock
 from unittest import mock
-from tc_etl_lib.minio import minioManager
+from tc_etl_lib.s3 import s3Manager
 import os
 
 
-def init_minio_manager():
-    return minioManager(
-        endpoint='localhost:9000',
+def init_s3_manager():
+    return s3Manager(
+        endpoint='http://localhost:9000',
         access_key='admin',
         secret_key='admin123')
 
 
 def test_create_bucket(minio_mock):
-    minio_manager = init_minio_manager()
+    minio_manager = init_s3_manager()
 
     minio_manager.create_bucket("test_bucket")
     buckets = minio_manager.client.list_buckets()
@@ -43,7 +43,7 @@ def test_create_bucket(minio_mock):
 
 
 def test_remove_bucket(minio_mock):
-    minio_manager = init_minio_manager()
+    minio_manager = init_s3_manager()
 
     minio_manager.create_bucket("test_bucket")
     minio_manager.remove_bucket("test_bucket")
@@ -52,7 +52,7 @@ def test_remove_bucket(minio_mock):
 
 
 def test_upload_file(minio_mock):
-    minio_manager = init_minio_manager()
+    minio_manager = init_s3_manager()
     bucket_name = 'test-bucket'
     file = 'test_minioManager_file.txt'
 
@@ -73,7 +73,7 @@ def test_upload_file(minio_mock):
 
 
 def test_process_file(minio_mock):
-    minio_manager = init_minio_manager()
+    minio_manager = init_s3_manager()
     bucket_name = 'test-bucket'
     file = "test-minioManager-file.txt"
     out_file_name = "out.txt"
