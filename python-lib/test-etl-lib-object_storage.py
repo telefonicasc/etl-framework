@@ -20,18 +20,18 @@
 
 import tc_etl_lib as tc
 
-# declare minioManager
-minio_manager = tc.s3Manager(endpoint='<http/https>://<minio_endpoint>:<port>',
+# declare objectStorageManager
+object_storage_manager = tc.objectStorageManager(endpoint='<http/https>://<object_storage_endpoint>:<port>',
                              access_key='<user>',
                              secret_key='<password>')
 
 # Upload test-file.txt to python-test-bucket/output/example.txt
-minio_manager.upload_file(bucket_name='python-test-bucket',
+object_storage_manager.upload_file(bucket_name='python-test-bucket',
                          destination_file='/output/example.txt',
                          source_file="test-file.txt")
 
 # Retrieve example.txt and apply print method to each 3 bytes
-minio_manager.process_file(bucket_name='python-test-bucket',
+object_storage_manager.process_file(bucket_name='python-test-bucket',
                                file='/output/example.txt',
                                processing_method=print,
                                chunk_size=3)
@@ -43,12 +43,12 @@ def customCSVProcessingMethod(file_chunk):
     processed_file.close()
 
 # Upload CSV
-minio_manager.upload_file(bucket_name='python-test-bucket',
+object_storage_manager.upload_file(bucket_name='python-test-bucket',
                          destination_file='/output/reallyBigFile.csv',
                          source_file="movimientos_padronales_20250822_v2.csv")
 
 # Retrieve reallyBigFile.csv and apply customCSVProcessingMethod method to each 1000000 bytes
-minio_manager.process_file(bucket_name='python-test-bucket',
+object_storage_manager.process_file(bucket_name='python-test-bucket',
                                file='/output/reallyBigFile.csv',
                                processing_method=customCSVProcessingMethod,
                                chunk_size=1000000)

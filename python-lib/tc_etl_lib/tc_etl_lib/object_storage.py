@@ -19,8 +19,8 @@
 # along with IoT orchestrator. If not, see http://www.gnu.org/licenses/.
 
 """
-S3 routines for Python:
-    - s3Manager.
+Object storage routines for Python:
+    - objectStorageManager.
 """
 from typing import Optional, cast
 import logging
@@ -29,12 +29,12 @@ import boto3
 logger = logging.getLogger(__name__)
 
 
-class s3Manager:
-    """S3 Manager
+class objectStorageManager:
+    """Object storage Manager
 
-    endpoint: define S3 endpoint
-    access_key: user to log in to S3
-    secret_key: password to log in to S3
+    endpoint: define Object storage endpoint
+    access_key: user to log in to Object storage
+    secret_key: password to log in to Object storage
     """
     endpoint: str
     access_key: str
@@ -57,7 +57,7 @@ class s3Manager:
             if len(messageError) != 1:
                 defineParams = " and ".join(
                     [", ".join(messageError[:-1]), messageError[-1]])
-            raise ValueError(f'You must define {defineParams} in s3Manager')
+            raise ValueError(f'You must define {defineParams} in objectStorageManager')
 
         # At this point, all Optional[str] have been validated to be not None.
         # cast them to let type checker knows.
@@ -68,9 +68,9 @@ class s3Manager:
 
     def __init_client(self):
         """
-        Create a S3 client with the class endpoint, its access key and secret key.
+        Create a Object storage client with the class endpoint, its access key and secret key.
 
-        :return authenticated S3 client
+        :return authenticated Object storage client
         """
         return boto3.client(
             's3',
@@ -92,7 +92,6 @@ class s3Manager:
         except Exception as e:
             # BucketAlreadyExists or BucketAlreadyOwnedByYou
             logger.debug(f'Error creating the bucket: {e}')
-            raise Exception(f'Error creating the bucket: {e}')
 
     def remove_bucket(self, bucket_name):
         """

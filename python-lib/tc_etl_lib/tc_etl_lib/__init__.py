@@ -25,4 +25,4 @@ from .exceptions import FetchError
 from .iota import iotaManager
 from .store import Store, orionStore, sqlFileStore
 from .normalizer import normalizer
-from .s3 import s3Manager
+from .object_storage import objectStorageManager
