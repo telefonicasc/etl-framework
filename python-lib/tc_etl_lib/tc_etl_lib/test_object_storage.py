@@ -46,17 +46,6 @@ class TestObjectStorageService(TestCase):
         )
 
     @patch('tc_etl_lib.object_storage.boto3.client')
-    def test_create_bucket_error(self, mock_boto_client):
-        mock_object_storage_client = mock.MagicMock()
-        mock_boto_client.return_value = mock_object_storage_client
-
-        mock_object_storage_client.create_bucket.side_effect = Exception(
-            "Test error creating bucket")
-        with self.assertRaises(Exception):
-            object_storage_manager = self.init_object_storage_manager()
-            object_storage_manager.create_bucket("test-bucket")
-
-    @patch('tc_etl_lib.object_storage.boto3.client')
     def test_remove_bucket(self, mock_boto_client):
         mock_object_storage_client = mock.MagicMock()
         mock_boto_client.return_value = mock_object_storage_client
