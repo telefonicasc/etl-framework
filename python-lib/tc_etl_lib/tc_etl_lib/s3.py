@@ -92,6 +92,7 @@ class s3Manager:
         except Exception as e:
             # BucketAlreadyExists or BucketAlreadyOwnedByYou
             logger.debug(f'Error creating the bucket: {e}')
+            raise Exception(f'Error creating the bucket: {e}')
 
     def remove_bucket(self, bucket_name):
         """
@@ -99,12 +100,12 @@ class s3Manager:
 
         :param bucket_name: name of the bucket where the file is located
         """
-        found = self.client.bucket_exists(bucket_name)
-        if found:
-            self.client.remove_bucket(bucket_name)
+        try:
+            self.client.delete_bucket(Bucket=bucket_name)
             logger.debug(f'Removed bucket {bucket_name}')
-        else:
-            logger.debug(f'Bucket {bucket_name} doesnt exist')
+        except Exception as e:
+            logger.debug(f'An error ocurred while deleting {bucket_name}: {e}')
+            raise Exception(f'An error ocurred while deleting {bucket_name}: {e}')
 
     def upload_file(self, bucket_name, destination_file, source_file):
         """
