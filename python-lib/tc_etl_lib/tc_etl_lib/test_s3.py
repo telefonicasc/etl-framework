@@ -21,97 +21,119 @@
 S3 Manager tests.
 '''
 
-from pytest_minio_mock.plugin import minio_mock
-from unittest import mock
+from unittest import mock, TestCase
+from unittest.mock import patch
 from tc_etl_lib.s3 import s3Manager
-import os
 
 
-def init_s3_manager():
-    return s3Manager(
-        endpoint='http://localhost:9000',
-        access_key='admin',
-        secret_key='admin123')
+class TestS3Service(TestCase):
 
+    def init_s3_manager(self):
+        return s3Manager(
+            endpoint='http://localhost:9000',
+            access_key='admin',
+            secret_key='admin123')
 
-def test_create_bucket(minio_mock):
-    minio_manager = init_s3_manager()
+    @patch('tc_etl_lib.s3.boto3.client')
+    def test_create_bucket(self, mock_boto_client):
+        mock_s3_client = mock.MagicMock()
+        mock_boto_client.return_value = mock_s3_client
+        s3_manager = self.init_s3_manager()
+        s3_manager.create_bucket("test-bucket")
 
-    minio_manager.create_bucket("test_bucket")
-    buckets = minio_manager.client.list_buckets()
-    assert len(buckets) == 1
+        mock_s3_client.create_bucket.assert_called_once_with(
+            Bucket='test-bucket'
+        )
 
+    @patch('tc_etl_lib.s3.boto3.client')
+    def test_create_bucket_error(self, mock_boto_client):
+        mock_s3_client = mock.MagicMock()
+        mock_boto_client.return_value = mock_s3_client
 
-def test_remove_bucket(minio_mock):
-    minio_manager = init_s3_manager()
+        mock_s3_client.create_bucket.side_effect = Exception(
+            "Test error creating bucket")
+        with self.assertRaises(Exception):
+            s3_manager = self.init_s3_manager()
+            s3_manager.create_bucket("test-bucket")
 
-    minio_manager.create_bucket("test_bucket")
-    minio_manager.remove_bucket("test_bucket")
-    buckets = minio_manager.client.list_buckets()
-    assert len(buckets) == 0
+    @patch('tc_etl_lib.s3.boto3.client')
+    def test_remove_bucket(self, mock_boto_client):
+        mock_s3_client = mock.MagicMock()
+        mock_boto_client.return_value = mock_s3_client
+        s3_manager = self.init_s3_manager()
+        s3_manager.remove_bucket("test-bucket")
 
+        mock_s3_client.delete_bucket.assert_called_once_with(
+            Bucket='test-bucket'
+        )
 
-def test_upload_file(minio_mock):
-    minio_manager = init_s3_manager()
-    bucket_name = 'test-bucket'
-    file = 'test_minioManager_file.txt'
+    @patch('tc_etl_lib.s3.boto3.client')
+    def test_remove_bucket_error(self, mock_boto_client):
+        mock_s3_client = mock.MagicMock()
+        mock_boto_client.return_value = mock_s3_client
 
-    # Create the test file if it doesnt exist
-    fichero_test = open(file, "w")
-    fichero_test.write("Test text")
-    fichero_test.close()
+        mock_s3_client.delete_bucket.side_effect = Exception(
+            "Test error removing bucket")
+        with self.assertRaises(Exception):
+            s3_manager = self.init_s3_manager()
+            s3_manager.remove_bucket("test-bucket")
 
-    minio_manager.create_bucket(bucket_name)
-    result = minio_manager.upload_file(bucket_name,
-                                      destination_file=file,
-                                      source_file=file)
+    @patch('tc_etl_lib.s3.boto3.client')
+    def test_upload_file(self, mock_boto_client):
+        mock_s3_client = mock.MagicMock()
+        mock_boto_client.return_value = mock_s3_client
+        s3_manager = self.init_s3_manager()
+        s3_manager.upload_file("test-bucket", "destination", "source")
 
-    # Remove the test file
-    os.remove(file)
-    # pytest_minio_mock returns a string while real minio returns an object
-    assert result == "Upload successful"
+        mock_s3_client.upload_file.assert_called_once_with(
+            "source", "test-bucket", "destination"
+        )
 
+    @patch('tc_etl_lib.s3.boto3.client')
+    def test_upload_file_error(self, mock_boto_client):
+        mock_s3_client = mock.MagicMock()
+        mock_boto_client.return_value = mock_s3_client
 
-def test_process_file(minio_mock):
-    minio_manager = init_s3_manager()
-    bucket_name = 'test-bucket'
-    file = "test-minioManager-file.txt"
-    out_file_name = "out.txt"
+        mock_s3_client.upload_file.side_effect = Exception(
+            "Test error uploading file")
+        with self.assertRaises(Exception):
+            s3_manager = self.init_s3_manager()
+            s3_manager.upload_file("test-bucket", "destination", "source")
 
-    # Create the test file if it doesnt exist
-    fichero_test = open(file, "w")
-    fichero_test.write("Test text")
-    fichero_test.close()
+    @patch('tc_etl_lib.s3.boto3.client')
+    def test_process_file(self, mock_boto_client):
+        mock_s3_client = mock.MagicMock()
+        mock_boto_client.return_value = mock_s3_client
+        fake_attr = {'ObjectSize': 10}
+        mock_s3_client.get_object_attributes.return_value(fake_attr)
 
-    minio_manager.create_bucket(bucket_name)
+        def custom_processing_method(chunk):
+            pass
+        s3_manager = self.init_s3_manager()
+        s3_manager.process_file(bucket_name='test-bucket',
+                                file='file',
+                                processing_method=custom_processing_method,
+                                chunk_size=10)
 
-    minio_manager.upload_file(bucket_name,
-                             destination_file=file,
-                             source_file=file)
+        mock_s3_client.get_object.assert_called_once_with(
+            Bucket='test-bucket', Key='file', Range='bytes=0-9'
+        )
 
-    # Custom processing method that saves locally the minio file
-    def test_processingMethod(file_chunk):
-        fichero_procesado = open(out_file_name, "ab")
-        fichero_procesado.write(file_chunk)
-        fichero_procesado.close()
+    @patch('tc_etl_lib.s3.boto3.client')
+    def test_process_file_error(self, mock_boto_client):
+        mock_s3_client = mock.MagicMock()
+        mock_boto_client.return_value = mock_s3_client
+        fake_attr = {'ObjectSize': 10}
+        mock_s3_client.get_object_attributes.return_value(fake_attr)
 
-    class obectStat:
-        size = 9
+        def custom_processing_method(chunk):
+            pass
 
-    mocked_return = obectStat()
-    with mock.patch('pytest_minio_mock.plugin.MockMinioObject.stat_object', return_value=mocked_return) as irrelevant:
-        minio_manager.process_file(bucket_name,
-                                  file=file,
-                                  chunk_size=9,
-                                  processing_method=test_processingMethod)
-
-    # Reads the out file
-    out_file = open(out_file_name, "r")
-    result = out_file.read()
-    out_file.close()
-
-    # Remove the created files
-    os.remove(file)
-    os.remove(out_file_name)
-    # Check the downloaded file content is equal to the uploaded one
-    assert result == "Test text"
+        mock_s3_client.get_object.side_effect = Exception(
+            "Test error uploading file")
+        with self.assertRaises(Exception):
+            s3_manager = self.init_s3_manager()
+            s3_manager.process_file(bucket_name='test-bucket',
+                                    file='file',
+                                    processing_method=custom_processing_method,
+                                    chunk_size=10)
