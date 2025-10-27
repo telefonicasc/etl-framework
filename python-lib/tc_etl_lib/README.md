@@ -247,14 +247,14 @@ import tc_etl_lib as tc
 
 # declare objectStorageManager
 object_storage_manager = tc.objectStorageManager(endpoint='<http/https>://<object_storage_endpoint>:<port>',
-                             access_key='<user>',
-                             secret_key='<password>')
+                                                 access_key='<user>',
+                                                 secret_key='<password>')
 
 # Upload test-file.txt to python-test-bucket/output/example.txt
 # note test-file.txt must exist in the same directory where this example is run
 object_storage_manager.upload_file(bucket_name='python-test-bucket',
-                         destination_file='/output/example.txt',
-                         source_file="test-file.txt")
+                                   destination_file='/output/example.txt',
+                                   source_file="test-file.txt")
 
 # You can define your own custom processing method and use it in the processing_method argument of the process_file method
 def process_chunk(file_chunk):
@@ -262,9 +262,9 @@ def process_chunk(file_chunk):
 
 # Retrieve example.txt and apply custom method to each 3 bytes chunk
 object_storage_manager.process_file(bucket_name='python-test-bucket',
-                               destination_file='/output/example.txt',
-                               chunk_size=3,
-                               processing_method=process_chunk)
+                                    destination_file='/output/example.txt',
+                                    chunk_size=3,
+                                    processing_method=process_chunk)
 
 # Remove the bucket created in the upload file method
 object_storage_manager.remove_bucket("python-test-bucket")
@@ -566,8 +566,7 @@ TOTAL                        403    221    45%
 ## Changelog
 
 
-- Change: replace `minioManager` backend library to use aws `boto3`
-- Add: new class `minioManager` to manage MinIO connection and file processing ([#109](https://github.com/telefonicasc/etl-framework/issues/109))
+- Add: new class `objectStorageBucket` to manage bucket based object storage compatible with S3 API (such as AWS S3 or MINIMO) ([#109](https://github.com/telefonicasc/etl-framework/issues/109))
 
 0.16.0 (September 29th, 2025)
 
