@@ -100,9 +100,9 @@ class TestObjectStorageService(TestCase):
             pass
         object_storage_manager = self.init_object_storage_manager()
         object_storage_manager.process_file(bucket_name='test-bucket',
-                                file='file',
-                                processing_method=custom_processing_method,
-                                chunk_size=10)
+                                            file='file',
+                                            processing_method=custom_processing_method,
+                                            chunk_size=10)
 
         mock_object_storage_client.get_object.assert_called_once_with(
             Bucket='test-bucket', Key='file', Range='bytes=0-9'
@@ -123,6 +123,6 @@ class TestObjectStorageService(TestCase):
         with self.assertRaises(Exception):
             object_storage_manager = self.init_object_storage_manager()
             object_storage_manager.process_file(bucket_name='test-bucket',
-                                    file='file',
-                                    processing_method=custom_processing_method,
-                                    chunk_size=10)
+                                                file='file',
+                                                processing_method=custom_processing_method,
+                                                chunk_size=10)
