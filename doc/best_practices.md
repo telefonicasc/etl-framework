@@ -338,9 +338,9 @@ Los Códigos de Salida Específicos, es una best practice que permite a los sist
 | 2 | Fallo Transitorio | Red, timeouts, servicio externo caído... |Reintentar después de un tiempo |
 | 3+ | Fallo de Lógica/Datos | Errores de validación, configuración... | Parar | La lógica del script o los datos de entrada deben cambiarse |
 
-La ETL de be hacer uso de excepciones más adecuadas, en función del problema que de o quieras controlar.
+La ETL debe hacer uso de excepciones más adecuadas, en función del problema que quieras controlar.
 
-Puedes utilizar tus propias Excepciones, defindiendo esas excepciones en el código de la etl, ejemplo de definción:
+Puedes utilizar tus propias Excepciones, definiendo esas excepciones en el código de la etl, ejemplo de definción:
 
 ```python
     @dataclass(frozen=True)
