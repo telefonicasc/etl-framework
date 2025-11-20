@@ -303,22 +303,22 @@ except NetworkException as ne:
     # Network or API errors: log specific details for debugging.
     try:
         # Try to use specific attributes of your NetworkException class
-        logger.error(f'⚠️ Network error: {ne.msg} | URL: {ne.url} | Status: {ne.status_code}')
+        logger.error(f'Network error: {ne.msg} | URL: {ne.url} | Status: {ne.status_code}')
     except AttributeError:
         # Fallback if exception object is missing fields (safeguard)
-        logger.error(f'⚠️ Unexpected network error format: {ne}')
+        logger.error(f'Unexpected network error format: {ne}')
     sys.exit(2)
     
 except CustomAppException as cae:
     # Exit Code 3: Application Logic Failure (Non-retryable without changes)
     # Data validation errors, missing configuration, business logic issues.
-    logger.error(f'🚫 Application error: {cae.msg}')
+    logger.error(f'Application error: {cae.msg}')
     sys.exit(3)
     
 except Exception:
     # Exit Code 1: Unexpected/Unknown Failure (Needs intervention)
     # Catch any other unhandled error. Include the full traceback.
-    logger.exception('💥 Unexpected error running the ETL. Review traceback.')
+    logger.exception('Unexpected error running the ETL. Review traceback.')
     sys.exit(1)
     
 finally:
