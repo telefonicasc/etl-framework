@@ -7,6 +7,7 @@
 * [Logging niveles y f-strings](#logging-string)
 * [Configuración de la ETL](#etl-config)
 * [Ficheros CSV](#etl-csv)
+* [Terminación controlada y manejo de Errores](#etl-control-errors)
 
 ## <a name="version"></a>Versión de Python
 
