@@ -269,3 +269,100 @@ for index, row in df.iterrows():
         logger.warning(f'Data CIF: {row[csv_municipality_column_cif]}')
         ...
 ```
+## <a name="etl-control-errors"></a> Terminación Controlada y Manejo de Errores (ETL)
+
+Es crucial que cualquier proceso ETL o script de larga duración finalice de forma controlada y predecible. Una terminación descontrolada puede dejar recursos abiertos, datos inconsistentes o, peor aún, ocultar la causa raíz de un fallo.
+
+Un buen control de excepciones garantiza tres cosas:
+
+- Robustez: Permite manejar errores esperados (como fallos de red o datos inválidos) de manera específica.
+- Observabilidad: Proporciona un registro claro de la causa, permitiendo la depuración y la automatización de reintentos.
+- Gestión de Recursos: Asegura que los recursos (conexiones de bases de datos, archivos abiertos, etc.) se cierren correctamente.
+
+Para lograr una terminación controlada, se recomienda encapsular el código en una estructura `try...except...finally` y utilizar códigos de salida (sys.exit) específicos para clasificar la naturaleza del fallo. Todo el flujo de ejecución principal de la ETL debe estar contenido en este patrón (`try...except...finally`) para garantizar una salida controlada y un manejo consistente de los recursos.
+
+Un ejemplo de uso sería: 
+
+```python
+import sys
+import logging
+# Assume logger is initialized somewhere
+logger = logging.getLogger(__name__)
+
+# NOTE: NetworkException and CustomAppException should be user-defined classes.
+
+try:
+    # Main code for extraction, transformation, and loading (ETL)
+    # Functions that might raise known exceptions are executed here
+    logger.info("Starting ETL process...")
+    # <etl working code> 
+    
+except NetworkException as ne:
+    # Exit Code 2: External Resource/Connectivity Failure (Retryable)
+    # Network or API errors: log specific details for debugging.
+    try:
+        # Try to use specific attributes of your NetworkException class
+        logger.error(f'⚠️ Network error: {ne.msg} | URL: {ne.url} | Status: {ne.status_code}')
+    except AttributeError:
+        # Fallback if exception object is missing fields (safeguard)
+        logger.error(f'⚠️ Unexpected network error format: {ne}')
+    sys.exit(2)
+    
+except CustomAppException as cae:
+    # Exit Code 3: Application Logic Failure (Non-retryable without changes)
+    # Data validation errors, missing configuration, business logic issues.
+    logger.error(f'🚫 Application error: {cae.msg}')
+    sys.exit(3)
+    
+except Exception:
+    # Exit Code 1: Unexpected/Unknown Failure (Needs intervention)
+    # Catch any other unhandled error. Include the full traceback.
+    logger.exception('💥 Unexpected error running the ETL. Review traceback.')
+    sys.exit(1)
+    
+finally:
+    # The 'finally' block executes ALWAYS (whether there was an exception or not)
+    # Essential for releasing external resources, ensuring a clean termination.
+    logger.info("Releasing resources...")
+    # source.close() 
+    # db_connection.close()
+```
+
+Los Códigos de Salida Específicos, es una best practice que permite a los sistemas externos (shells, orquestadores, etc.) entender la naturaleza del fallo sin leer los logs. 
+
+| Código (N) | Significado Estándar | Clasificación del Error | Recomendación de Automatización |
+|-----------:|----------------------|-------------------------|---------------------------------|
+| 0          | Éxito | N/A | Continuar |
+| 1 | Fallo General | Errores no manejados, bugs... | Parar | Necesita revisión humana |
+| 2 | Fallo Transitorio | Red, timeouts, servicio externo caído... |Reintentar después de un tiempo |
+| 3+ | Fallo de Lógica/Datos | Errores de validación, configuración... | Parar | La lógica del script o los datos de entrada deben cambiarse |
+
+La ETL de be hacer uso de excepciones más adecuadas, en función del problema que de o quieras controlar.
+
+Puedes utilizar tus propias Excepciones, defindiendo esas excepciones en el código de la etl, ejemplo de definción:
+
+```python
+    @dataclass(frozen=True)
+    class NetworkException(Exception):
+        """Exception raised for network errors.
+
+        Attributes:
+            msg: the failure message
+            url -- URL the request was sent to
+            status_code -- response status code
+            text -- response body
+        """
+        msg: str
+        url: str
+        status_code: int
+        text: str
+...
+```
+
+Y luego darle uso, por ejemplo:
+
+```python
+   if res.status_code != 200:
+      raise NetworkException(msg='Failed to get zone manager token (galgus zoneManager)', url=req_url, status_code=res.status_code, text=res.text)
+...
+```
