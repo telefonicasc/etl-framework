@@ -16,7 +16,7 @@
 # General Public License for more details.
 #
 # You should have received a copy of the GNU Affero General Public License
-# along with IoT orchestrator. If not, see http://www.gnu.org/licenses/.
+# along with tc_etl_lib. If not, see http://www.gnu.org/licenses/.
 
 '''
 IoT Agent routines for Python:
