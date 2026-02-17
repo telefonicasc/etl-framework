@@ -91,7 +91,9 @@ Una vez añadida esa referencia en requeriments.txt, se puede instalar con el co
 
 ## Uso de la librería
 
-El uso de la librería, una vez se ha instalado en el venv (es recomendable instalar y ejecutar esta libreria desde un entorno virtual, por ejemplo, usando la libería estándar de Python [venv](https://docs.python.org/3/library/venv.html) ), es similar al resto de librerías que dispondrías en python. A continuación mostramos un ejemplo de referencia:
+El uso de la librería, una vez se ha instalado en el venv (es recomendable instalar y ejecutar esta libreria desde un entorno virtual, por ejemplo, usando la libería estándar de Python [venv](https://docs.python.org/3/library/venv.html) ), es similar al resto de librerías que dispondrías en python. A continuación mostramos un ejemplo de referencia.
+
+### Consulta de entidades del Context Broker
 
 ```python    
 # import library
@@ -152,6 +154,9 @@ for i, item in enumerate(entities):
     logger.info(f'[{i}]--> {item["id"]} ({item["type"]})')
 
 ```
+
+### Envío de entidades al Context Broker
+
 
 Ejemplo de Envío de datos en ráfaga
 
@@ -227,6 +232,8 @@ with tc.sqlFileStore(path="inserts.sql", subservice="/energia", namespace="energ
     store(entities)
 ```
 
+### Envío de medidas al iot-agent
+
 Ejemplo de uso de la clase iotaManager
 
 ```
@@ -238,6 +245,8 @@ iotam.send_http(data={"<key_1>": "<value_1>", "<key_2>": "<value_2>"})
 iotam: tc.iota.iotaManager = tc.iota.iotaManager(endpoint = 'http://<iota_endpoint>:<port>/iot/json', device_id='<device_id>', api_key='<api_key>', sleep_send_batch='<time_sleep>')
 iotam.send_batch_http(data=[{"<key_1>": "<value_1>", "<key_2>": "<value_2>"}, {"<key_3>": "<value_3>", "<key_4>": "<value_4>"}])
 ```
+
+### Subida y consulta de ficheros del data lake
 
 Ejemplo de uso de la clase objectStorageManager
 
