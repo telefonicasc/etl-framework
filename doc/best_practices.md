@@ -124,6 +124,8 @@ logger.info(f"Hello, {name}. You are {age}.")
 
 El mecanismo de f-String a la hora de formatear los strings (y en este caso usarlo en el log), es más rápido y comprensible que los mecanismos anteriores. Por lo tanto f-String es el recomendado a usar.
 
+**Nota**: los mensajes que se dan en cada traza no debe incluir retornos de carro ('\n'), cada traza debe ocupar una sola línea.
+
 ## <a name="etl-config"></a> Configuración de la ETL
 
 Cada ETL tiene su propia configuración, dependiendo de su necesidades a nivel funcional. Es importante parametrizar todo lo posible y que las ETLs sean lo más flexible posible.
