@@ -576,7 +576,7 @@ TOTAL                        403    221    45%
 
 0.18.0 (April 16th, 2026)
 
-- Fix: change pandas==2.2.2 to pandas>=2.2.2 in package requirements (Python 3.13 case)
+- Fix: change pandas==2.2.2 to pandas>=2.2.3 in package requirements (Python 3.13 case)
 
 0.17.0 (October 28th, 2025)
 
