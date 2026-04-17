@@ -574,6 +574,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+- Fix: change pandas==2.2.2 to pandas==2.2.3 in package requirements (Python 3.13 case)
+
 0.17.0 (October 28th, 2025)
 
 - Add: new class `objectStorageBucket` to manage bucket based object storage compatible with S3 API (such as AWS S3 or MINIMO) ([#109](https://github.com/telefonicasc/etl-framework/issues/109))
