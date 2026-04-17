@@ -54,7 +54,7 @@ INSTALL_REQUIRES_PYTHON_3_12 = [
     'requests>=2.28.2,<2.33.0',
     'urllib3==1.26.16',
     'psycopg2-binary>=2.9.5',
-    'pandas>=2.2.3',
+    'pandas==2.2.3',
     'numpy==2.2.0',
     'boto3==1.40.55'
 ]
