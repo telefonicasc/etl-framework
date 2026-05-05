@@ -574,6 +574,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+- Fix: update boto3 to ~=1.41.5 and requests to >=2.28.2,<2.33.0
+
 0.18.0 (April 20th, 2026)
 
 - Fix: change pandas==2.2.2 to pandas==2.2.3 in package requirements (Python 3.13 case)
