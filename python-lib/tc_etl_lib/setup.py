@@ -37,7 +37,7 @@ LONG_DESC_TYPE = "text/markdown"
 #Paquetes necesarios para que funcione la librería. Se instalarán a la vez si no lo tuvieras ya instalado
 #Dos listas separadas (para Python >=3.12 y para Python <3.12)
 INSTALL_REQUIRES = [
-    'requests>=2.28.2,<2.33.0',
+    'requests==2.25.1',
     'urllib3==1.26.16',
     'psycopg2-binary>=2.9.5',
     'pandas==2.0.3',
@@ -47,7 +47,7 @@ INSTALL_REQUIRES = [
     # La última release de numpy antes de 2.0.0 es 1.26.4.
     # La última release de numpy compatible con python 3.8 es 1.24.4
     'numpy==1.24.4',
-    'boto3~=1.41.5'
+    'boto3==1.37.38'
 
 ]
 INSTALL_REQUIRES_PYTHON_3_12 = [
