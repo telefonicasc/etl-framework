@@ -56,7 +56,7 @@ INSTALL_REQUIRES_PYTHON_3_12 = [
     'psycopg2-binary>=2.9.5',
     'pandas==2.2.3',
     'numpy==2.2.0',
-    'boto3~=1.41.5'
+    'boto3==1.41.5'
 ]
 
 setup(
