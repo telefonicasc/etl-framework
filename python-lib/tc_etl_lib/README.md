@@ -574,7 +574,7 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
-- Fix: update boto3 to ~=1.41.5 and requests to >=2.28.2,<2.33.0
+- Fix: change boto3 from 1.40.55 to 1.41.5 in package requirements (Python >=3.12 case)
 
 0.18.0 (April 20th, 2026)
 
