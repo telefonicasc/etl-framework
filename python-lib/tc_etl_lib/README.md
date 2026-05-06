@@ -574,6 +574,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+- Fix: change boto3 from 1.43.4 to >=1.37.38,<1.43.4 in package requirements (Python >=3.12 case)
+
 0.19.0 (May 6th, 2026)
 
 - Fix: change boto3 from 1.37.38 to >=1.37.38,<1.43.4 in package requirements (Python >=3.8,<3.12 case)
