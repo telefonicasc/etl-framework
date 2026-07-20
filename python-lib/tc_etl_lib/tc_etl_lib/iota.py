@@ -110,7 +110,7 @@ class iotaManager:
         http.mount('https://', adapter)
 
         try:
-            resp = http.post(url=self.endpoint, json=data, params=params, headers=headers)
+            resp = http.post(url=self.endpoint, json=data, params=params, headers=headers, timeout=self.timeout)
             if resp.status_code == 200:
                 return True
             else:
