@@ -45,11 +45,11 @@ Para instalar la última versión:
 
 Para instalar una versión concreta:
 
-        pip install tc_etl_lib==0.20.0
+        pip install tc_etl_lib==0.21.0
 
 También se puede añadir la depedencia a `requirements.txt`:
 
-        tc_etl_lib==0.20.0
+        tc_etl_lib==0.21.0
 
 he instalar (junto con el resto de depedencias) con el habitual:
 
@@ -573,6 +573,8 @@ TOTAL                        403    221    45%
 ```
 
 ## Changelog
+
+0.21.0 (July 22nd, 2026)
 
 - Fix: timeout was never used in `iotaManager.send_http()` so requests never actually timed out
 
