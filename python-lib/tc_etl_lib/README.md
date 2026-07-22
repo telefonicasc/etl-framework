@@ -574,6 +574,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+- Fix: timeout was never used in `iotaManager.send_http()` so requests never actually timed out
+
 0.20.0 (May 6th, 2026)
 
 - Fix: change boto3 from 1.43.4 to >=1.37.38,<1.43.4 in package requirements (Python >=3.12 case)
