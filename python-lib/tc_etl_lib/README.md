@@ -574,7 +574,7 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
-- Fix: pass `timeout` parameter to `http.post()` call in `iotaManager.send_http`, which was defined but never used, so requests never actually timed out
+- Fix: timeout was never used in `iotaManager.send_http()` so requests never actually timed out
 
 0.20.0 (May 6th, 2026)
 
