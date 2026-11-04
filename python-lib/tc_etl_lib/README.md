@@ -45,11 +45,11 @@ Para instalar la última versión:
 
 Para instalar una versión concreta:
 
-        pip install tc_etl_lib==0.18.0
+        pip install tc_etl_lib==0.21.0
 
 También se puede añadir la depedencia a `requirements.txt`:
 
-        tc_etl_lib==0.18.0
+        tc_etl_lib==0.21.0
 
 he instalar (junto con el resto de depedencias) con el habitual:
 
@@ -59,7 +59,7 @@ he instalar (junto con el resto de depedencias) con el habitual:
 
 La librería de tipo `tc_etl_lib-<version>.tar.gz`, se puede instalar en cualquier entorno python con el siguiente comando:
 
-    pip install ./tc_etl_lib/dist/tc_etl_lib-0.18.0.tar.gz
+    pip install ./tc_etl_lib/dist/tc_etl_lib-0.21.0.tar.gz
 
 En este caso, la librería está disponible en ese directorio. Si estuviera disponible en cualquier otra ruta, se debería de reemplazar por la ruta relativa o absoluta correspondiente. Si se quiere instalar sobre un entorno venv, primero has de activar el entorno venv y luego ejecutar el comando de instalación de la librería.
 
@@ -577,6 +577,21 @@ TOTAL                        403    221    45%
 - Add: get_subscriptions function to retrieve subscriptions with internal pagination.
 - Add: get_subscriptions_page function to retrieve a page of subscriptions from Context Broker.
 - Add: update_subscription function to update an existing subscription using the PATCH endpoint.
+
+0.21.0 (July 22nd, 2026)
+
+- Fix: timeout was never used in `iotaManager.send_http()` so requests never actually timed out
+
+0.20.0 (May 6th, 2026)
+
+- Fix: change boto3 from 1.43.4 to >=1.37.38,<1.43.4 in package requirements (Python >=3.12 case)
+
+0.19.0 (May 6th, 2026)
+
+- Fix: change boto3 from 1.37.38 to >=1.37.38,<1.43.4 in package requirements (Python >=3.8,<3.12 case)
+- Fix: change requests from 2.25.1 to >=2.32.4,<2.33.0 in package requirements (Python >=3.8,<3.12 case)
+- Fix: change boto3 from 1.40.55 to 1.43.4 in package requirements (Python >=3.12 case)
+- Fix: change requests from >=2.28.2,<2.33.0 to >=2.32.4,<2.33.0 in package requirements (Python >=3.12 case)
 
 0.18.0 (April 20th, 2026)
 
