@@ -248,6 +248,110 @@ class cbManager:
 
         return resp.json()
 
+    def get_subscriptions(
+        self,
+        *,
+        service: Optional[str] = None,
+        subservice: Optional[str] = None,
+        auth: Optional[authManager] = None,
+        limit: int = 100,
+        options: Optional[List[str]] = None,
+    ):
+        """Retrieve subscriptions from context broker
+
+        :param service: Define service from which entities are retrieved, defaults to None or auth.service defined value
+        :param subservice: Define subservice from which entities are retrieved, defaults to None or auth.subservice defined value
+        :param auth: Define authManager, defaults to None
+        :param limit: Limits the number of entities to be retrieved, defaults to 100
+        :param options: Options used, defaults to None
+        :raises ValueError: is thrown when some required argument is missing
+        :raises FetchError: is thrown when the response from the cb indicates an error
+        :return: json data
+        """
+
+        result = []
+        pg = 1
+
+        data = ["go!"]
+        while data != []:
+            offset = (pg - 1) * limit
+            data = self.get_subscriptions_page(service=service, subservice=subservice, auth=auth, offset=offset, limit=limit, options=options)
+            pg += 1
+            result += data
+        return result
+
+    def get_subscriptions_page(
+        self,
+        *,
+        service: Optional[str] = None,
+        subservice: Optional[str] = None,
+        auth: Optional[authManager] = None,
+        offset: Optional[int] = None,
+        limit: Optional[int] = None,
+        options: Optional[List[str]] = None,
+    ):
+        """Retrieve subscriptions from context broker
+        :param service: Define service from which entities are retrieved, defaults to None or auth.service defined value
+        :param subservice: Define subservice from which entities are retrieved, defaults to None or auth.subservice defined value
+        :param auth: Define authManager, defaults to None
+        :param offset: Establishes the offset from where entities are retrieved, defaults to None
+        :param limit: Limits the number of entities to be retrieved, defaults to None
+        :param options: Options used, defaults to None
+        :raises ValueError: is thrown when some required argument is missing
+        :raises FetchError: is thrown when the response from the cb indicates an error
+        :return: json data
+        """
+
+        if service is None and auth is not None:
+            service = auth.service
+
+        if subservice is None and auth is not None:
+            subservice = auth.subservice
+
+        if subservice is None:
+            raise ValueError("You must define <<subservice>> either here or in authManager")
+
+        headers = {}
+
+        if service is not None:
+            headers["Fiware-Service"] = service
+
+        headers["Fiware-ServicePath"] = subservice
+
+        if auth is not None:
+            token = auth.tokens.get(subservice)
+
+            if token is None:
+                token = auth.get_auth_token_subservice(subservice=subservice)
+
+            headers["X-Auth-Token"] = token
+
+        params = {}
+
+        if offset is not None:
+            params["offset"] = offset
+
+        if limit is not None:
+            params["limit"] = limit
+
+        if options:
+            params["options"] = ",".join(options)
+
+        req_url = f"{self.endpoint}/v2/subscriptions"
+
+        resp = requests.get(req_url, params=params, headers=headers, verify=False, timeout=self.timeout)
+
+        if resp.status_code == 400 or resp.status_code == 401:
+            try:
+                respjson = resp.json()
+                logger.error(f'{respjson.get("name", "Error")}: ' f'{respjson.get("message", resp.text)}')
+            except ValueError:
+                logger.error(resp.text)
+
+        if resp.status_code != 200:
+            raise exceptions.FetchError(response=resp, method="GET", url=req_url, params=params, headers=headers)
+
+        return resp.json()
 
     def send_batch(self, *, service:str = None, subservice: str = None, auth: authManager = None, entities: Iterable[Any], actionType: str = 'append', options: list = []) -> bool:
         """Send batch data to context broker with block control
@@ -412,3 +516,69 @@ class cbManager:
         http.mount('http://', adapter)
         http.mount('https://', adapter)
         return http.post(req_url, json=body, headers=headers, verify=False, timeout=self.timeout)
+
+    def update_subscription(
+        self, *, subscription_id: str, payload: dict, service: Optional[str] = None, subservice: Optional[str] = None, auth: Optional[authManager] = None
+    ) -> bool:
+        """Update an existing subscription in context broker.
+
+        :param subscription_id: ID of the subscription to update.
+        :param payload: JSON object containing the fields to update.
+        :param service: Define service, defaults to auth.service.
+        :param subservice: Define subservice, defaults to auth.subservice.
+        :param auth: Define authManager, defaults to None.
+        :raises ValueError: When some required argument is missing.
+        :raises FetchError: When the response from the CB indicates an error.
+        :return: True if the operation is successful.
+        """
+
+        if not subscription_id:
+            raise ValueError("You must define <<subscription_id>>")
+
+        if not isinstance(payload, dict) or not payload:
+            raise ValueError("You must define a valid <<payload>>")
+
+        # Resolve service and subservice
+        if service is None and auth is not None:
+            service = auth.service
+
+        if subservice is None and auth is not None:
+            subservice = auth.subservice
+
+        if subservice is None:
+            raise ValueError("You must define <<subservice>> either here or in authManager")
+
+        # Prepare headers
+        headers = {"Content-Type": "application/json"}
+
+        if service is not None:
+            headers["Fiware-Service"] = service
+
+        headers["Fiware-ServicePath"] = subservice
+
+        # Authentication
+        if auth is not None:
+            token = auth.tokens.get(subservice)
+
+            if token is None:
+                token = auth.get_auth_token_subservice(subservice=subservice)
+
+            headers["X-Auth-Token"] = token
+
+        req_url = f"{self.endpoint}/v2/subscriptions/{subscription_id}"
+
+        resp = self.session.patch(req_url, json=payload, headers=headers, verify=False, timeout=self.timeout)
+
+        # Check response
+        if resp.status_code != 204:
+            try:
+                respjson = resp.json()
+                logger.error(f'{respjson.get("name", "Error")}: ' f'{respjson.get("message", resp.text)}')
+            except ValueError:
+                logger.error(resp.text)
+
+            raise exceptions.FetchError(response=resp, method="PATCH", url=req_url, params=None, headers=headers)
+
+        logger.info(f"Subscription {subscription_id} updated successfully")
+
+        return True
