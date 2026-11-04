@@ -574,6 +574,10 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+- Add: get_subscriptions function to retrieve subscriptions with internal pagination.
+- Add: get_subscriptions_page function to retrieve a page of subscriptions from Context Broker.
+- Add: update_subscription function to update an existing subscription using the PATCH endpoint.
+
 0.18.0 (April 20th, 2026)
 
 - Fix: change pandas==2.2.2 to pandas==2.2.3 in package requirements (Python 3.13 case)
