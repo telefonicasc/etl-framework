@@ -259,8 +259,8 @@ class cbManager:
     ):
         """Retrieve subscriptions from context broker
 
-        :param service: Define service from which entities are retrieved, defaults to None or auth.service defined value
-        :param subservice: Define subservice from which entities are retrieved, defaults to None or auth.subservice defined value
+        :param service: Define service from which subscriptions are retrieved, defaults to None or auth.service defined value
+        :param subservice: Define subservice from which subscriptions are retrieved, defaults to None or auth.subservice defined value
         :param auth: Define authManager, defaults to None
         :param limit: Limits the number of subscriptions to be retrieved, defaults to 100
         :param options: Options used, defaults to None
@@ -291,10 +291,10 @@ class cbManager:
         options: Optional[List[str]] = None,
     ):
         """Retrieve subscriptions from context broker
-        :param service: Define service from which entities are retrieved, defaults to None or auth.service defined value
-        :param subservice: Define subservice from which entities are retrieved, defaults to None or auth.subservice defined value
+        :param service: Define service from which subscriptions are retrieved, defaults to None or auth.service defined value
+        :param subservice: Define subservice from which subscriptions are retrieved, defaults to None or auth.subservice defined value
         :param auth: Define authManager, defaults to None
-        :param offset: Establishes the offset from where entities are retrieved, defaults to None
+        :param offset: Establishes the offset from where subscriptions are retrieved, defaults to None
         :param limit: Limits the number of subscriptions to be retrieved, defaults to None
         :param options: Options used, defaults to None
         :raises ValueError: is thrown when some required argument is missing
