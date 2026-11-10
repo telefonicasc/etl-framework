@@ -295,7 +295,7 @@ class cbManager:
         :param subservice: Define subservice from which entities are retrieved, defaults to None or auth.subservice defined value
         :param auth: Define authManager, defaults to None
         :param offset: Establishes the offset from where entities are retrieved, defaults to None
-        :param limit: Limits the number of entities to be retrieved, defaults to None
+        :param limit: Limits the number of subscriptions to be retrieved, defaults to None
         :param options: Options used, defaults to None
         :raises ValueError: is thrown when some required argument is missing
         :raises FetchError: is thrown when the response from the cb indicates an error
