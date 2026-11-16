@@ -602,6 +602,8 @@ TOTAL                        403    221    45%
 
 ## Changelog
 
+0.22.0 (November 16th, 2026)
+
 - Add: get_subscriptions function to retrieve subscriptions with internal pagination.
 - Add: get_subscriptions_page function to retrieve a page of subscriptions from Context Broker.
 - Add: update_subscription function to update an existing subscription using the PATCH endpoint.
